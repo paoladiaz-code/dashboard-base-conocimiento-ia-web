@@ -19,7 +19,8 @@
                             bg: '#F8FAFC',
                             card: '#FFFFFF',
                             text: '#334155',
-                            text_muted: '#64748B'
+                            text_muted: '#64748B',
+                            red: '#E1001A' // Rojo usado en botones de "Jugar ahora"
                         }
                     },
                     fontFamily: {
@@ -32,14 +33,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Chosen Palette: Tinka Brand Inspired (Warm Neutral Background, Tinka Green, Tinka Yellow Accents, Slate Text) -->
-    <!-- Application Structure Plan: Dynamic Knowledge Management Dashboard with tone customization, live CRUD operations for Q&A inputs, and real-time Chart.js metric updates. -->
-    <!-- Visualization & Content Choices: 
-         1. Dynamic Doughnut Chart (Chart.js): Visualizes current distribution of Q&A across categories.
-         2. Interactive Accordions with Edit/Delete controls.
-         3. Tone Modifier UI: Real-time adaptation of text responses based on selected bot personality (Entusiasta, Formal, Directo).
-         4. Modal Form: Clean UI for adding/editing KB items with instant state reflection.
-         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Application Structure Plan: Dynamic Knowledge Management Dashboard with live Chatbot Simulator. -->
 
     <style>
         .chart-container { 
@@ -70,9 +64,40 @@
             background-color: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
         }
+
+        /* Chat scrollbar customization */
+        #chat-messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-messages-container::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        #chat-messages-container::-webkit-scrollbar-thumb {
+            background: #ccc; 
+            border-radius: 10px;
+        }
+        #chat-messages-container::-webkit-scrollbar-thumb:hover {
+            background: #aaa; 
+        }
+
+        .chat-bubble-bot {
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble-user {
+            border-bottom-right-radius: 4px;
+        }
+        
+        /* Animación de entrada para el chat */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-chat-open {
+            animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
-<body class="bg-tinka-bg text-tinka-text font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-tinka-bg text-tinka-text font-sans antialiased min-h-screen flex flex-col relative">
 
     <!-- HEADER -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
@@ -81,17 +106,17 @@
                 <span class="text-3xl">🤖</span>
                 <div>
                     <h1 class="text-xl font-bold text-tinka-green_dark leading-tight">Loterías IA</h1>
-                    <p class="text-xs text-tinka-text_muted font-medium uppercase tracking-wider">Gestor RAG & Configurador de Tono</p>
+                    <p class="text-xs text-tinka-text_muted font-medium uppercase tracking-wider">Gestor RAG & Simulador</p>
                 </div>
             </div>
 
             <!-- CONTROLES GLOBALES DE TONO Y ACCIÓN -->
             <div class="flex items-center gap-3 flex-wrap">
                 <!-- Selector de Tono -->
-                <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
                     <span class="text-base">🎭</span>
                     <label for="tone-select" class="text-xs font-bold text-slate-600 hidden sm:inline">Tono del Bot:</label>
-                    <select id="tone-select" onchange="changeTone(this.value)" class="bg-white text-xs font-bold text-slate-800 py-1 px-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green cursor-pointer">
+                    <select id="tone-select" onchange="changeTone(this.value)" class="bg-white text-xs font-bold text-slate-800 py-1 px-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green cursor-pointer">
                         <option value="ludico">🎉 Entusiasta (Lúdico)</option>
                         <option value="formal">🏛️ Formal (Institucional)</option>
                         <option value="directo">⚡ Directo (Sintético)</option>
@@ -99,13 +124,13 @@
                 </div>
 
                 <!-- Botón Agregar Pregunta -->
-                <button onclick="openInputModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
+                <button onclick="openInputModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
                     <span>➕</span>
                     <span>Nueva Pregunta</span>
                 </button>
 
                 <!-- Botón Restablecer KB -->
-                <button onclick="resetDefaultKB()" title="Restablecer datos originales" class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 text-xs font-medium px-3 py-2.5 rounded-xl transition-all cursor-pointer">
+                <button onclick="resetDefaultKB()" title="Restablecer datos originales" class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 text-xs font-medium px-3 py-2.5 rounded-full transition-all cursor-pointer">
                     <span>🔄</span>
                 </button>
             </div>
@@ -113,21 +138,21 @@
     </header>
 
     <!-- NOTIFICACIÓN TIPO TOAST -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
+    <div id="toast-notification" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 border border-slate-700 z-50">
         <span id="toast-icon">✅</span>
         <span id="toast-message">Cambio guardado exitosamente</span>
     </div>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 pb-32">
         
         <!-- BARRA LATERAL -->
         <aside class="w-full lg:w-1/3 xl:w-1/4 shrink-0">
             <!-- NAVEGACIÓN POR CATEGORÍAS -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 mb-6">
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-base font-bold text-tinka-green_dark">Categorías RAG</h2>
-                    <span id="kb-total-count" class="bg-tinka-yellow text-tinka-text text-xs font-extrabold px-2 py-0.5 rounded-full">0 inputs</span>
+                    <h2 class="text-base font-extrabold text-tinka-green_dark">Categorías RAG</h2>
+                    <span id="kb-total-count" class="bg-tinka-yellow text-tinka-text text-xs font-extrabold px-3 py-1 rounded-full">0 inputs</span>
                 </div>
                 <p class="text-xs text-tinka-text_muted mb-4">
                     Selecciona una categoría para revisar, modificar o estructurar sus preguntas asociadas.
@@ -138,12 +163,12 @@
             </div>
             
             <!-- TARJETA INFORMATIVA DEL TONO SELECCIONADO -->
-            <div id="tone-info-card" class="bg-slate-900 text-white rounded-2xl p-5 shadow-md border border-slate-800 transition-all">
+            <div id="tone-info-card" class="bg-slate-900 text-white rounded-3xl p-5 shadow-md border border-slate-800 transition-all">
                 <div class="flex items-center justify-between mb-2">
                     <h3 id="tone-info-title" class="font-bold text-sm text-tinka-yellow flex items-center gap-2">
                         🎉 Tono Entusiasta
                     </h3>
-                    <span class="text-xs bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">Prompt Activo</span>
+                    <span class="text-[10px] uppercase font-bold bg-slate-800 px-2 py-0.5 rounded-full text-slate-300 border border-slate-700">Prompt Activo</span>
                 </div>
                 <p id="tone-info-desc" class="text-xs text-slate-300 leading-relaxed">
                     Usa lenguaje lúdico, llamadas a la acción enérgicas, emojificación comercial y priorización de promociones cruzadas.
@@ -158,9 +183,63 @@
 
     </main>
 
+    <!-- ========================================== -->
+    <!-- WIDGET DEL CHATBOT SIMULADOR (TINKA STYLE) -->
+    <!-- ========================================== -->
+    
+    <!-- Botón flotante -->
+    <button id="chatbot-fab" onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-2xl flex items-center justify-center text-3xl transition-transform transform hover:scale-110 z-40 border-4 border-white cursor-pointer">
+        💬
+    </button>
+
+    <!-- Panel de Chat -->
+    <div id="chatbot-panel" class="fixed bottom-24 right-6 w-[340px] sm:w-[380px] h-[550px] max-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 hidden flex-col z-50 overflow-hidden animate-chat-open">
+        
+        <!-- Cabecera del Chat -->
+        <div class="bg-tinka-green px-5 py-4 flex items-center justify-between shadow-sm relative">
+            <!-- Accent yellow dot -->
+            <div class="absolute top-2 right-2 w-3 h-3 bg-tinka-yellow rounded-full shadow-sm"></div>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-inner">
+                    🤖
+                </div>
+                <div>
+                    <h3 class="text-white font-extrabold text-sm">Asistente Tinka IA</h3>
+                    <p class="text-tinka-yellow text-[10px] font-bold">Simulador RAG Activo</p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-white hover:text-gray-200 text-xl font-bold p-1 cursor-pointer">
+                ✕
+            </button>
+        </div>
+
+        <!-- Área de Mensajes -->
+        <div id="chat-messages-container" class="flex-grow p-5 overflow-y-auto flex flex-col gap-4 bg-gray-50">
+            <!-- Welcome message -->
+            <div class="flex flex-col gap-1 items-start">
+                <div class="bg-white border border-gray-100 text-tinka-text text-sm p-3.5 rounded-2xl rounded-bl-sm shadow-sm chat-bubble-bot max-w-[85%]">
+                    ¡Hola! 👋 Soy tu simulador IA. Hazme cualquier pregunta que hayas configurado en el panel izquierdo y te responderé usando el tono actual.
+                </div>
+                <span class="text-[9px] text-gray-400 font-medium ml-1">Bot • Ahora</span>
+            </div>
+        </div>
+
+        <!-- Área de Input -->
+        <div class="p-4 bg-white border-t border-gray-100 rounded-b-3xl">
+            <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="Pregunta sobre promociones o juegos..." class="flex-grow bg-gray-100 text-sm px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-tinka-green border border-transparent transition-all placeholder-gray-400" autocomplete="off" required>
+                <button type="submit" class="w-11 h-11 shrink-0 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full flex items-center justify-center shadow-md transition-colors cursor-pointer">
+                    ➤
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- ========================================== -->
+
+
     <!-- MODAL DE FORMULARIO PARA AGREGAR / EDITAR INPUT -->
     <div id="input-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-xl overflow-hidden my-8">
+        <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-xl overflow-hidden my-8">
             <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
                 <h3 id="modal-title" class="text-base font-bold flex items-center gap-2">
                     <span>➕</span> Agregar Nueva Pregunta a la KB
@@ -174,38 +253,38 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Categoría RAG:</label>
-                    <select id="modal-category-select" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                    <select id="modal-category-select" class="w-full text-xs font-medium p-3 rounded-2xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-tinka-green">
                         <!-- Categorías dinámicas -->
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Pregunta del Usuario (Input / Intent):</label>
-                    <input type="text" id="modal-question" required placeholder="Ej: ¿Puedo recargar mi saldo con Yape?" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                    <input type="text" id="modal-question" required placeholder="Ej: ¿Puedo recargar mi saldo con Yape?" class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Respuesta Base del Bot (Knowledge Base):</label>
-                    <textarea id="modal-answer" rows="4" required placeholder="Escribe aquí la respuesta oficial..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green"></textarea>
+                    <textarea id="modal-answer" rows="4" required placeholder="Escribe aquí la respuesta oficial..." class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green"></textarea>
                     <p class="text-[10px] text-slate-400 mt-1">El tono seleccionado aplicará modificadores visuales y de redacción sobre esta respuesta base.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Texto del Enlace / CTA (Opcional):</label>
-                        <input type="text" id="modal-link-text" placeholder="Ej: Recargar saldo aquí" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                        <input type="text" id="modal-link-text" placeholder="Ej: Recargar saldo aquí" class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">URL de Redirección (Opcional):</label>
-                        <input type="url" id="modal-link-url" placeholder="https://www.latinka.com.pe/..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                        <input type="url" id="modal-link-url" placeholder="https://www.latinka.com.pe/..." class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
                     </div>
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
-                    <button type="button" onclick="closeInputModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer">
+                    <button type="button" onclick="closeInputModal()" class="px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-full transition cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-tinka-green hover:bg-tinka-green_dark text-white rounded-xl shadow-sm transition cursor-pointer">
+                    <button type="submit" class="px-6 py-2.5 text-xs font-bold bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-sm transition cursor-pointer">
                         Guardar en KB
                     </button>
                 </div>
@@ -214,14 +293,14 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-tinka-text_muted">
-            Diseñado para la experiencia omnicanal de La Tinka. Motor RAG con edición dinámica y cambio de tono.
-        </div>
+    <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-tinka-text_muted">
+        Diseñado para la experiencia omnicanal de La Tinka. Motor RAG con edición dinámica, simulador de chatbot y cambio de tono.
     </footer>
 
     <script>
-        // CONFIGURACIÓN DE BASE DE DATOS INICIAL
+        // ==========================================
+        // BASE DE DATOS Y CONFIGURACIÓN (RAG)
+        // ==========================================
         const defaultKbData = {
             overview: {
                 id: 'overview',
@@ -242,25 +321,19 @@
                         a: "¡Siempre tenemos beneficios para potenciar tu suerte! Nuestras promociones se actualizan constantemente. Actualmente, te sugerimos aprovechar estas promociones estrella:",
                         promos: [
                             {
-                                title: "1. Gana un iPhone 17 Pro Max",
-                                desc: "¡Haz tu primera recarga desde S/15 y llévate hasta S/60 en bonos para loterías y participa del sorteo! Multiplica tus chances de hacer realidad tus sueños millonarios.",
-                                linkText: "Ver los Términos y Condiciones",
-                                linkUrl: "https://blog.latinka.com.pe/promocion/tu-primera-recarga-viene-con-yapa/"
+                                title: "Gana un iPhone 17 Pro Max",
+                                desc: "¡Haz tu primera recarga desde S/15 y llévate bonos!",
+                                linkText: "Ver TyC",
+                                linkUrl: "https://blog.latinka.com.pe/"
                             },
                             {
-                                title: "2. Combo Lotero",
-                                desc: "Combina tus juegos favoritos y accede a un precio preferencial o promociones especiales cruzadas. ¡Más juegos, más opciones!",
-                                linkText: "Ver promoción vigente",
-                                linkUrl: "https://blog.latinka.com.pe/promociones/tinka/"
-                            },
-                            {
-                                title: "3. 3 Gana Diario por solo S/ 5",
-                                desc: "¡Aprovecha y llévate 3 jugadas de Gana Diario a un súper precio!",
-                                linkText: "Revisa los detalles aquí",
-                                linkUrl: "https://blog.latinka.com.pe/promociones/tinka/"
+                                title: "Combo Lotero",
+                                desc: "Combina tus juegos favoritos y accede a un precio preferencial.",
+                                linkText: "Comprar S/10",
+                                linkUrl: "https://www.latinka.com.pe/"
                             }
                         ],
-                        footerNote: "*Nota: Te invito a revisar nuestra sección de promociones para conocer las fechas de vigencia exactas y descubrir nuevas oportunidades de ganar.*",
+                        footerNote: "*Nota: Visita la web para fechas exactas.*",
                         footerLinkText: "Ver todas las promociones vigentes",
                         footerLinkUrl: "https://blog.latinka.com.pe/promociones/tinka/"
                     }
@@ -275,7 +348,7 @@
                 items: [
                     {
                         q: "¿Cómo juego a La Tinka de forma online?",
-                        a: "¡Jugar es rapidísimo! Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Si prefieres, usa el botón 'Azar' y el sistema elige por ti.",
+                        a: "¡Jugar es rapidísimo! Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Si prefieres, usa el botón 'Azar'.",
                         linkText: "Ir a jugar La Tinka ahora",
                         linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html"
                     },
@@ -284,10 +357,6 @@
                         a: "Sorteamos todos los miércoles y domingos a las 10:50 p.m. Recuerda que el cierre de apuestas es a las 9:50 p.m. ¡No llegues tarde!",
                         linkText: "Ver cronograma completo",
                         linkUrl: "https://www.latinka.com.pe/p/ayuda.html"
-                    },
-                    {
-                        q: "¿Qué es la Boliyapa y el Sí o Sí?",
-                        a: "¡Son chances extra!<br><br><strong>La Boliyapa:</strong> Es un número extra extraído después de los 6 principales. Te permite ganar premios adicionales si tienes entre 2 y 5 aciertos en tu jugada. ¡Puedes ganar hasta S/100,000 extra!<br><br><strong>El Sí o Sí:</strong> Si nadie gana el Pozo, se extraen bolillas adicionales hasta que alguien se lleve el premio garantizado de S/ 50,000."
                     }
                 ]
             },
@@ -300,13 +369,13 @@
                 items: [
                     {
                         q: "¿Cuánto cuesta jugar La Tinka?",
-                        a: "Una jugada simple cuesta S/ 5.00. También ofrecemos 'Jugadas Múltiples' (donde marcas más números para tener más chances) y 'Combos Tinkeros' que te dan descuentos de hasta 40% si compras tus jugadas por adelantado (para 1, 3, 6 o 12 meses).",
-                        linkText: "Ver opciones de jugadas y precios",
+                        a: "Una jugada simple cuesta S/ 5.00. También ofrecemos 'Jugadas Múltiples' y 'Combos Tinkeros' que te dan descuentos si compras por adelantado.",
+                        linkText: "Ver opciones de jugadas",
                         linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html"
                     },
                     {
-                        q: "¿Cómo pago mis jugadas?",
-                        a: "Recarga rápido y seguro con tus tarjetas (Visa/Mastercard) o usando tus billeteras digitales favoritas: <strong>Yape, Plin, PagoEfectivo, o tu banca móvil</strong>. ¡Recuerda que tu primera recarga puede traer bonos adicionales!",
+                        q: "¿Cómo pago mis jugadas o recargo?",
+                        a: "Recarga rápido y seguro con tus tarjetas (Visa/Mastercard) o usando tus billeteras digitales favoritas: Yape, Plin, PagoEfectivo, o tu banca móvil.",
                         linkText: "Recargar saldo aquí",
                         linkUrl: "https://www.latinka.com.pe/p/mi-cuenta.html"
                     }
@@ -321,7 +390,7 @@
                 items: [
                     {
                         q: "¿Cómo cobro mi premio si gané?",
-                        a: "¡Felicidades!<br><br><strong>Premios menores:</strong> Se abonan directamente como saldo en tu cuenta web para seguir jugando, o puedes solicitar un retiro a tu cuenta bancaria o tarjeta.<br><br><strong>Premios mayores:</strong> Se gestionan de forma segura previa validación de identidad.",
+                        a: "¡Felicidades! Los premios menores se abonan directamente como saldo en tu cuenta web. Los premios mayores se gestionan de forma segura previa validación de identidad.",
                         linkText: "Gestionar mi cobro vía Tinkanet",
                         linkUrl: "https://www.latinka.com.pe/p/cobro-premios.html"
                     }
@@ -336,7 +405,7 @@
                 items: [
                     {
                         q: "Siento que estoy jugando demasiado, ¿pueden ayudarme?",
-                        a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil en la sección de 'Juego Responsable'.",
+                        a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil.",
                         linkText: "Configurar mis límites",
                         linkUrl: "https://www.latinka.com.pe/p/juego-responsable.html"
                     }
@@ -344,14 +413,13 @@
             }
         };
 
-        // CONFIGURACIÓN DE TONOS
         const toneConfigs = {
             ludico: {
                 title: '🎉 Tono Entusiasta (Lúdico)',
                 desc: 'Usa lenguaje enérgico, emojificación, llamado a la acción comercial y enfoque en la emoción de ganar.',
                 badgeText: 'Tono: Entusiasta',
-                badgeClass: 'bg-amber-100 text-amber-800 border-amber-300',
-                transformText: (text) => text // Mantiene el formato alegre original
+                badgeClass: 'bg-tinka-yellow text-tinka-text border-yellow-400',
+                transformText: (text) => text // Mantiene el formato alegre
             },
             formal: {
                 title: '🏛️ Tono Formal (Institucional)',
@@ -368,7 +436,7 @@
             },
             directo: {
                 title: '⚡ Tono Directo (Sintético)',
-                desc: 'Proporciona datos concisos, resúmenes directos y minimiza texto decorativo para respuestas rápidas.',
+                desc: 'Proporciona datos concisos, resúmenes directos y minimiza texto decorativo.',
                 badgeText: 'Tono: Directo',
                 badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
                 transformText: (text) => {
@@ -384,7 +452,164 @@
         let currentCategoryKey = 'overview';
         let currentChart = null;
 
-        // INICIALIZACIÓN DE LA APP
+        // ==========================================
+        // LÓGICA DEL CHATBOT SIMULADOR
+        // ==========================================
+        
+        function toggleChat() {
+            const panel = document.getElementById('chatbot-panel');
+            const fab = document.getElementById('chatbot-fab');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                fab.innerHTML = '✕';
+                fab.classList.replace('text-3xl', 'text-2xl');
+                document.getElementById('chat-input').focus();
+            } else {
+                panel.classList.add('hidden');
+                fab.innerHTML = '💬';
+                fab.classList.replace('text-2xl', 'text-3xl');
+            }
+        }
+
+        function appendChatMessage(htmlContent, sender, isHTML = false) {
+            const container = document.getElementById('chat-messages-container');
+            const wrap = document.createElement('div');
+            wrap.className = `flex flex-col gap-1 ${sender === 'user' ? 'items-end' : 'items-start'} opacity-0 translate-y-2`;
+            
+            // Animación de entrada suave
+            wrap.style.transition = 'all 0.3s ease-out';
+            
+            let bubbleClass = sender === 'user' 
+                ? 'bg-tinka-yellow text-tinka-text shadow-sm chat-bubble-user max-w-[85%]' 
+                : 'bg-white border border-gray-100 text-tinka-text shadow-sm chat-bubble-bot max-w-[85%]';
+            
+            let contentStr = isHTML ? htmlContent : `<p>${htmlContent}</p>`;
+
+            wrap.innerHTML = `
+                <div class="text-sm p-3.5 rounded-2xl ${bubbleClass} leading-relaxed">
+                    ${contentStr}
+                </div>
+                <span class="text-[9px] text-gray-400 font-medium mx-1">${sender === 'user' ? 'Tú' : 'Bot'} • Ahora</span>
+            `;
+
+            container.appendChild(wrap);
+            
+            // Trigger animation
+            setTimeout(() => {
+                wrap.classList.remove('opacity-0', 'translate-y-2');
+            }, 10);
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const container = document.getElementById('chat-messages-container');
+            const indicator = document.createElement('div');
+            indicator.id = 'typing-indicator';
+            indicator.className = 'flex flex-col gap-1 items-start opacity-0 translate-y-2 transition-all';
+            indicator.innerHTML = `
+                <div class="bg-white border border-gray-100 p-3.5 rounded-2xl chat-bubble-bot shadow-sm flex gap-1 items-center h-10">
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                </div>
+            `;
+            container.appendChild(indicator);
+            setTimeout(() => indicator.classList.remove('opacity-0', 'translate-y-2'), 10);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const ind = document.getElementById('typing-indicator');
+            if (ind) ind.remove();
+        }
+
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Mostrar mensaje del usuario
+            appendChatMessage(text, 'user');
+            input.value = '';
+
+            // 2. Mostrar "escribiendo..."
+            showTypingIndicator();
+
+            // 3. Simular procesamiento IA y búsqueda en KB local
+            setTimeout(() => {
+                simulateAIResponse(text);
+            }, 800 + Math.random() * 500); // Retraso artificial para simular red
+        }
+
+        function simulateAIResponse(userText) {
+            removeTypingIndicator();
+            const lowerText = userText.toLowerCase();
+            let matchedItem = null;
+
+            // Algoritmo hiper-básico de NLP simulado (busca coincidencias de palabras clave)
+            for (const key in kbData) {
+                if (kbData[key].type === 'category') {
+                    for (const item of kbData[key].items) {
+                        // Extraemos palabras de más de 3 letras de la pregunta base
+                        const keywords = item.q.toLowerCase().replace(/[¿?]/g, '').split(' ').filter(w => w.length > 3);
+                        
+                        // Palabras clave manuales de emergencia
+                        if(lowerText.includes('recarg') || lowerText.includes('pagar')) {
+                            if(item.q.includes('pago') || item.q.includes('cuesta')) matchedItem = kbData['compras'].items[1];
+                        }
+                        if(lowerText.includes('promocion') || lowerText.includes('combo')) {
+                             matchedItem = kbData['promociones'].items[0];
+                        }
+
+                        // Coincidencia estándar
+                        const match = keywords.some(kw => lowerText.includes(kw));
+                        if (match && !matchedItem) {
+                            matchedItem = item;
+                            break;
+                        }
+                    }
+                }
+                if (matchedItem) break;
+            }
+
+            if (matchedItem) {
+                // Aplicar filtro de Tono
+                let botReply = toneConfigs[currentTone].transformText(matchedItem.a);
+                
+                // Formatear si tiene Promociones
+                if (matchedItem.promos && matchedItem.promos.length > 0) {
+                    botReply += `<div class="mt-3 flex flex-col gap-2">`;
+                    matchedItem.promos.forEach(p => {
+                        botReply += `
+                        <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                            <h4 class="text-tinka-green_dark font-bold text-xs mb-1">${p.title}</h4>
+                            <p class="text-[10px] text-gray-600 mb-2 leading-tight">${p.desc}</p>
+                            <a href="${p.linkUrl}" target="_blank" class="text-tinka-red text-[10px] font-bold hover:underline">▶ ${p.linkText}</a>
+                        </div>`;
+                    });
+                    botReply += `</div>`;
+                }
+
+                // Links normales
+                if (matchedItem.linkText) {
+                     botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
+                }
+
+                appendChatMessage(botReply, 'bot', true);
+            } else {
+                // Fallback
+                const fallbackMsg = toneConfigs[currentTone].transformText("Lo siento, no encuentro información exacta sobre eso en mi base actual. Te sugiero reformular la pregunta o consultar nuestra sección de ayuda en la web.");
+                appendChatMessage(fallbackMsg, 'bot', false);
+            }
+        }
+
+
+        // ==========================================
+        // LÓGICA DE LA PLATAFORMA DASHBOARD (CRUD)
+        // ==========================================
+
         function initApp() {
             loadSavedData();
             renderNavigation();
@@ -437,7 +662,6 @@
             document.getElementById('kb-total-count').textContent = `${total} inputs`;
         }
 
-        // CAMBIO DE TONO
         function changeTone(newTone) {
             currentTone = newTone;
             saveData();
@@ -452,7 +676,6 @@
             document.getElementById('tone-info-desc').textContent = config.desc;
         }
 
-        // RENDERIZADO DE NAVEGACIÓN
         function renderNavigation() {
             const nav = document.getElementById('category-nav');
             let html = '';
@@ -462,12 +685,12 @@
                 const itemCount = item.items ? item.items.length : 0;
                 
                 html += `
-                    <button onclick="loadContent('${key}')" id="nav-btn-${key}" class="nav-btn w-full text-left flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50 border border-transparent hover:border-gray-200 cursor-pointer">
+                    <button onclick="loadContent('${key}')" id="nav-btn-${key}" class="nav-btn w-full text-left flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-200 hover:bg-gray-50 border border-transparent hover:border-gray-200 cursor-pointer">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${item.icon}</span>
-                            <span class="font-semibold text-xs text-tinka-text">${item.title}</span>
+                            <span class="font-bold text-xs text-tinka-text">${item.title}</span>
                         </div>
-                        ${item.type === 'category' ? `<span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">${itemCount}</span>` : ''}
+                        ${item.type === 'category' ? `<span class="text-[10px] bg-slate-100 text-slate-500 font-extrabold px-2 py-0.5 rounded-full">${itemCount}</span>` : ''}
                     </button>
                 `;
             });
@@ -475,14 +698,13 @@
             updateTotalCount();
         }
 
-        // CARGAR CONTENIDO
         function loadContent(key) {
             currentCategoryKey = key;
             
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-tinka-green', 'text-white', 'border-tinka-green', 'shadow-sm', 'hover:bg-tinka-green');
                 btn.classList.add('hover:bg-gray-50');
-                const title = btn.querySelector('.font-semibold');
+                const title = btn.querySelector('.font-bold');
                 if(title) title.classList.remove('text-white');
             });
             
@@ -490,7 +712,7 @@
             if(activeBtn) {
                 activeBtn.classList.remove('hover:bg-gray-50');
                 activeBtn.classList.add('bg-tinka-green', 'border-tinka-green', 'shadow-sm');
-                const title = activeBtn.querySelector('.font-semibold');
+                const title = activeBtn.querySelector('.font-bold');
                 if(title) title.classList.add('text-white');
             }
 
@@ -504,18 +726,17 @@
             }
         }
 
-        // DASHBOARD RESUMEN
         function renderDashboard(container, data) {
             let html = `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <div class="mb-6 border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h2 class="text-xl font-bold text-tinka-text flex items-center gap-2">
+                            <h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2">
                                 <span>${data.icon}</span> ${data.title}
                             </h2>
                             <p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p>
                         </div>
-                        <span class="text-xs font-bold px-3 py-1 rounded-full border ${toneConfigs[currentTone].badgeClass}">
+                        <span class="text-[11px] font-bold px-3 py-1.5 rounded-full border ${toneConfigs[currentTone].badgeClass}">
                             ${toneConfigs[currentTone].badgeText}
                         </span>
                     </div>
@@ -527,15 +748,15 @@
                     </div>
                     
                     <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-tinka-bg p-4 rounded-xl border border-gray-100">
-                            <div class="text-[10px] text-tinka-text_muted uppercase font-bold tracking-wider mb-1">Métrica Clave</div>
-                            <div class="text-base font-bold text-tinka-green_dark">Configuración de Tono Activa</div>
-                            <p class="text-xs text-slate-600 mt-1">${toneConfigs[currentTone].desc}</p>
+                        <div class="bg-tinka-bg p-5 rounded-3xl border border-gray-100">
+                            <div class="text-[10px] text-tinka-text_muted uppercase font-extrabold tracking-wider mb-1">Métrica Clave</div>
+                            <div class="text-base font-extrabold text-tinka-green_dark">Configuración de Tono Activa</div>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${toneConfigs[currentTone].desc}</p>
                         </div>
-                        <div class="bg-tinka-bg p-4 rounded-xl border border-gray-100">
-                            <div class="text-[10px] text-tinka-text_muted uppercase font-bold tracking-wider mb-1">Capacidad RAG</div>
-                            <div class="text-base font-bold text-tinka-green_dark">Edición & Inserción en Vivo</div>
-                            <p class="text-xs text-slate-600 mt-1">Puedes agregar nuevos inputs o editar los existentes desde el botón "+ Nueva Pregunta".</p>
+                        <div class="bg-tinka-bg p-5 rounded-3xl border border-gray-100">
+                            <div class="text-[10px] text-tinka-text_muted uppercase font-extrabold tracking-wider mb-1">Capacidad RAG</div>
+                            <div class="text-base font-extrabold text-tinka-green_dark">Edición & Simulación en Vivo</div>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">Puedes agregar inputs y testearlos inmediatamente abriendo el Chatbot Flotante abajo a la derecha.</p>
                         </div>
                     </div>
                 </div>
@@ -550,7 +771,7 @@
 
             const labels = [];
             const dataPoints = [];
-            const colors = ['#00A859', '#FFD100', '#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B'];
+            const colors = ['#00A859', '#FFD100', '#3B82F6', '#8B5CF6', '#E1001A', '#10B981', '#F59E0B'];
 
             Object.keys(kbData).forEach(key => {
                 if (kbData[key].type === 'category') {
@@ -576,41 +797,38 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { padding: 15, font: { family: 'Inter', size: 12 } }
+                            labels: { padding: 15, font: { family: 'Inter', size: 12, weight: 'bold' } }
                         },
                         tooltip: {
-                            callbacks: {
-                                label: (ctx) => ` ${ctx.label}: ${ctx.raw} Entradas activas`
-                            },
+                            callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} Entradas activas` },
                             backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 10,
-                            cornerRadius: 8
+                            padding: 12,
+                            cornerRadius: 12
                         }
                     },
-                    cutout: '65%'
+                    cutout: '68%'
                 }
             });
         }
 
-        // RENDERIZADO DE CATEGORÍAS
         function renderCategory(container, data, categoryKey) {
             const toneTransform = toneConfigs[currentTone].transformText;
 
             let html = `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <div class="mb-6 border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-xl font-bold text-tinka-text flex items-center gap-2">
+                            <h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2">
                                 <span>${data.icon}</span> ${data.title}
                             </h2>
                             <p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold px-3 py-1 rounded-full border ${toneConfigs[currentTone].badgeClass}">
+                            <span class="text-[11px] font-bold px-3 py-1.5 rounded-full border ${toneConfigs[currentTone].badgeClass}">
                                 ${toneConfigs[currentTone].badgeText}
                             </span>
-                            <button onclick="openInputModal('${categoryKey}')" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer">
-                                <span>➕</span> <span>Agregar aquí</span>
+                            <button onclick="openInputModal('${categoryKey}')" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-4 py-2 rounded-full shadow-sm transition flex items-center gap-1 cursor-pointer">
+                                <span>➕</span> <span>Agregar Input</span>
                             </button>
                         </div>
                     </div>
@@ -620,7 +838,7 @@
 
             if (!data.items || data.items.length === 0) {
                 html += `
-                    <div class="p-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <div class="p-8 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
                         <span class="text-3xl block mb-2">📭</span>
                         <p class="text-xs text-slate-500 font-medium">No hay preguntas registradas en esta categoría aún.</p>
                         <button onclick="openInputModal('${categoryKey}')" class="mt-3 text-xs font-bold text-tinka-green hover:underline cursor-pointer">
@@ -634,30 +852,30 @@
                     const adaptedAnswer = toneTransform(item.a);
 
                     html += `
-                        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white hover:border-gray-300 transition-all">
-                            <div class="flex items-center justify-between p-4 bg-white border-b border-gray-100">
+                        <div class="border border-gray-200 rounded-3xl overflow-hidden bg-white hover:border-gray-300 transition-all shadow-sm">
+                            <div class="flex items-center justify-between p-5 bg-white border-b border-gray-100">
                                 <button onclick="toggleAccordion(this)" class="flex-grow text-left focus:outline-none flex items-center justify-between pr-4 cursor-pointer">
-                                    <span class="font-bold text-xs sm:text-sm text-tinka-text flex items-center gap-2">
-                                        <span class="text-tinka-green font-bold">Q:</span>
+                                    <span class="font-extrabold text-xs sm:text-sm text-tinka-text flex items-center gap-2">
+                                        <span class="text-tinka-green font-extrabold">Q:</span>
                                         <span>${item.q}</span>
                                     </span>
                                     <span class="text-gray-400 transform transition-transform duration-300 ml-2">▼</span>
                                 </button>
                                 
-                                <div class="flex items-center gap-1 shrink-0 bg-slate-50 p-1 rounded-lg border border-slate-100">
-                                    <button onclick="openEditModal('${categoryKey}', ${index})" title="Editar pregunta" class="text-xs text-slate-500 hover:text-tinka-green px-2 py-1 rounded hover:bg-white transition cursor-pointer">
+                                <div class="flex items-center gap-1 shrink-0 bg-slate-50 p-1.5 rounded-xl border border-slate-100">
+                                    <button onclick="openEditModal('${categoryKey}', ${index})" title="Editar pregunta" class="text-xs text-slate-500 hover:text-tinka-green px-2 py-1.5 rounded-lg hover:bg-white transition cursor-pointer shadow-sm">
                                         ✏️
                                     </button>
-                                    <button onclick="deleteItem('${categoryKey}', ${index})" title="Eliminar pregunta" class="text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-white transition cursor-pointer">
+                                    <button onclick="deleteItem('${categoryKey}', ${index})" title="Eliminar pregunta" class="text-xs text-slate-500 hover:text-tinka-red px-2 py-1.5 rounded-lg hover:bg-white transition cursor-pointer shadow-sm">
                                         🗑️
                                     </button>
                                 </div>
                             </div>
 
                             <div class="accordion-content bg-tinka-bg">
-                                <div class="p-5 text-xs text-tinka-text leading-relaxed">
+                                <div class="p-6 text-xs text-tinka-text leading-relaxed">
                                     <div class="flex items-start gap-2 mb-3">
-                                        <span class="text-tinka-green font-bold text-xs">A:</span>
+                                        <span class="text-tinka-green font-extrabold text-xs">A:</span>
                                         <div class="flex-grow">${adaptedAnswer}</div>
                                     </div>
                                     
@@ -681,12 +899,12 @@
         }
 
         function renderPromos(promos) {
-            let promoHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 ml-4">';
+            let promoHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ml-5">';
             promos.forEach(p => {
                 promoHtml += `
-                    <div class="bg-white p-3.5 rounded-lg border border-gray-200 shadow-sm flex flex-col h-full">
-                        <h4 class="font-bold text-tinka-green_dark mb-1 text-xs">${p.title}</h4>
-                        <p class="text-[11px] text-tinka-text_muted mb-3 flex-grow">${p.desc}</p>
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col h-full">
+                        <h4 class="font-extrabold text-tinka-green_dark mb-1 text-xs">${p.title}</h4>
+                        <p class="text-[11px] text-tinka-text_muted mb-3 flex-grow leading-tight">${p.desc}</p>
                         ${renderLink(p.linkText, p.linkUrl, '', 'text-[11px]')}
                     </div>
                 `;
@@ -698,8 +916,8 @@
         function renderLink(text, url, extraClasses = '', textClasses = 'text-xs') {
             return `
                 <div class="${extraClasses}">
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold ${textClasses} transition-colors group">
-                        <span>👉</span>
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-tinka-red hover:text-red-700 font-extrabold ${textClasses} transition-colors group">
+                        <span>▶</span>
                         <span class="underline group-hover:no-underline">${text}</span>
                     </a>
                 </div>
@@ -726,7 +944,6 @@
             }
         }
 
-        // OPERACIONES CRUD (MODAL Y FORMULARIO)
         function openInputModal(targetCategory = null) {
             populateCategorySelect();
             document.getElementById('edit-item-index').value = '-1';
