@@ -20,7 +20,7 @@
                             card: '#FFFFFF',
                             text: '#334155',
                             text_muted: '#64748B',
-                            red: '#E1001A' // Rojo usado en botones de "Jugar ahora"
+                            red: '#E1001A'
                         }
                     },
                     fontFamily: {
@@ -31,9 +31,11 @@
         }
     </script>
     
+    <!-- Librerías Externas para Gráficos y Exportación -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Application Structure Plan: Dynamic Knowledge Management Dashboard with live Chatbot Simulator. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
     <style>
         .chart-container { 
@@ -65,7 +67,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Chat scrollbar customization */
         #chat-messages-container::-webkit-scrollbar {
             width: 6px;
         }
@@ -80,14 +81,9 @@
             background: #aaa; 
         }
 
-        .chat-bubble-bot {
-            border-bottom-left-radius: 4px;
-        }
-        .chat-bubble-user {
-            border-bottom-right-radius: 4px;
-        }
+        .chat-bubble-bot { border-bottom-left-radius: 4px; }
+        .chat-bubble-user { border-bottom-right-radius: 4px; }
         
-        /* Animación de entrada para el chat */
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -110,27 +106,30 @@
                 </div>
             </div>
 
-            <!-- CONTROLES GLOBALES DE TONO Y ACCIÓN -->
-            <div class="flex items-center gap-3 flex-wrap">
+            <!-- CONTROLES -->
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <!-- Selector de Tono -->
                 <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
                     <span class="text-base">🎭</span>
-                    <label for="tone-select" class="text-xs font-bold text-slate-600 hidden sm:inline">Tono del Bot:</label>
-                    <select id="tone-select" onchange="changeTone(this.value)" class="bg-white text-xs font-bold text-slate-800 py-1 px-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green cursor-pointer">
-                        <option value="ludico">🎉 Entusiasta (Lúdico)</option>
-                        <option value="formal">🏛️ Formal (Institucional)</option>
-                        <option value="directo">⚡ Directo (Sintético)</option>
+                    <select id="tone-select" onchange="changeTone(this.value)" class="bg-transparent text-xs font-bold text-slate-800 py-1 focus:outline-none cursor-pointer">
+                        <option value="ludico">Entusiasta (Lúdico)</option>
+                        <option value="formal">Formal (Institucional)</option>
+                        <option value="directo">Directo (Sintético)</option>
                     </select>
                 </div>
 
                 <!-- Botón Agregar Pregunta -->
-                <button onclick="openInputModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
-                    <span>➕</span>
-                    <span>Nueva Pregunta</span>
+                <button onclick="openInputModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-3 sm:px-4 py-2.5 rounded-full shadow-sm transition-all flex items-center gap-1.5">
+                    <span>➕</span> <span class="hidden sm:inline">Nueva Pregunta</span>
+                </button>
+
+                <!-- Botón Exportar -->
+                <button onclick="openExportModal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 sm:px-4 py-2.5 rounded-full shadow-sm transition-all flex items-center gap-1.5">
+                    <span>📥</span> <span class="hidden sm:inline">Exportar</span>
                 </button>
 
                 <!-- Botón Restablecer KB -->
-                <button onclick="resetDefaultKB()" title="Restablecer datos originales" class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 text-xs font-medium px-3 py-2.5 rounded-full transition-all cursor-pointer">
+                <button onclick="resetDefaultKB()" title="Restablecer datos originales" class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 text-xs px-3 py-2.5 rounded-full transition-all">
                     <span>🔄</span>
                 </button>
             </div>
@@ -140,7 +139,7 @@
     <!-- NOTIFICACIÓN TIPO TOAST -->
     <div id="toast-notification" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 border border-slate-700 z-50">
         <span id="toast-icon">✅</span>
-        <span id="toast-message">Cambio guardado exitosamente</span>
+        <span id="toast-message">Notificación</span>
     </div>
 
     <!-- CONTENIDO PRINCIPAL -->
@@ -148,302 +147,228 @@
         
         <!-- BARRA LATERAL -->
         <aside class="w-full lg:w-1/3 xl:w-1/4 shrink-0">
-            <!-- NAVEGACIÓN POR CATEGORÍAS -->
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 mb-6">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-base font-extrabold text-tinka-green_dark">Categorías RAG</h2>
                     <span id="kb-total-count" class="bg-tinka-yellow text-tinka-text text-xs font-extrabold px-3 py-1 rounded-full">0 inputs</span>
                 </div>
-                <p class="text-xs text-tinka-text_muted mb-4">
-                    Selecciona una categoría para revisar, modificar o estructurar sus preguntas asociadas.
-                </p>
-                <nav id="category-nav" class="flex flex-col gap-2">
-                    <!-- Nav items dinámicos -->
-                </nav>
+                <p class="text-xs text-tinka-text_muted mb-4">Selecciona una categoría para revisar o modificar la base de conocimientos.</p>
+                <nav id="category-nav" class="flex flex-col gap-2"></nav>
             </div>
             
-            <!-- TARJETA INFORMATIVA DEL TONO SELECCIONADO -->
-            <div id="tone-info-card" class="bg-slate-900 text-white rounded-3xl p-5 shadow-md border border-slate-800 transition-all">
+            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-md border border-slate-800 transition-all">
                 <div class="flex items-center justify-between mb-2">
-                    <h3 id="tone-info-title" class="font-bold text-sm text-tinka-yellow flex items-center gap-2">
-                        🎉 Tono Entusiasta
-                    </h3>
+                    <h3 id="tone-info-title" class="font-bold text-sm text-tinka-yellow flex items-center gap-2">🎉 Tono Entusiasta</h3>
                     <span class="text-[10px] uppercase font-bold bg-slate-800 px-2 py-0.5 rounded-full text-slate-300 border border-slate-700">Prompt Activo</span>
                 </div>
-                <p id="tone-info-desc" class="text-xs text-slate-300 leading-relaxed">
-                    Usa lenguaje lúdico, llamadas a la acción enérgicas, emojificación comercial y priorización de promociones cruzadas.
-                </p>
+                <p id="tone-info-desc" class="text-xs text-slate-300 leading-relaxed">Usa lenguaje lúdico, llamadas a la acción enérgicas y priorización de promociones cruzadas.</p>
             </div>
         </aside>
 
         <!-- ÁREA DE CONTENIDO PRINCIPAL -->
-        <section id="main-content-area" class="w-full lg:w-2/3 xl:w-3/4 flex flex-col gap-6">
-            <!-- Contenido dinámico -->
+        <section id="main-content-area" class="w-full lg:w-2/3 xl:w-3/4 flex flex-col gap-6" >
+            <div id="export-target" class="w-full">
+                <!-- Contenido dinámico -->
+            </div>
         </section>
 
     </main>
 
-    <!-- ========================================== -->
-    <!-- WIDGET DEL CHATBOT SIMULADOR (TINKA STYLE) -->
-    <!-- ========================================== -->
-    
-    <!-- Botón flotante -->
-    <button id="chatbot-fab" onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-2xl flex items-center justify-center text-3xl transition-transform transform hover:scale-110 z-40 border-4 border-white cursor-pointer">
+    <!-- WIDGET DEL CHATBOT SIMULADOR -->
+    <button id="chatbot-fab" onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-2xl flex items-center justify-center text-3xl transition-transform transform hover:scale-110 z-40 border-4 border-white">
         💬
     </button>
 
-    <!-- Panel de Chat -->
     <div id="chatbot-panel" class="fixed bottom-24 right-6 w-[340px] sm:w-[380px] h-[550px] max-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 hidden flex-col z-50 overflow-hidden animate-chat-open">
-        
-        <!-- Cabecera del Chat -->
         <div class="bg-tinka-green px-5 py-4 flex items-center justify-between shadow-sm relative">
-            <!-- Accent yellow dot -->
             <div class="absolute top-2 right-2 w-3 h-3 bg-tinka-yellow rounded-full shadow-sm"></div>
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-inner">
-                    🤖
-                </div>
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-inner">🤖</div>
                 <div>
                     <h3 class="text-white font-extrabold text-sm">Asistente Tinka IA</h3>
-                    <p class="text-tinka-yellow text-[10px] font-bold">Simulador RAG Activo</p>
+                    <p class="text-tinka-yellow text-[10px] font-bold">Cross-selling Activo</p>
                 </div>
             </div>
-            <button onclick="toggleChat()" class="text-white hover:text-gray-200 text-xl font-bold p-1 cursor-pointer">
-                ✕
-            </button>
+            <button onclick="toggleChat()" class="text-white hover:text-gray-200 text-xl font-bold p-1">✕</button>
         </div>
-
-        <!-- Área de Mensajes -->
         <div id="chat-messages-container" class="flex-grow p-5 overflow-y-auto flex flex-col gap-4 bg-gray-50">
-            <!-- Welcome message -->
             <div class="flex flex-col gap-1 items-start">
                 <div class="bg-white border border-gray-100 text-tinka-text text-sm p-3.5 rounded-2xl rounded-bl-sm shadow-sm chat-bubble-bot max-w-[85%]">
-                    ¡Hola! 👋 Soy tu simulador IA. Hazme cualquier pregunta que hayas configurado en el panel izquierdo y te responderé usando el tono actual.
+                    ¡Hola! 👋 Hazme cualquier pregunta sobre Tinka, Kábala, Gana Diario o Videoloterías. Verás cómo te respondo y te sugiero promociones aleatorias de forma inteligente.
                 </div>
                 <span class="text-[9px] text-gray-400 font-medium ml-1">Bot • Ahora</span>
             </div>
         </div>
-
-        <!-- Área de Input -->
         <div class="p-4 bg-white border-t border-gray-100 rounded-b-3xl">
             <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
-                <input type="text" id="chat-input" placeholder="Pregunta sobre promociones o juegos..." class="flex-grow bg-gray-100 text-sm px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-tinka-green border border-transparent transition-all placeholder-gray-400" autocomplete="off" required>
-                <button type="submit" class="w-11 h-11 shrink-0 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full flex items-center justify-center shadow-md transition-colors cursor-pointer">
-                    ➤
-                </button>
+                <input type="text" id="chat-input" placeholder="Pregunta algo..." class="flex-grow bg-gray-100 text-sm px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-tinka-green border border-transparent" autocomplete="off" required>
+                <button type="submit" class="w-11 h-11 shrink-0 bg-tinka-green text-white rounded-full flex items-center justify-center shadow-md hover:bg-tinka-green_dark">➤</button>
             </form>
         </div>
     </div>
-    <!-- ========================================== -->
 
-
-    <!-- MODAL DE FORMULARIO PARA AGREGAR / EDITAR INPUT -->
-    <div id="input-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-xl overflow-hidden my-8">
+    <!-- MODAL PARA AGREGAR / EDITAR INPUT -->
+    <div id="input-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop p-4 overflow-y-auto transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-xl overflow-hidden my-8 transform transition-transform scale-95" id="input-modal-content">
             <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                <h3 id="modal-title" class="text-base font-bold flex items-center gap-2">
-                    <span>➕</span> Agregar Nueva Pregunta a la KB
-                </h3>
-                <button onclick="closeInputModal()" class="text-slate-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
+                <h3 id="modal-title" class="text-base font-bold flex items-center gap-2"><span>➕</span> Agregar Nueva Pregunta</h3>
+                <button onclick="closeInputModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
             </div>
-            
             <form id="kb-form" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
                 <input type="hidden" id="edit-item-index" value="-1">
                 <input type="hidden" id="edit-category-id" value="">
-
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Categoría RAG:</label>
-                    <select id="modal-category-select" class="w-full text-xs font-medium p-3 rounded-2xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-tinka-green">
-                        <!-- Categorías dinámicas -->
-                    </select>
+                    <select id="modal-category-select" class="w-full text-xs font-medium p-3 rounded-2xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-tinka-green"></select>
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Pregunta del Usuario (Input / Intent):</label>
-                    <input type="text" id="modal-question" required placeholder="Ej: ¿Puedo recargar mi saldo con Yape?" class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Pregunta del Usuario (Intent):</label>
+                    <input type="text" id="modal-question" required placeholder="Ej: ¿Puedo recargar con Yape?" class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Respuesta Base del Bot (Knowledge Base):</label>
-                    <textarea id="modal-answer" rows="4" required placeholder="Escribe aquí la respuesta oficial..." class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green"></textarea>
-                    <p class="text-[10px] text-slate-400 mt-1">El tono seleccionado aplicará modificadores visuales y de redacción sobre esta respuesta base.</p>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Respuesta Base (KB):</label>
+                    <textarea id="modal-answer" rows="4" required class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green"></textarea>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Texto del Enlace / CTA (Opcional):</label>
-                        <input type="text" id="modal-link-text" placeholder="Ej: Recargar saldo aquí" class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Texto del Enlace (Opcional):</label>
+                        <input type="text" id="modal-link-text" placeholder="Ej: Recargar saldo" class="w-full text-xs p-3 rounded-2xl border border-slate-300">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">URL de Redirección (Opcional):</label>
-                        <input type="url" id="modal-link-url" placeholder="https://www.latinka.com.pe/..." class="w-full text-xs p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tinka-green">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">URL (Opcional):</label>
+                        <input type="url" id="modal-link-url" placeholder="https://..." class="w-full text-xs p-3 rounded-2xl border border-slate-300">
                     </div>
                 </div>
-
                 <div class="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
-                    <button type="button" onclick="closeInputModal()" class="px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-full transition cursor-pointer">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="px-6 py-2.5 text-xs font-bold bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-sm transition cursor-pointer">
-                        Guardar en KB
-                    </button>
+                    <button type="button" onclick="closeInputModal()" class="px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-full">Cancelar</button>
+                    <button type="submit" class="px-6 py-2.5 text-xs font-bold bg-tinka-green text-white rounded-full shadow-sm hover:bg-tinka-green_dark">Guardar en KB</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-tinka-text_muted">
-        Diseñado para la experiencia omnicanal de La Tinka. Motor RAG con edición dinámica, simulador de chatbot y cambio de tono.
-    </footer>
+    <!-- MODAL DE EXPORTACIÓN -->
+    <div id="export-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-lg overflow-hidden transform transition-transform scale-95" id="export-modal-content">
+            <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="text-base font-bold flex items-center gap-2"><span>📥</span> Exportar Base de Conocimientos</h3>
+                <button onclick="closeExportModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-600 mb-5">Selecciona el formato en el que deseas exportar los datos y la configuración del Workspace:</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="exportToCSV()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-green-100 bg-green-50 hover:bg-green-100 hover:border-green-300 transition-all group">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📊</span>
+                        <span class="font-bold text-sm text-green-900">Hoja de Cálculo</span>
+                        <span class="text-[10px] text-green-700 mt-1">Formato CSV (Excel)</span>
+                    </button>
+                    
+                    <button onclick="exportToPPTX()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-orange-100 bg-orange-50 hover:bg-orange-100 hover:border-orange-300 transition-all group">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📽️</span>
+                        <span class="font-bold text-sm text-orange-900">Presentación</span>
+                        <span class="text-[10px] text-orange-700 mt-1">Formato PPTX (PowerPoint)</span>
+                    </button>
+                    
+                    <button onclick="exportToPDF()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-red-100 bg-red-50 hover:bg-red-100 hover:border-red-300 transition-all group">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📄</span>
+                        <span class="font-bold text-sm text-red-900">Documento PDF</span>
+                        <span class="text-[10px] text-red-700 mt-1">Captura de la vista actual</span>
+                    </button>
+                    
+                    <button onclick="exportToPNG()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-blue-100 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 transition-all group">
+                        <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">🖼️</span>
+                        <span class="font-bold text-sm text-blue-900">Imagen PNG</span>
+                        <span class="text-[10px] text-blue-700 mt-1">Screenshot del panel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // ==========================================
-        // BASE DE DATOS Y CONFIGURACIÓN (RAG)
+        // DATOS BASE RAG Y TONOS (ACTUALIZADOS CON TODOS LOS JUEGOS)
         // ==========================================
         const defaultKbData = {
             overview: {
-                id: 'overview',
-                icon: '📊',
-                title: 'Resumen de Configuración',
-                desc: 'Vista general de la distribución de intenciones y estado de la Base de Conocimientos.',
-                type: 'dashboard'
+                id: 'overview', icon: '📊', title: 'Resumen de Configuración', type: 'dashboard',
+                desc: 'Vista general de la distribución de intenciones y estado de la Base de Conocimientos.'
             },
             promociones: {
-                id: 'promociones',
-                icon: '🎁',
-                title: 'Promociones y Beneficios',
-                desc: 'Prioridad Alta - Directrices para impulsar la conversión y el cross-selling de productos.',
-                type: 'category',
+                id: 'promociones', icon: '🎁', title: 'Promociones y Beneficios', type: 'category',
+                desc: 'Prioridad Alta - Directrices para impulsar la conversión y el cross-selling.',
                 items: [
                     {
                         q: "¿Qué promociones tienen vigentes hoy?",
                         a: "¡Siempre tenemos beneficios para potenciar tu suerte! Nuestras promociones se actualizan constantemente. Actualmente, te sugerimos aprovechar estas promociones estrella:",
                         promos: [
-                            {
-                                title: "Gana un iPhone 17 Pro Max",
-                                desc: "¡Haz tu primera recarga desde S/15 y llévate bonos!",
-                                linkText: "Ver TyC",
-                                linkUrl: "https://blog.latinka.com.pe/"
-                            },
-                            {
-                                title: "Combo Lotero",
-                                desc: "Combina tus juegos favoritos y accede a un precio preferencial.",
-                                linkText: "Comprar S/10",
-                                linkUrl: "https://www.latinka.com.pe/"
-                            }
+                            { title: "Gana un iPhone 17 Pro Max", desc: "¡Haz tu primera recarga desde S/15 y llévate bonos!", linkText: "Ver TyC", linkUrl: "https://blog.latinka.com.pe/" },
+                            { title: "Combo Lotero", desc: "Combina tus juegos favoritos (Tinka, Kábala, Gana Diario) a precio preferencial.", linkText: "Comprar Combo", linkUrl: "https://www.latinka.com.pe/" }
                         ],
-                        footerNote: "*Nota: Visita la web para fechas exactas.*",
-                        footerLinkText: "Ver todas las promociones vigentes",
-                        footerLinkUrl: "https://blog.latinka.com.pe/promociones/tinka/"
+                        footerNote: "*Nota: Visita la web para fechas exactas.*", footerLinkText: "Ver todas las promociones", footerLinkUrl: "https://blog.latinka.com.pe/promociones/tinka/"
                     }
                 ]
             },
             mecanicas: {
-                id: 'mecanicas',
-                icon: '🎲',
-                title: 'Mecánicas de Juego',
-                desc: 'Instrucciones claras sobre cómo participar, horarios y reglas especiales para guiar al usuario nuevo.',
-                type: 'category',
+                id: 'mecanicas', icon: '🎲', title: 'Mecánicas de Juego', type: 'category',
+                desc: 'Instrucciones de participación para Tinka, Kábala, Gana Diario, Kinelo y Videoloterías.',
                 items: [
-                    {
-                        q: "¿Cómo juego a La Tinka de forma online?",
-                        a: "¡Jugar es rapidísimo! Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Si prefieres, usa el botón 'Azar'.",
-                        linkText: "Ir a jugar La Tinka ahora",
-                        linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html"
-                    },
-                    {
-                        q: "¿A qué hora y qué días son los sorteos?",
-                        a: "Sorteamos todos los miércoles y domingos a las 10:50 p.m. Recuerda que el cierre de apuestas es a las 9:50 p.m. ¡No llegues tarde!",
-                        linkText: "Ver cronograma completo",
-                        linkUrl: "https://www.latinka.com.pe/p/ayuda.html"
-                    }
+                    { q: "¿Cómo juego a La Tinka?", a: "Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00.", linkText: "Jugar Tinka", linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html" },
+                    { q: "¿Cómo se juega a Kábala y Chau Chamba?", a: "Elige 6 números del 1 al 40 (cuesta S/ 2.00). Por S/ 1.00 adicional juegas 'Chau Chamba' con los mismos números para ganar S/ 5,000 mensuales por 20 años.", linkText: "Jugar Kábala", linkUrl: "https://www.latinka.com.pe/p/juega-kabala.html" },
+                    { q: "¿Cómo funciona Gana Diario?", a: "Gana Diario es fácil: elige 5 números del 1 al 35. El costo es S/ 2.00 y puedes ganar S/ 200,000 todos los días.", linkText: "Jugar Gana Diario", linkUrl: "https://www.latinka.com.pe/p/juega-ganadiario.html" },
+                    { q: "¿Qué es Kinelo y cómo se juega?", a: "Kinelo es nuestra lotería rápida. Hay sorteos ¡cada 5 minutos! Tú eliges cuántos números jugar (del 1 al 10) sobre un panel de 80 números y cuánto apostar.", linkText: "Jugar Kinelo", linkUrl: "https://www.latinka.com.pe/p/juega-kinelo.html" },
+                    { q: "¿Qué son las Videoloterías (Casino)?", a: "Son juegos instantáneos muy divertidos, similares a los tragamonedas o juegos de casino online, donde juegas y descubres si ganaste al instante. ¡Tenemos Joyas del Imperio y más!", linkText: "Probar Videoloterías", linkUrl: "https://www.latinka.com.pe/p/videoloterias.html" }
+                ]
+            },
+            resultados: {
+                id: 'resultados', icon: '📈', title: 'Resultados y Ganadores', type: 'category',
+                desc: 'Consultas sobre números ganadores, últimos sorteos y pozos de todos los juegos.',
+                items: [
+                    { q: "¿Dónde veo los resultados y ganadores de La Tinka, Kábala y Gana Diario?", a: "Puedes ver los resultados de todos nuestros sorteos apenas finalizan directamente en nuestra página web en la sección 'Resultados'. También podrás ver los pozos actuales y el video del sorteo en vivo.", linkText: "Ver resultados y ganadores", linkUrl: "https://www.latinka.com.pe/p/resultados.html" },
+                    { q: "¿Cuándo son los sorteos (qué días)?", a: "Tinka: Miércoles y Domingos 10:50pm. Kábala: Martes, Jueves y Sábados 10:00pm. Gana Diario: ¡Todos los días a las 8:30pm!" },
+                    { q: "¿Cómo sé si gané en Kinelo o Videoloterías?", a: "Para Kinelo (sorteos cada 5 minutos) y Videoloterías (juegos instantáneos), los resultados y tus ganancias se muestran al instante en tu pantalla tras cada jugada y se abonan a tu saldo.", linkText: "Revisar mis jugadas", linkUrl: "https://www.latinka.com.pe/p/mi-cuenta.html" }
                 ]
             },
             compras: {
-                id: 'compras',
-                icon: '💳',
-                title: 'Compras y Billetera',
-                desc: 'Información transaccional sobre costos, recargas y métodos de pago aceptados.',
-                type: 'category',
+                id: 'compras', icon: '💳', title: 'Compras y Billetera', type: 'category',
+                desc: 'Información sobre recargas y métodos de pago aceptados.',
                 items: [
-                    {
-                        q: "¿Cuánto cuesta jugar La Tinka?",
-                        a: "Una jugada simple cuesta S/ 5.00. También ofrecemos 'Jugadas Múltiples' y 'Combos Tinkeros' que te dan descuentos si compras por adelantado.",
-                        linkText: "Ver opciones de jugadas",
-                        linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html"
-                    },
-                    {
-                        q: "¿Cómo pago mis jugadas o recargo?",
-                        a: "Recarga rápido y seguro con tus tarjetas (Visa/Mastercard) o usando tus billeteras digitales favoritas: Yape, Plin, PagoEfectivo, o tu banca móvil.",
-                        linkText: "Recargar saldo aquí",
-                        linkUrl: "https://www.latinka.com.pe/p/mi-cuenta.html"
-                    }
+                    { q: "¿Cómo pago mis jugadas o recargo?", a: "Recarga con tarjetas o billeteras digitales: Yape, Plin, PagoEfectivo." }
                 ]
             },
             premios: {
-                id: 'premios',
-                icon: '🏆',
-                title: 'Premios y Cobro',
-                desc: 'Flujos de derivación para gestionar la ansiedad post-sorteo y facilitar el cobro seguro.',
-                type: 'category',
+                id: 'premios', icon: '🏆', title: 'Premios y Cobro', type: 'category',
+                desc: 'Flujos para gestionar el cobro seguro.',
                 items: [
-                    {
-                        q: "¿Cómo cobro mi premio si gané?",
-                        a: "¡Felicidades! Los premios menores se abonan directamente como saldo en tu cuenta web. Los premios mayores se gestionan de forma segura previa validación de identidad.",
-                        linkText: "Gestionar mi cobro vía Tinkanet",
-                        linkUrl: "https://www.latinka.com.pe/p/cobro-premios.html"
-                    }
+                    { q: "¿Cómo cobro mi premio si gané?", a: "Los premios menores se abonan en web. Los mayores previa validación de identidad." }
                 ]
             },
             responsable: {
-                id: 'responsable',
-                icon: '🛡️',
-                title: 'Juego Responsable',
+                id: 'responsable', icon: '🛡️', title: 'Juego Responsable', type: 'category',
                 desc: 'Directrices éticas para detectar y ayudar a usuarios con patrones de riesgo.',
-                type: 'category',
                 items: [
-                    {
-                        q: "Siento que estoy jugando demasiado, ¿pueden ayudarme?",
-                        a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil.",
-                        linkText: "Configurar mis límites",
-                        linkUrl: "https://www.latinka.com.pe/p/juego-responsable.html"
-                    }
+                    { q: "Siento que estoy jugando demasiado, ¿pueden ayudarme?", a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil." }
                 ]
             }
         };
 
         const toneConfigs = {
             ludico: {
-                title: '🎉 Tono Entusiasta (Lúdico)',
-                desc: 'Usa lenguaje enérgico, emojificación, llamado a la acción comercial y enfoque en la emoción de ganar.',
-                badgeText: 'Tono: Entusiasta',
-                badgeClass: 'bg-tinka-yellow text-tinka-text border-yellow-400',
-                transformText: (text) => text // Mantiene el formato alegre
+                title: '🎉 Tono Entusiasta (Lúdico)', desc: 'Lenguaje enérgico y enfoque en la emoción de ganar.',
+                badgeText: 'Tono: Entusiasta', badgeClass: 'bg-tinka-yellow text-tinka-text border-yellow-400',
+                transformText: (text) => text
             },
             formal: {
-                title: '🏛️ Tono Formal (Institucional)',
-                desc: 'Elimina exclamaciones excesivas y lenguaje informal. Enfoque técnico, preciso y corporativo.',
-                badgeText: 'Tono: Formal',
-                badgeClass: 'bg-slate-100 text-slate-800 border-slate-300',
-                transformText: (text) => {
-                    return text
-                        .replace(/¡/g, '')
-                        .replace(/!/g, '.')
-                        .replace(/rapidísimo/gi, 'sencillo y directo')
-                        .replace(/Felicidades/gi, 'Estimado usuario');
-                }
+                title: '🏛️ Tono Formal', desc: 'Enfoque técnico, preciso y corporativo.',
+                badgeText: 'Tono: Formal', badgeClass: 'bg-slate-100 text-slate-800 border-slate-300',
+                transformText: (text) => text.replace(/¡/g, '').replace(/!/g, '.').replace(/rapidísimo/gi, 'sencillo').replace(/Felicidades/gi, 'Estimado usuario')
             },
             directo: {
-                title: '⚡ Tono Directo (Sintético)',
-                desc: 'Proporciona datos concisos, resúmenes directos y minimiza texto decorativo.',
-                badgeText: 'Tono: Directo',
-                badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
-                transformText: (text) => {
-                    return text
-                        .replace(/¡Siempre tenemos beneficios para potenciar tu suerte!/gi, 'Promociones activas:')
-                        .replace(/¡Son chances extra!/gi, 'Modalidades de ganancia adicional:');
-                }
+                title: '⚡ Tono Directo', desc: 'Datos concisos y resúmenes directos.',
+                badgeText: 'Tono: Directo', badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
+                transformText: (text) => text.replace(/¡Siempre tenemos beneficios para potenciar tu suerte!/gi, 'Promociones activas:')
             }
         };
 
@@ -453,9 +378,104 @@
         let currentChart = null;
 
         // ==========================================
-        // LÓGICA DEL CHATBOT SIMULADOR
+        // FUNCIONES DE EXPORTACIÓN
         // ==========================================
-        
+        function openExportModal() {
+            const modal = document.getElementById('export-modal');
+            const modalContent = document.getElementById('export-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modalContent.classList.remove('scale-95'); modalContent.classList.add('scale-100'); }, 10);
+        }
+
+        function closeExportModal() {
+            const modal = document.getElementById('export-modal');
+            const modalContent = document.getElementById('export-modal-content');
+            modalContent.classList.remove('scale-100'); modalContent.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 200);
+        }
+
+        function notifyLoading(msg) {
+            showToast("⏳ " + msg);
+            closeExportModal();
+        }
+
+        function exportToCSV() {
+            notifyLoading("Generando Hoja de Cálculo...");
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+            csvContent += "Categoria,Pregunta (Intent),Respuesta (Base),Link de Accion,URL\n";
+            Object.keys(kbData).forEach(key => {
+                if (kbData[key].type === 'category' && kbData[key].items) {
+                    kbData[key].items.forEach(item => {
+                        let cat = `"${kbData[key].title.replace(/"/g, '""')}"`;
+                        let q = `"${item.q.replace(/"/g, '""')}"`;
+                        let a = `"${item.a.replace(/"/g, '""')}"`;
+                        let linkTxt = item.linkText ? `"${item.linkText.replace(/"/g, '""')}"` : '""';
+                        let linkUrl = item.linkUrl ? `"${item.linkUrl}"` : '""';
+                        csvContent += `${cat},${q},${a},${linkTxt},${linkUrl}\n`;
+                    });
+                }
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "RAG_LaTinka_Omnicanal.csv");
+            document.body.appendChild(link);
+            link.click(); document.body.removeChild(link);
+            setTimeout(() => showToast("✅ Archivo CSV descargado"), 500);
+        }
+
+        function exportToPPTX() {
+            notifyLoading("Generando Presentación PPTX...");
+            setTimeout(() => {
+                let pptx = new PptxGenJS();
+                pptx.layout = 'LAYOUT_16x9';
+                let cover = pptx.addSlide();
+                cover.background = { color: "F8FAFC" };
+                cover.addText("Base de Conocimientos RAG Omnicanal", { x:0, y:2, w:"100%", fontSize:40, bold:true, align:"center", color:"00A859" });
+                cover.addText("Juegos, Resultados y Promociones - La Tinka", { x:0, y:3.5, w:"100%", fontSize:20, align:"center", color:"334155" });
+                Object.keys(kbData).forEach(key => {
+                    if (kbData[key].type === 'category' && kbData[key].items) {
+                        kbData[key].items.forEach(item => {
+                            let slide = pptx.addSlide();
+                            slide.addText(kbData[key].title.toUpperCase(), { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
+                            slide.addText("Q: " + item.q, { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
+                            slide.addText("A: " + item.a, { x:0.5, y:2.5, w:9, h: 2, fontSize:16, color:"334155", valign:"top" });
+                        });
+                    }
+                });
+                pptx.writeFile({ fileName: "Matriz_RAG_LaTinka.pptx" }).then(() => { showToast("✅ Presentación PPTX descargada"); });
+            }, 100);
+        }
+
+        function exportToPDF() {
+            notifyLoading("Generando Documento PDF...");
+            setTimeout(() => {
+                const element = document.getElementById('export-target');
+                const opt = { margin: 0.5, filename: 'Dashboard_LaTinka.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
+                const actions = document.querySelectorAll('.action-buttons-export');
+                actions.forEach(el => el.style.display = 'none');
+                html2pdf().set(opt).from(element).save().then(() => {
+                    actions.forEach(el => el.style.display = 'flex');
+                    showToast("✅ Archivo PDF descargado");
+                });
+            }, 100);
+        }
+
+        function exportToPNG() {
+            notifyLoading("Tomando captura PNG...");
+            setTimeout(() => {
+                const element = document.getElementById('export-target');
+                html2canvas(element, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+                    const link = document.createElement('a'); link.download = 'Captura_RAG_LaTinka.png'; link.href = canvas.toDataURL('image/png'); link.click();
+                    showToast("✅ Imagen PNG descargada");
+                });
+            }, 100);
+        }
+
+
+        // ==========================================
+        // LÓGICA DEL CHATBOT SIMULADOR (CROSS-SELLING)
+        // ==========================================
         function toggleChat() {
             const panel = document.getElementById('chatbot-panel');
             const fab = document.getElementById('chatbot-fab');
@@ -475,53 +495,15 @@
             const container = document.getElementById('chat-messages-container');
             const wrap = document.createElement('div');
             wrap.className = `flex flex-col gap-1 ${sender === 'user' ? 'items-end' : 'items-start'} opacity-0 translate-y-2`;
-            
-            // Animación de entrada suave
             wrap.style.transition = 'all 0.3s ease-out';
             
-            let bubbleClass = sender === 'user' 
-                ? 'bg-tinka-yellow text-tinka-text shadow-sm chat-bubble-user max-w-[85%]' 
-                : 'bg-white border border-gray-100 text-tinka-text shadow-sm chat-bubble-bot max-w-[85%]';
+            let bubbleClass = sender === 'user' ? 'bg-tinka-yellow text-tinka-text shadow-sm chat-bubble-user max-w-[85%]' : 'bg-white border border-gray-100 text-tinka-text shadow-sm chat-bubble-bot max-w-[85%]';
+            wrap.innerHTML = `<div class="text-sm p-3.5 rounded-2xl ${bubbleClass} leading-relaxed">${isHTML ? htmlContent : `<p>${htmlContent}</p>`}</div>
+                              <span class="text-[9px] text-gray-400 font-medium mx-1">${sender === 'user' ? 'Tú' : 'Bot'} • Ahora</span>`;
             
-            let contentStr = isHTML ? htmlContent : `<p>${htmlContent}</p>`;
-
-            wrap.innerHTML = `
-                <div class="text-sm p-3.5 rounded-2xl ${bubbleClass} leading-relaxed">
-                    ${contentStr}
-                </div>
-                <span class="text-[9px] text-gray-400 font-medium mx-1">${sender === 'user' ? 'Tú' : 'Bot'} • Ahora</span>
-            `;
-
             container.appendChild(wrap);
-            
-            // Trigger animation
-            setTimeout(() => {
-                wrap.classList.remove('opacity-0', 'translate-y-2');
-            }, 10);
-
+            setTimeout(() => { wrap.classList.remove('opacity-0', 'translate-y-2'); }, 10);
             container.scrollTop = container.scrollHeight;
-        }
-
-        function showTypingIndicator() {
-            const container = document.getElementById('chat-messages-container');
-            const indicator = document.createElement('div');
-            indicator.id = 'typing-indicator';
-            indicator.className = 'flex flex-col gap-1 items-start opacity-0 translate-y-2 transition-all';
-            indicator.innerHTML = `
-                <div class="bg-white border border-gray-100 p-3.5 rounded-2xl chat-bubble-bot shadow-sm flex gap-1 items-center h-10">
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
-                </div>
-            `;
-            container.appendChild(indicator);
-            setTimeout(() => indicator.classList.remove('opacity-0', 'translate-y-2'), 10);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            const ind = document.getElementById('typing-indicator');
-            if (ind) ind.remove();
         }
 
         function handleChatSubmit(event) {
@@ -529,45 +511,48 @@
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
-
-            // 1. Mostrar mensaje del usuario
             appendChatMessage(text, 'user');
             input.value = '';
+            
+            const container = document.getElementById('chat-messages-container');
+            const ind = document.createElement('div');
+            ind.id = 'typing-indicator';
+            ind.className = 'flex flex-col gap-1 items-start opacity-0 translate-y-2 transition-all';
+            ind.innerHTML = `<div class="bg-white border border-gray-100 p-3.5 rounded-2xl chat-bubble-bot shadow-sm flex gap-1 items-center h-10"><div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div></div>`;
+            container.appendChild(ind);
+            container.scrollTop = container.scrollHeight;
+            setTimeout(() => ind.classList.remove('opacity-0', 'translate-y-2'), 10);
 
-            // 2. Mostrar "escribiendo..."
-            showTypingIndicator();
-
-            // 3. Simular procesamiento IA y búsqueda en KB local
-            setTimeout(() => {
-                simulateAIResponse(text);
-            }, 800 + Math.random() * 500); // Retraso artificial para simular red
+            setTimeout(() => { simulateAIResponse(text); }, 800 + Math.random() * 500); 
         }
 
         function simulateAIResponse(userText) {
-            removeTypingIndicator();
+            const ind = document.getElementById('typing-indicator');
+            if (ind) ind.remove();
             const lowerText = userText.toLowerCase();
-            let matchedItem = null;
+            
+            const greetings = ['hola', 'holas', 'buenas'];
+            if (greetings.some(g => lowerText === g || lowerText.startsWith(g + ' '))) {
+                appendChatMessage(toneConfigs[currentTone].transformText("¡Hola! ¿En qué puedo ayudarte hoy sobre nuestros juegos, resultados o promociones?"), 'bot', false);
+                return;
+            }
 
-            // Algoritmo hiper-básico de NLP simulado (busca coincidencias de palabras clave)
+            let matchedItem = null;
             for (const key in kbData) {
                 if (kbData[key].type === 'category') {
                     for (const item of kbData[key].items) {
-                        // Extraemos palabras de más de 3 letras de la pregunta base
                         const keywords = item.q.toLowerCase().replace(/[¿?]/g, '').split(' ').filter(w => w.length > 3);
-                        
-                        // Palabras clave manuales de emergencia
-                        if(lowerText.includes('recarg') || lowerText.includes('pagar')) {
-                            if(item.q.includes('pago') || item.q.includes('cuesta')) matchedItem = kbData['compras'].items[1];
-                        }
-                        if(lowerText.includes('promocion') || lowerText.includes('combo')) {
-                             matchedItem = kbData['promociones'].items[0];
-                        }
-
-                        // Coincidencia estándar
                         const match = keywords.some(kw => lowerText.includes(kw));
-                        if (match && !matchedItem) {
-                            matchedItem = item;
-                            break;
+                        
+                        // Sinónimos adicionales para la nueva data
+                        const isKabala = (lowerText.includes('kabala') || lowerText.includes('kábala') || lowerText.includes('chamba')) && item.q.includes('Kábala');
+                        const isGanaDiario = lowerText.includes('gana diario') && item.q.includes('Diario');
+                        const isKinelo = lowerText.includes('kinelo') && item.q.includes('Kinelo');
+                        const isVideo = (lowerText.includes('videoloter') || lowerText.includes('casino')) && item.q.includes('Videoloterías');
+                        const isResultados = (lowerText.includes('resultado') || lowerText.includes('ganador')) && item.q.includes('resultados');
+                        
+                        if (match || isKabala || isGanaDiario || isKinelo || isVideo || isResultados || (lowerText.includes('recarg') && item.q.includes('pago'))) {
+                            matchedItem = item; break;
                         }
                     }
                 }
@@ -575,41 +560,56 @@
             }
 
             if (matchedItem) {
-                // Aplicar filtro de Tono
                 let botReply = toneConfigs[currentTone].transformText(matchedItem.a);
                 
-                // Formatear si tiene Promociones
-                if (matchedItem.promos && matchedItem.promos.length > 0) {
+                if (matchedItem.promos) {
                     botReply += `<div class="mt-3 flex flex-col gap-2">`;
                     matchedItem.promos.forEach(p => {
-                        botReply += `
-                        <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-                            <h4 class="text-tinka-green_dark font-bold text-xs mb-1">${p.title}</h4>
-                            <p class="text-[10px] text-gray-600 mb-2 leading-tight">${p.desc}</p>
-                            <a href="${p.linkUrl}" target="_blank" class="text-tinka-red text-[10px] font-bold hover:underline">▶ ${p.linkText}</a>
-                        </div>`;
+                        botReply += `<div class="bg-gray-50 rounded-xl p-3 border border-gray-200"><h4 class="text-tinka-green_dark font-bold text-xs mb-1">${p.title}</h4><p class="text-[10px] text-gray-600 mb-2 leading-tight">${p.desc}</p><a href="${p.linkUrl}" target="_blank" class="text-tinka-red text-[10px] font-bold hover:underline">▶ ${p.linkText}</a></div>`;
                     });
                     botReply += `</div>`;
                 }
 
-                // Links normales
-                if (matchedItem.linkText) {
-                     botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
+                if (matchedItem.linkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
+
+                // CROSS-SELLING LOGIC
+                if (!matchedItem.promos && kbData['promociones'] && kbData['promociones'].items[0].promos) {
+                    const allPromos = kbData['promociones'].items[0].promos;
+                    if (allPromos.length > 0) {
+                        const rPromo = allPromos[Math.floor(Math.random() * allPromos.length)];
+                        const intro = currentTone === 'ludico' ? '💡 ¡Oye! Multiplica tu suerte con esto:' : 'Le sugerimos revisar esta promoción vigente:';
+                        botReply += `
+                            <div class="mt-4 pt-3 border-t border-gray-100">
+                                <p class="text-[11px] font-bold text-tinka-green_dark mb-2">${intro}</p>
+                                <div class="bg-yellow-50 rounded-xl p-3 border border-yellow-200 shadow-sm">
+                                    <h4 class="text-tinka-green_dark font-bold text-xs mb-1">${rPromo.title}</h4>
+                                    <p class="text-[10px] text-gray-700 mb-2 leading-tight">${rPromo.desc}</p>
+                                    <a href="${rPromo.linkUrl}" target="_blank" class="text-tinka-red text-[10px] font-bold hover:underline">▶ ${rPromo.linkText}</a>
+                                </div>
+                            </div>`;
+                    }
                 }
 
                 appendChatMessage(botReply, 'bot', true);
             } else {
-                // Fallback
-                const fallbackMsg = toneConfigs[currentTone].transformText("Lo siento, no encuentro información exacta sobre eso en mi base actual. Te sugiero reformular la pregunta o consultar nuestra sección de ayuda en la web.");
-                appendChatMessage(fallbackMsg, 'bot', false);
+                const fallbackMsg = toneConfigs[currentTone].transformText("Lo siento, no encuentro información exacta sobre eso en mi base de conocimientos actual.");
+                const safeUserText = userText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const feedbackUI = `<div class="flex flex-col gap-2"><p>${fallbackMsg}</p><div class="bg-tinka-bg border border-gray-200 rounded-xl p-3 mt-1"><p class="text-[11px] font-bold text-tinka-text mb-2">¿Te gustaría enseñarme la respuesta y agregarla al sistema RAG?</p><div class="flex gap-2"><button onclick="startFeedbackLoop('${safeUserText}', this)" class="bg-tinka-green text-white text-[10px] font-bold px-3 py-1.5 rounded-full">Sí, agregar info</button></div></div></div>`;
+                appendChatMessage(feedbackUI, 'bot', true);
             }
+        }
+
+        function startFeedbackLoop(failedQuestion, btnElement) {
+            btnElement.parentElement.parentElement.innerHTML = `<span class="text-[10px] text-tinka-green_dark font-bold flex items-center gap-1"><span>🧠</span> Abriendo editor RAG...</span>`;
+            if (window.innerWidth < 640) toggleChat();
+            openInputModal();
+            document.getElementById('modal-question').value = failedQuestion;
         }
 
 
         // ==========================================
-        // LÓGICA DE LA PLATAFORMA DASHBOARD (CRUD)
+        // FUNCIONES CORE DASHBOARD
         // ==========================================
-
         function initApp() {
             loadSavedData();
             renderNavigation();
@@ -619,21 +619,11 @@
 
         function loadSavedData() {
             const savedData = localStorage.getItem('tinka_kb_data');
-            if (savedData) {
-                try {
-                    kbData = JSON.parse(savedData);
-                } catch (e) {
-                    kbData = JSON.parse(JSON.stringify(defaultKbData));
-                }
-            } else {
-                kbData = JSON.parse(JSON.stringify(defaultKbData));
-            }
-
+            if (savedData) { try { kbData = JSON.parse(savedData); } catch (e) { kbData = JSON.parse(JSON.stringify(defaultKbData)); } } 
+            else { kbData = JSON.parse(JSON.stringify(defaultKbData)); }
+            
             const savedTone = localStorage.getItem('tinka_kb_tone');
-            if (savedTone && toneConfigs[savedTone]) {
-                currentTone = savedTone;
-                document.getElementById('tone-select').value = currentTone;
-            }
+            if (savedTone && toneConfigs[savedTone]) { currentTone = savedTone; document.getElementById('tone-select').value = currentTone; }
         }
 
         function saveData() {
@@ -643,413 +633,172 @@
         }
 
         function resetDefaultKB() {
-            if (confirm("¿Estás seguro de restablecer toda la Base de Conocimientos a los datos originales de La Tinka?")) {
+            if (confirm("¿Restablecer datos originales? Esto traerá la data de todos los juegos (Tinka, Kábala, Gana Diario, Kinelo).")) {
                 kbData = JSON.parse(JSON.stringify(defaultKbData));
-                saveData();
-                renderNavigation();
-                loadContent(currentCategoryKey);
-                showToast("✅ Base de Conocimientos restablecida");
+                saveData(); renderNavigation(); loadContent(currentCategoryKey);
+                showToast("✅ Base restablecida");
             }
         }
 
         function updateTotalCount() {
             let total = 0;
-            Object.keys(kbData).forEach(k => {
-                if (kbData[k].type === 'category' && kbData[k].items) {
-                    total += kbData[k].items.length;
-                }
-            });
+            Object.keys(kbData).forEach(k => { if (kbData[k].type === 'category' && kbData[k].items) total += kbData[k].items.length; });
             document.getElementById('kb-total-count').textContent = `${total} inputs`;
         }
 
         function changeTone(newTone) {
-            currentTone = newTone;
-            saveData();
-            updateToneUI();
-            loadContent(currentCategoryKey);
-            showToast(`🎭 Tono cambiado a: ${toneConfigs[newTone].title}`);
+            currentTone = newTone; saveData(); updateToneUI(); loadContent(currentCategoryKey); showToast(`🎭 Tono cambiado`);
         }
 
         function updateToneUI() {
-            const config = toneConfigs[currentTone];
-            document.getElementById('tone-info-title').textContent = config.title;
-            document.getElementById('tone-info-desc').textContent = config.desc;
+            document.getElementById('tone-info-title').textContent = toneConfigs[currentTone].title;
+            document.getElementById('tone-info-desc').textContent = toneConfigs[currentTone].desc;
         }
 
         function renderNavigation() {
             const nav = document.getElementById('category-nav');
             let html = '';
-            
             Object.keys(kbData).forEach(key => {
                 const item = kbData[key];
-                const itemCount = item.items ? item.items.length : 0;
-                
-                html += `
-                    <button onclick="loadContent('${key}')" id="nav-btn-${key}" class="nav-btn w-full text-left flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-200 hover:bg-gray-50 border border-transparent hover:border-gray-200 cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">${item.icon}</span>
-                            <span class="font-bold text-xs text-tinka-text">${item.title}</span>
-                        </div>
-                        ${item.type === 'category' ? `<span class="text-[10px] bg-slate-100 text-slate-500 font-extrabold px-2 py-0.5 rounded-full">${itemCount}</span>` : ''}
-                    </button>
-                `;
+                const count = item.items ? item.items.length : 0;
+                html += `<button onclick="loadContent('${key}')" id="nav-btn-${key}" class="nav-btn w-full text-left flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-200 hover:bg-gray-50 border border-transparent cursor-pointer">
+                            <div class="flex items-center gap-3"><span class="text-xl">${item.icon}</span><span class="font-bold text-xs text-tinka-text">${item.title}</span></div>
+                            ${item.type === 'category' ? `<span class="text-[10px] bg-slate-100 text-slate-500 font-extrabold px-2 py-0.5 rounded-full">${count}</span>` : ''}
+                         </button>`;
             });
-            nav.innerHTML = html;
-            updateTotalCount();
+            nav.innerHTML = html; updateTotalCount();
         }
 
         function loadContent(key) {
             currentCategoryKey = key;
-            
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-tinka-green', 'text-white', 'border-tinka-green', 'shadow-sm', 'hover:bg-tinka-green');
-                btn.classList.add('hover:bg-gray-50');
-                const title = btn.querySelector('.font-bold');
-                if(title) title.classList.remove('text-white');
+                btn.classList.remove('bg-tinka-green', 'text-white', 'shadow-sm'); btn.classList.add('hover:bg-gray-50');
+                if(btn.querySelector('.font-bold')) btn.querySelector('.font-bold').classList.remove('text-white');
             });
-            
             const activeBtn = document.getElementById(`nav-btn-${key}`);
             if(activeBtn) {
-                activeBtn.classList.remove('hover:bg-gray-50');
-                activeBtn.classList.add('bg-tinka-green', 'border-tinka-green', 'shadow-sm');
-                const title = activeBtn.querySelector('.font-bold');
-                if(title) title.classList.add('text-white');
+                activeBtn.classList.add('bg-tinka-green', 'shadow-sm'); activeBtn.classList.remove('hover:bg-gray-50');
+                if(activeBtn.querySelector('.font-bold')) activeBtn.querySelector('.font-bold').classList.add('text-white');
             }
-
-            const area = document.getElementById('main-content-area');
-            const data = kbData[key];
-
-            if (data.type === 'dashboard') {
-                renderDashboard(area, data);
-            } else {
-                renderCategory(area, data, key);
-            }
+            const area = document.getElementById('export-target'); 
+            if (kbData[key].type === 'dashboard') renderDashboard(area, kbData[key]);
+            else renderCategory(area, kbData[key], key);
         }
 
         function renderDashboard(container, data) {
-            let html = `
+            container.innerHTML = `
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8">
-                    <div class="mb-6 border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                            <h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2">
-                                <span>${data.icon}</span> ${data.title}
-                            </h2>
-                            <p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p>
-                        </div>
-                        <span class="text-[11px] font-bold px-3 py-1.5 rounded-full border ${toneConfigs[currentTone].badgeClass}">
-                            ${toneConfigs[currentTone].badgeText}
-                        </span>
+                    <div class="mb-6 border-b border-gray-100 pb-4 flex justify-between gap-3">
+                        <div><h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2"><span>${data.icon}</span> ${data.title}</h2><p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p></div>
+                        <span class="text-[11px] font-bold px-3 py-1.5 rounded-full border ${toneConfigs[currentTone].badgeClass} h-fit">${toneConfigs[currentTone].badgeText}</span>
                     </div>
-                    
-                    <div class="w-full">
-                        <div class="chart-container">
-                            <canvas id="kbChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-tinka-bg p-5 rounded-3xl border border-gray-100">
-                            <div class="text-[10px] text-tinka-text_muted uppercase font-extrabold tracking-wider mb-1">Métrica Clave</div>
-                            <div class="text-base font-extrabold text-tinka-green_dark">Configuración de Tono Activa</div>
-                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${toneConfigs[currentTone].desc}</p>
-                        </div>
-                        <div class="bg-tinka-bg p-5 rounded-3xl border border-gray-100">
-                            <div class="text-[10px] text-tinka-text_muted uppercase font-extrabold tracking-wider mb-1">Capacidad RAG</div>
-                            <div class="text-base font-extrabold text-tinka-green_dark">Edición & Simulación en Vivo</div>
-                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">Puedes agregar inputs y testearlos inmediatamente abriendo el Chatbot Flotante abajo a la derecha.</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
+                    <div class="w-full"><div class="chart-container"><canvas id="kbChart"></canvas></div></div>
+                </div>`;
             initChart();
         }
 
         function initChart() {
             const ctx = document.getElementById('kbChart').getContext('2d');
             if (currentChart) currentChart.destroy();
-
-            const labels = [];
-            const dataPoints = [];
-            const colors = ['#00A859', '#FFD100', '#3B82F6', '#8B5CF6', '#E1001A', '#10B981', '#F59E0B'];
-
-            Object.keys(kbData).forEach(key => {
-                if (kbData[key].type === 'category') {
-                    labels.push(kbData[key].title);
-                    dataPoints.push(kbData[key].items ? kbData[key].items.length : 0);
-                }
-            });
-
-            currentChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: dataPoints,
-                        backgroundColor: colors.slice(0, labels.length),
-                        borderWidth: 0,
-                        hoverOffset: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { family: 'Inter', size: 12, weight: 'bold' } }
-                        },
-                        tooltip: {
-                            callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} Entradas activas` },
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            cornerRadius: 12
-                        }
-                    },
-                    cutout: '68%'
-                }
-            });
+            const labels = []; const dataPoints = []; const colors = ['#00A859', '#FFD100', '#3B82F6', '#8B5CF6', '#E1001A', '#10B981', '#F59E0B'];
+            Object.keys(kbData).forEach(key => { if (kbData[key].type === 'category') { labels.push(kbData[key].title); dataPoints.push(kbData[key].items ? kbData[key].items.length : 0); } });
+            currentChart = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: dataPoints, backgroundColor: colors, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '68%' } });
         }
 
         function renderCategory(container, data, categoryKey) {
             const toneTransform = toneConfigs[currentTone].transformText;
-
             let html = `
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8">
-                    <div class="mb-6 border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2">
-                                <span>${data.icon}</span> ${data.title}
-                            </h2>
-                            <p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[11px] font-bold px-3 py-1.5 rounded-full border ${toneConfigs[currentTone].badgeClass}">
-                                ${toneConfigs[currentTone].badgeText}
-                            </span>
-                            <button onclick="openInputModal('${categoryKey}')" class="bg-tinka-green hover:bg-tinka-green_dark text-white text-xs font-bold px-4 py-2 rounded-full shadow-sm transition flex items-center gap-1 cursor-pointer">
-                                <span>➕</span> <span>Agregar Input</span>
-                            </button>
-                        </div>
+                    <div class="mb-6 border-b border-gray-100 pb-4 flex justify-between gap-4">
+                        <div><h2 class="text-xl font-extrabold text-tinka-text flex items-center gap-2"><span>${data.icon}</span> ${data.title}</h2><p class="text-xs text-tinka-text_muted mt-1">${data.desc}</p></div>
+                        <button onclick="openInputModal('${categoryKey}')" class="action-buttons-export h-fit bg-tinka-green text-white text-xs font-bold px-4 py-2 rounded-full shadow-sm hover:bg-tinka-green_dark">➕ Agregar Input</button>
                     </div>
-                    
-                    <div class="space-y-4">
-            `;
+                    <div class="space-y-4">`;
 
             if (!data.items || data.items.length === 0) {
-                html += `
-                    <div class="p-8 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                        <span class="text-3xl block mb-2">📭</span>
-                        <p class="text-xs text-slate-500 font-medium">No hay preguntas registradas en esta categoría aún.</p>
-                        <button onclick="openInputModal('${categoryKey}')" class="mt-3 text-xs font-bold text-tinka-green hover:underline cursor-pointer">
-                            + Agregar la primera pregunta
-                        </button>
-                    </div>
-                `;
+                html += `<div class="p-8 text-center bg-gray-50 rounded-3xl border border-dashed"><p class="text-xs text-slate-500 font-medium">No hay preguntas registradas.</p></div>`;
             } else {
                 data.items.forEach((item, index) => {
-                    const isPromocion = item.promos !== undefined;
                     const adaptedAnswer = toneTransform(item.a);
-
                     html += `
-                        <div class="border border-gray-200 rounded-3xl overflow-hidden bg-white hover:border-gray-300 transition-all shadow-sm">
-                            <div class="flex items-center justify-between p-5 bg-white border-b border-gray-100">
-                                <button onclick="toggleAccordion(this)" class="flex-grow text-left focus:outline-none flex items-center justify-between pr-4 cursor-pointer">
-                                    <span class="font-extrabold text-xs sm:text-sm text-tinka-text flex items-center gap-2">
-                                        <span class="text-tinka-green font-extrabold">Q:</span>
-                                        <span>${item.q}</span>
-                                    </span>
-                                    <span class="text-gray-400 transform transition-transform duration-300 ml-2">▼</span>
-                                </button>
-                                
-                                <div class="flex items-center gap-1 shrink-0 bg-slate-50 p-1.5 rounded-xl border border-slate-100">
-                                    <button onclick="openEditModal('${categoryKey}', ${index})" title="Editar pregunta" class="text-xs text-slate-500 hover:text-tinka-green px-2 py-1.5 rounded-lg hover:bg-white transition cursor-pointer shadow-sm">
-                                        ✏️
-                                    </button>
-                                    <button onclick="deleteItem('${categoryKey}', ${index})" title="Eliminar pregunta" class="text-xs text-slate-500 hover:text-tinka-red px-2 py-1.5 rounded-lg hover:bg-white transition cursor-pointer shadow-sm">
-                                        🗑️
-                                    </button>
+                        <div class="border border-gray-200 rounded-3xl overflow-hidden bg-white shadow-sm">
+                            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                                <button onclick="toggleAccordion(this)" class="flex-grow text-left focus:outline-none flex justify-between pr-4"><span class="font-extrabold text-xs sm:text-sm text-tinka-text flex gap-2"><span class="text-tinka-green">Q:</span><span>${item.q}</span></span><span class="text-gray-400">▼</span></button>
+                                <div class="action-buttons-export flex items-center gap-1 bg-slate-50 p-1.5 rounded-xl border border-slate-100">
+                                    <button onclick="openEditModal('${categoryKey}', ${index})" class="text-xs text-slate-500 px-2 py-1.5 rounded-lg hover:bg-white shadow-sm">✏️</button>
+                                    <button onclick="deleteItem('${categoryKey}', ${index})" class="text-xs text-slate-500 px-2 py-1.5 rounded-lg hover:bg-white shadow-sm hover:text-tinka-red">🗑️</button>
                                 </div>
                             </div>
-
-                            <div class="accordion-content bg-tinka-bg">
-                                <div class="p-6 text-xs text-tinka-text leading-relaxed">
-                                    <div class="flex items-start gap-2 mb-3">
-                                        <span class="text-tinka-green font-extrabold text-xs">A:</span>
-                                        <div class="flex-grow">${adaptedAnswer}</div>
-                                    </div>
-                                    
-                                    ${isPromocion ? renderPromos(item.promos) : ''}
-                                    
-                                    ${item.footerNote ? `<p class="mt-4 italic text-tinka-text_muted text-[11px]">${item.footerNote}</p>` : ''}
-                                    ${item.footerLinkText ? renderLink(item.footerLinkText, item.footerLinkUrl, 'mt-3') : ''}
-                                    ${item.linkText ? renderLink(item.linkText, item.linkUrl, 'mt-4') : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                            <div class="accordion-content bg-tinka-bg"><div class="p-6 text-xs text-tinka-text leading-relaxed">
+                                <div class="flex gap-2 mb-3"><span class="text-tinka-green font-extrabold">A:</span><div>${adaptedAnswer}</div></div>`;
+                    
+                    if (item.promos) {
+                        html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ml-5">`;
+                        item.promos.forEach(p => { html += `<div class="bg-white p-4 rounded-2xl border shadow-sm"><h4 class="font-extrabold text-tinka-green_dark mb-1">${p.title}</h4><p class="text-[11px] mb-3">${p.desc}</p><a href="${p.linkUrl}" class="text-tinka-red text-[11px] font-bold">▶ ${p.linkText}</a></div>`; });
+                        html += `</div>`;
+                    }
+                    if (item.linkText) html += `<div class="mt-4"><a href="${item.linkUrl}" class="text-tinka-red font-extrabold">▶ ${item.linkText}</a></div>`;
+                    html += `</div></div></div>`;
                 });
             }
-
-            html += `
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        function renderPromos(promos) {
-            let promoHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ml-5">';
-            promos.forEach(p => {
-                promoHtml += `
-                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col h-full">
-                        <h4 class="font-extrabold text-tinka-green_dark mb-1 text-xs">${p.title}</h4>
-                        <p class="text-[11px] text-tinka-text_muted mb-3 flex-grow leading-tight">${p.desc}</p>
-                        ${renderLink(p.linkText, p.linkUrl, '', 'text-[11px]')}
-                    </div>
-                `;
-            });
-            promoHtml += '</div>';
-            return promoHtml;
-        }
-
-        function renderLink(text, url, extraClasses = '', textClasses = 'text-xs') {
-            return `
-                <div class="${extraClasses}">
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-tinka-red hover:text-red-700 font-extrabold ${textClasses} transition-colors group">
-                        <span>▶</span>
-                        <span class="underline group-hover:no-underline">${text}</span>
-                    </a>
-                </div>
-            `;
+            container.innerHTML = html + `</div></div>`;
         }
 
         function toggleAccordion(btn) {
             const content = btn.parentElement.nextElementSibling;
-            const icon = btn.querySelector('span:last-child');
-            
-            document.querySelectorAll('.accordion-content').forEach(el => {
-                if(el !== content) {
-                    el.classList.remove('open');
-                    const otherIcon = el.previousElementSibling.querySelector('button span:last-child');
-                    if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
-                }
-            });
-
             content.classList.toggle('open');
-            if (content.classList.contains('open')) {
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                icon.style.transform = 'rotate(0deg)';
-            }
         }
 
-        function openInputModal(targetCategory = null) {
-            populateCategorySelect();
-            document.getElementById('edit-item-index').value = '-1';
-            document.getElementById('edit-category-id').value = '';
-            document.getElementById('modal-title').innerHTML = '<span>➕</span> Agregar Nueva Pregunta a la KB';
-            document.getElementById('kb-form').reset();
-
-            if (targetCategory && kbData[targetCategory]) {
-                document.getElementById('modal-category-select').value = targetCategory;
-            } else if (currentCategoryKey !== 'overview') {
-                document.getElementById('modal-category-select').value = currentCategoryKey;
-            }
-
-            document.getElementById('input-modal').classList.remove('hidden');
+        function openInputModal(targetCat = null) {
+            const select = document.getElementById('modal-category-select');
+            select.innerHTML = ''; Object.keys(kbData).forEach(k => { if (kbData[k].type === 'category') select.innerHTML += `<option value="${k}">${kbData[k].title}</option>`; });
+            document.getElementById('kb-form').reset(); document.getElementById('edit-item-index').value = '-1';
+            if(targetCat) select.value = targetCat;
+            const modal = document.getElementById('input-modal');
+            modal.classList.remove('hidden'); setTimeout(() => { document.getElementById('input-modal-content').classList.remove('scale-95'); }, 10);
         }
 
-        function openEditModal(categoryKey, index) {
-            const item = kbData[categoryKey].items[index];
-            if (!item) return;
-
-            populateCategorySelect();
-            document.getElementById('modal-title').innerHTML = '<span>✏️</span> Editar Pregunta de la KB';
-            document.getElementById('edit-item-index').value = index;
-            document.getElementById('edit-category-id').value = categoryKey;
-
-            document.getElementById('modal-category-select').value = categoryKey;
-            document.getElementById('modal-question').value = item.q;
-            document.getElementById('modal-answer').value = item.a;
-            document.getElementById('modal-link-text').value = item.linkText || '';
-            document.getElementById('modal-link-url').value = item.linkUrl || '';
-
-            document.getElementById('input-modal').classList.remove('hidden');
+        function openEditModal(catKey, idx) {
+            openInputModal(catKey);
+            const item = kbData[catKey].items[idx];
+            document.getElementById('edit-item-index').value = idx; document.getElementById('edit-category-id').value = catKey;
+            document.getElementById('modal-question').value = item.q; document.getElementById('modal-answer').value = item.a;
+            document.getElementById('modal-link-text').value = item.linkText || ''; document.getElementById('modal-link-url').value = item.linkUrl || '';
         }
 
         function closeInputModal() {
-            document.getElementById('input-modal').classList.add('hidden');
+            document.getElementById('input-modal-content').classList.add('scale-95');
+            setTimeout(() => { document.getElementById('input-modal').classList.add('hidden'); }, 200);
         }
 
-        function populateCategorySelect() {
-            const select = document.getElementById('modal-category-select');
-            let html = '';
-            Object.keys(kbData).forEach(k => {
-                if (kbData[k].type === 'category') {
-                    html += `<option value="${k}">${kbData[k].icon} ${kbData[k].title}</option>`;
-                }
-            });
-            select.innerHTML = html;
-        }
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const cat = document.getElementById('modal-category-select').value;
+            const idx = parseInt(document.getElementById('edit-item-index').value);
+            const origCat = document.getElementById('edit-category-id').value;
+            const newItem = { q: document.getElementById('modal-question').value, a: document.getElementById('modal-answer').value };
+            if(document.getElementById('modal-link-text').value) newItem.linkText = document.getElementById('modal-link-text').value;
+            if(document.getElementById('modal-link-url').value) newItem.linkUrl = document.getElementById('modal-link-url').value;
 
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            
-            const categoryKey = document.getElementById('modal-category-select').value;
-            const editIndex = parseInt(document.getElementById('edit-item-index').value);
-            const origCategoryKey = document.getElementById('edit-category-id').value;
-
-            const q = document.getElementById('modal-question').value.trim();
-            const a = document.getElementById('modal-answer').value.trim();
-            const linkText = document.getElementById('modal-link-text').value.trim();
-            const linkUrl = document.getElementById('modal-link-url').value.trim();
-
-            const newItem = { q, a };
-            if (linkText) newItem.linkText = linkText;
-            if (linkUrl) newItem.linkUrl = linkUrl;
-
-            if (editIndex >= 0 && origCategoryKey) {
-                if (origCategoryKey !== categoryKey) {
-                    kbData[origCategoryKey].items.splice(editIndex, 1);
-                    kbData[categoryKey].items.push(newItem);
-                } else {
-                    kbData[categoryKey].items[editIndex] = newItem;
-                }
-                showToast("✏️ Pregunta actualizada exitosamente");
+            if (idx >= 0) {
+                if (origCat !== cat) { kbData[origCat].items.splice(idx, 1); kbData[cat].items.push(newItem); } 
+                else { kbData[cat].items[idx] = newItem; }
             } else {
-                if (!kbData[categoryKey].items) kbData[categoryKey].items = [];
-                kbData[categoryKey].items.push(newItem);
-                showToast("➕ Nueva pregunta añadida a la KB");
+                if(!kbData[cat].items) kbData[cat].items = []; kbData[cat].items.push(newItem);
             }
-
-            saveData();
-            closeInputModal();
-            renderNavigation();
-            loadContent(categoryKey);
+            saveData(); closeInputModal(); loadContent(cat); renderNavigation(); showToast("✅ Input guardado");
         }
 
-        function deleteItem(categoryKey, index) {
-            if (confirm("¿Estás seguro de eliminar esta pregunta de la Base de Conocimientos?")) {
-                kbData[categoryKey].items.splice(index, 1);
-                saveData();
-                renderNavigation();
-                loadContent(categoryKey);
-                showToast("🗑️ Pregunta eliminada");
-            }
+        function deleteItem(cat, idx) {
+            if(confirm("¿Eliminar pregunta?")) { kbData[cat].items.splice(idx, 1); saveData(); loadContent(cat); renderNavigation(); showToast("🗑️ Eliminado"); }
         }
 
         function showToast(msg) {
-            const toast = document.getElementById('toast-notification');
-            document.getElementById('toast-message').textContent = msg;
+            const toast = document.getElementById('toast-notification'); document.getElementById('toast-message').textContent = msg;
             toast.classList.remove('translate-y-20', 'opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
         }
 
-        // Inicializar al cargar
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
