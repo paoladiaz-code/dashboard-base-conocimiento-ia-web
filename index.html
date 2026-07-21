@@ -193,10 +193,17 @@
         </div>
         <div id="chat-messages-container" class="flex-grow p-5 overflow-y-auto flex flex-col gap-4 bg-gray-50">
             <div class="flex flex-col gap-1 items-start">
-                <div class="bg-white border border-gray-100 text-tinka-text text-sm p-3.5 rounded-2xl rounded-bl-sm shadow-sm chat-bubble-bot max-w-[85%]">
-                    ¡Hola! 👋 Hazme cualquier pregunta sobre Tinka, Kábala, Gana Diario, tutoriales, puntos de venta o cómo cobrar. Verás cómo te respondo y te sugiero promociones.
+                <div class="bg-white border border-gray-100 text-tinka-text text-sm p-3.5 rounded-2xl rounded-bl-sm shadow-sm chat-bubble-bot max-w-[90%]">
+                    ¡Hola! 👋 Soy tu Asistente Inteligente. Hazme cualquier pregunta o elige una de estas opciones para empezar:
                 </div>
-                <span class="text-[9px] text-gray-400 font-medium ml-1">Bot • Ahora</span>
+                <!-- Menú de opciones iniciales -->
+                <div class="flex flex-wrap gap-1.5 mt-1 w-full max-w-[95%]">
+                    <button onclick="handleChipClick('¿Qué promociones hay hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver promociones</button>
+                    <button onclick="handleChipClick('¿Cómo se juega La Tinka?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎲 ¿Cómo jugar?</button>
+                    <button onclick="handleChipClick('¿Dónde veo los resultados?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">📈 Resultados</button>
+                    <button onclick="handleChipClick('¿Cómo cobro mi premio?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🏆 Cobrar premio</button>
+                </div>
+                <span class="text-[9px] text-gray-400 font-medium ml-1 mt-1">Bot • Ahora</span>
             </div>
         </div>
         <div class="p-4 bg-white border-t border-gray-100 rounded-b-3xl">
@@ -449,6 +456,7 @@
             // 2. Reglas del Sistema (Lógica)
             csvContent += "--- 2. REGLAS Y LÓGICA DEL BOT ---\n";
             csvContent += "Componente,Descripción,Regla en Vivo\n";
+            csvContent += `"Menú Zero-Typing","Sugerencias iniciales (Chips)","AL ABRIR CHAT ENTONCES Mostrar botones rápidos de guía"\n`;
             csvContent += `"Filtro NLP","Intercepta saludos comunes","SI input=='hola' ENTONCES Responder amigable"\n`;
             csvContent += `"Motor RAG","Mapeo semántico de intenciones","Busca coincidencias y deriva a categorías correspondientes"\n`;
             csvContent += `"Cross-Selling","Recomendaciones al final","SI NO es promo ENTONCES sugerir Suscripción o Promo aleatoria"\n`;
@@ -502,7 +510,7 @@
                 let logicSlide = pptx.addSlide();
                 logicSlide.addText("2. REGLAS Y LÓGICA DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
                 logicSlide.addText("Algoritmos Activos en el Chatbot", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
-                logicSlide.addText("• Filtro NLP: Intercepta y responde saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Cross-Selling Proactivo: Recomienda Suscripciones o Promos al finalizar consulta.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 3, fontSize:16, color:"334155", bullet: false });
+                logicSlide.addText("• Menú Zero-Typing: Chips iniciales para guiar al usuario sin escribir.\n• Filtro NLP: Intercepta y responde saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Cross-Selling Proactivo: Recomienda Suscripciones o Promos al finalizar consulta.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 3.5, fontSize:15, color:"334155", bullet: false });
 
                 // Diapositivas: Categorías y Q&A
                 let separatorSlide = pptx.addSlide();
@@ -553,7 +561,7 @@
 
 
         // ==========================================
-        // LÓGICA DEL CHATBOT SIMULADOR (CROSS-SELLING)
+        // LÓGICA DEL CHATBOT SIMULADOR Y NLP
         // ==========================================
         function toggleChat() {
             const panel = document.getElementById('chatbot-panel');
@@ -590,8 +598,16 @@
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
-            appendChatMessage(text, 'user');
             input.value = '';
+            sendMessageToBot(text);
+        }
+
+        function handleChipClick(text) {
+            sendMessageToBot(text);
+        }
+
+        function sendMessageToBot(text) {
+            appendChatMessage(text, 'user');
             
             const container = document.getElementById('chat-messages-container');
             const ind = document.createElement('div');
@@ -630,7 +646,6 @@
                         const isKinelo = lowerText.includes('kinelo') && item.q.includes('Kinelo');
                         const isVideo = (lowerText.includes('videoloter') || lowerText.includes('casino')) && item.q.includes('Videoloterías');
                         
-                        // Nuevos mapeos NLP
                         const isResultados = (lowerText.includes('resultado') || lowerText.includes('sorteo')) && item.q.includes('resultados');
                         const isGanadores = (lowerText.includes('ganador') || lowerText.includes('verdad')) && item.q.includes('ganadores');
                         const isSuscripcion = (lowerText.includes('suscribir') || lowerText.includes('suscrip')) && item.q.includes('Suscripción');
@@ -661,7 +676,7 @@
 
                 if (matchedItem.linkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
 
-                // INTELIGENCIA DE CROSS-SELLING
+                // CROSS-SELLING LOGIC
                 if (!matchedItem.promos && matchedCategoryKey !== 'suscripciones') {
                     let rPromo;
                     if (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras') {
@@ -839,6 +854,17 @@
                     </div>
                     
                     <div class="space-y-4">
+                        <!-- Zero-Typing Menu -->
+                        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
+                            <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🖱️</span> Menú Interactivo (Zero-Typing UI)</h3>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Presenta sugerencias predefinidas al inicio para guiar al usuario y reducir la fricción de escritura.</p>
+                            <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
+                                <span class="font-bold text-blue-600">AL ABRIR CHAT</span><br>
+                                <span class="font-bold text-green-600">MOSTRAR CHIPS:</span> [Promociones] [Cómo jugar] [Resultados] [Cobros]
+                            </div>
+                        </div>
+
                         <!-- NLP -->
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
