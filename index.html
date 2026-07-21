@@ -125,7 +125,7 @@
 
                 <!-- Botón Exportar -->
                 <button onclick="openExportModal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-3 sm:px-4 py-2.5 rounded-full shadow-sm transition-all flex items-center gap-1.5">
-                    <span>📥</span> <span class="hidden sm:inline">Exportar</span>
+                    <span>📥</span> <span class="hidden sm:inline">Exportar TODO</span>
                 </button>
 
                 <!-- Botón Restablecer KB -->
@@ -251,20 +251,22 @@
     <div id="export-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-backdrop p-4">
         <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 w-full max-w-lg overflow-hidden transform transition-transform scale-95" id="export-modal-content">
             <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="text-base font-bold flex items-center gap-2"><span>📥</span> Exportar Base de Conocimientos</h3>
+                <h3 class="text-base font-bold flex items-center gap-2"><span>📥</span> Exportar Documentación</h3>
                 <button onclick="closeExportModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
             </div>
             <div class="p-6">
-                <p class="text-sm text-slate-600 mb-5">Selecciona el formato en el que deseas exportar los datos y la configuración del Workspace:</p>
+                <p class="text-sm text-slate-600 mb-5">Elige el formato para extraer TODO el conocimiento, lógicas, tono y configuración de la herramienta:</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="exportToCSV()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-green-100 bg-green-50 hover:bg-green-100 hover:border-green-300 transition-all group">
+                    <button onclick="exportToCSV()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-green-100 bg-green-50 hover:bg-green-100 hover:border-green-300 transition-all group relative">
+                        <span class="absolute top-2 right-2 text-[9px] bg-green-200 text-green-800 font-bold px-2 py-0.5 rounded-full">Reporte Total</span>
                         <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📊</span>
                         <span class="font-bold text-sm text-green-900">Hoja de Cálculo</span>
                         <span class="text-[10px] text-green-700 mt-1">Formato CSV (Excel)</span>
                     </button>
                     
-                    <button onclick="exportToPPTX()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-orange-100 bg-orange-50 hover:bg-orange-100 hover:border-orange-300 transition-all group">
+                    <button onclick="exportToPPTX()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-orange-100 bg-orange-50 hover:bg-orange-100 hover:border-orange-300 transition-all group relative">
+                        <span class="absolute top-2 right-2 text-[9px] bg-orange-200 text-orange-800 font-bold px-2 py-0.5 rounded-full">Reporte Total</span>
                         <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📽️</span>
                         <span class="font-bold text-sm text-orange-900">Presentación</span>
                         <span class="text-[10px] text-orange-700 mt-1">Formato PPTX (PowerPoint)</span>
@@ -273,13 +275,13 @@
                     <button onclick="exportToPDF()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-red-100 bg-red-50 hover:bg-red-100 hover:border-red-300 transition-all group">
                         <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">📄</span>
                         <span class="font-bold text-sm text-red-900">Documento PDF</span>
-                        <span class="text-[10px] text-red-700 mt-1">Captura de la vista actual</span>
+                        <span class="text-[10px] text-red-700 mt-1">Captura de la pestaña actual</span>
                     </button>
                     
                     <button onclick="exportToPNG()" class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-blue-100 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 transition-all group">
                         <span class="text-4xl mb-2 group-hover:scale-110 transition-transform">🖼️</span>
                         <span class="font-bold text-sm text-blue-900">Imagen PNG</span>
-                        <span class="text-[10px] text-blue-700 mt-1">Screenshot del panel</span>
+                        <span class="text-[10px] text-blue-700 mt-1">Captura de la pestaña actual</span>
                     </button>
                 </div>
             </div>
@@ -289,7 +291,7 @@
 
     <script>
         // ==========================================
-        // DATOS BASE RAG Y TONOS (EXTENDIDOS)
+        // DATOS BASE RAG, LÓGICAS Y TONOS
         // ==========================================
         const defaultKbData = {
             overview: {
@@ -410,7 +412,7 @@
         let currentChart = null;
 
         // ==========================================
-        // FUNCIONES DE EXPORTACIÓN
+        // FUNCIONES DE EXPORTACIÓN (ACTUALIZADAS PARA TODO EL CONTENIDO)
         // ==========================================
         function openExportModal() {
             const modal = document.getElementById('export-modal');
@@ -431,9 +433,29 @@
             closeExportModal();
         }
 
+        // Exportar a CSV (Incluyendo TODO)
         function exportToCSV() {
-            notifyLoading("Generando Hoja de Cálculo...");
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+            notifyLoading("Generando Reporte Total (CSV)...");
+            
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Añadido BOM para acentos en Excel
+            
+            // 1. Resumen y Tono
+            csvContent += "--- 1. CONFIGURACIÓN DEL SISTEMA ---\n";
+            csvContent += `Tono Activo:, "${toneConfigs[currentTone].title}", "${toneConfigs[currentTone].desc}"\n`;
+            let totalInputs = 0;
+            Object.keys(kbData).forEach(k => { if (kbData[k].type === 'category' && kbData[k].items) totalInputs += kbData[k].items.length; });
+            csvContent += `Total de Inputs RAG:, ${totalInputs}\n\n`;
+
+            // 2. Reglas del Sistema (Lógica)
+            csvContent += "--- 2. REGLAS Y LÓGICA DEL BOT ---\n";
+            csvContent += "Componente,Descripción,Regla en Vivo\n";
+            csvContent += `"Filtro NLP","Intercepta saludos comunes","SI input=='hola' ENTONCES Responder amigable"\n`;
+            csvContent += `"Motor RAG","Mapeo semántico de intenciones","Busca coincidencias y deriva a categorías correspondientes"\n`;
+            csvContent += `"Cross-Selling","Recomendaciones al final","SI NO es promo ENTONCES sugerir Suscripción o Promo aleatoria"\n`;
+            csvContent += `"Entrenamiento","Feedback en caso de error (Human-in-the-loop)","SI match==null ENTONCES pedir que enseñen la respuesta al RAG"\n\n`;
+
+            // 3. Base RAG Completa
+            csvContent += "--- 3. BASE DE CONOCIMIENTOS (Q&A) ---\n";
             csvContent += "Categoria,Pregunta (Intent),Respuesta (Base),Link de Accion,URL\n";
             Object.keys(kbData).forEach(key => {
                 if (kbData[key].type === 'category' && kbData[key].items) {
@@ -447,24 +469,46 @@
                     });
                 }
             });
+
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "RAG_LaTinka_Omnicanal.csv");
+            link.setAttribute("download", "RAG_LaTinka_ReporteCompleto.csv");
             document.body.appendChild(link);
             link.click(); document.body.removeChild(link);
             setTimeout(() => showToast("✅ Archivo CSV descargado"), 500);
         }
 
+        // Exportar a PPTX (Incluyendo TODO)
         function exportToPPTX() {
-            notifyLoading("Generando Presentación PPTX...");
+            notifyLoading("Generando Presentación Total (PPTX)...");
             setTimeout(() => {
                 let pptx = new PptxGenJS();
                 pptx.layout = 'LAYOUT_16x9';
+                
+                // Portada
                 let cover = pptx.addSlide();
                 cover.background = { color: "F8FAFC" };
-                cover.addText("Base de Conocimientos RAG Omnicanal", { x:0, y:2, w:"100%", fontSize:40, bold:true, align:"center", color:"00A859" });
-                cover.addText("Ecosistema La Tinka Integral", { x:0, y:3.5, w:"100%", fontSize:20, align:"center", color:"334155" });
+                cover.addText("Base de Conocimientos RAG", { x:0, y:2, w:"100%", fontSize:40, bold:true, align:"center", color:"00A859" });
+                cover.addText("Documentación de Arquitectura e Intents - La Tinka", { x:0, y:3.5, w:"100%", fontSize:20, align:"center", color:"334155" });
+                
+                // Diapositiva: Configuración y Tono
+                let confSlide = pptx.addSlide();
+                confSlide.addText("1. CONFIGURACIÓN DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
+                confSlide.addText("Personalidad y Tono Activo", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
+                confSlide.addText(`${toneConfigs[currentTone].title}\n${toneConfigs[currentTone].desc}`, { x:0.5, y:2.2, w:9, fontSize:18, color:"334155" });
+
+                // Diapositiva: Lógicas y Reglas
+                let logicSlide = pptx.addSlide();
+                logicSlide.addText("2. REGLAS Y LÓGICA DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
+                logicSlide.addText("Algoritmos Activos en el Chatbot", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
+                logicSlide.addText("• Filtro NLP: Intercepta y responde saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Cross-Selling Proactivo: Recomienda Suscripciones o Promos al finalizar consulta.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 3, fontSize:16, color:"334155", bullet: false });
+
+                // Diapositivas: Categorías y Q&A
+                let separatorSlide = pptx.addSlide();
+                separatorSlide.background = { color: "00A859" };
+                separatorSlide.addText("3. BASE DE CONOCIMIENTOS (Q&A)", { x:0, y:2.5, w:"100%", fontSize:32, bold:true, align:"center", color:"FFFFFF" });
+
                 Object.keys(kbData).forEach(key => {
                     if (kbData[key].type === 'category' && kbData[key].items) {
                         kbData[key].items.forEach(item => {
@@ -475,15 +519,17 @@
                         });
                     }
                 });
-                pptx.writeFile({ fileName: "Matriz_RAG_LaTinka.pptx" }).then(() => { showToast("✅ Presentación PPTX descargada"); });
+                
+                pptx.writeFile({ fileName: "Documentacion_RAG_LaTinka.pptx" }).then(() => { showToast("✅ Presentación PPTX descargada"); });
             }, 100);
         }
 
+        // Exportar a PDF (Captura de Vista Actual)
         function exportToPDF() {
-            notifyLoading("Generando Documento PDF...");
+            notifyLoading("Generando PDF de la vista actual...");
             setTimeout(() => {
                 const element = document.getElementById('export-target');
-                const opt = { margin: 0.5, filename: 'Dashboard_LaTinka.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
+                const opt = { margin: 0.5, filename: 'Dashboard_Vista_LaTinka.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
                 const actions = document.querySelectorAll('.action-buttons-export');
                 actions.forEach(el => el.style.display = 'none');
                 html2pdf().set(opt).from(element).save().then(() => {
@@ -493,12 +539,13 @@
             }, 100);
         }
 
+        // Exportar a PNG (Captura de Vista Actual)
         function exportToPNG() {
             notifyLoading("Tomando captura PNG...");
             setTimeout(() => {
                 const element = document.getElementById('export-target');
                 html2canvas(element, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
-                    const link = document.createElement('a'); link.download = 'Captura_RAG_LaTinka.png'; link.href = canvas.toDataURL('image/png'); link.click();
+                    const link = document.createElement('a'); link.download = 'Captura_Vista_LaTinka.png'; link.href = canvas.toDataURL('image/png'); link.click();
                     showToast("✅ Imagen PNG descargada");
                 });
             }, 100);
@@ -615,10 +662,8 @@
                 if (matchedItem.linkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
 
                 // INTELIGENCIA DE CROSS-SELLING
-                // Si la consulta NO era sobre promociones ni suscripciones:
                 if (!matchedItem.promos && matchedCategoryKey !== 'suscripciones') {
                     let rPromo;
-                    // Sugerencia dirigida para preguntas de juegos y compras
                     if (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras') {
                         rPromo = {
                             title: "Suscripción Tinkera 🔁",
@@ -627,7 +672,6 @@
                             linkUrl: "https://blog.latinka.com.pe/tutoriales/como-funciona-la-suscripcion-tinkera/"
                         };
                     } else {
-                        // Promoción genérica aleatoria
                         const allPromos = kbData['promociones']?.items[0]?.promos || [];
                         if (allPromos.length > 0) {
                             rPromo = allPromos[Math.floor(Math.random() * allPromos.length)];
@@ -680,7 +724,6 @@
             if (savedData) { 
                 try { 
                     kbData = JSON.parse(savedData); 
-                    // Parche para migración: añade 'logicas' si el usuario tiene data guardada antigua
                     if (!kbData.logicas) kbData.logicas = defaultKbData.logicas;
                 } catch (e) { 
                     kbData = JSON.parse(JSON.stringify(defaultKbData)); 
@@ -699,7 +742,7 @@
         }
 
         function resetDefaultKB() {
-            if (confirm("¿Restablecer datos originales? Esto recargará los datos de todos los juegos, tutoriales y noticias.")) {
+            if (confirm("¿Restablecer datos originales? Esto recargará los datos de todos los juegos y lógicas.")) {
                 kbData = JSON.parse(JSON.stringify(defaultKbData));
                 saveData(); renderNavigation(); loadContent(currentCategoryKey);
                 showToast("✅ Base restablecida");
@@ -767,7 +810,6 @@
         function initChart() {
             const ctx = document.getElementById('kbChart').getContext('2d');
             if (currentChart) currentChart.destroy();
-            // Expanded colors to accommodate 9 categories
             const labels = []; const dataPoints = []; 
             const colors = ['#00A859', '#FFD100', '#3B82F6', '#8B5CF6', '#E1001A', '#10B981', '#F59E0B', '#06B6D4', '#64748B'];
             
