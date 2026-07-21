@@ -459,7 +459,7 @@
             csvContent += `"Menú Zero-Typing","Sugerencias iniciales (Chips)","AL ABRIR CHAT ENTONCES Mostrar botones rápidos de guía"\n`;
             csvContent += `"Filtro NLP","Intercepta saludos comunes","SI input=='hola' ENTONCES Responder amigable"\n`;
             csvContent += `"Motor RAG","Mapeo semántico de intenciones","Busca coincidencias y deriva a categorías correspondientes"\n`;
-            csvContent += `"Cross-Selling","Recomendaciones al final","SI NO es promo ENTONCES sugerir Suscripción o Promo aleatoria"\n`;
+            csvContent += `"Cross-Selling","Submenú de sugerencias","SI NO es promo ENTONCES ofrecer chips de (Suscripción/Promociones) en lugar de forzar info"\n`;
             csvContent += `"Entrenamiento","Feedback en caso de error (Human-in-the-loop)","SI match==null ENTONCES pedir que enseñen la respuesta al RAG"\n\n`;
 
             // 3. Base RAG Completa
@@ -510,7 +510,7 @@
                 let logicSlide = pptx.addSlide();
                 logicSlide.addText("2. REGLAS Y LÓGICA DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
                 logicSlide.addText("Algoritmos Activos en el Chatbot", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
-                logicSlide.addText("• Menú Zero-Typing: Chips iniciales para guiar al usuario sin escribir.\n• Filtro NLP: Intercepta y responde saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Cross-Selling Proactivo: Recomienda Suscripciones o Promos al finalizar consulta.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 3.5, fontSize:15, color:"334155", bullet: false });
+                logicSlide.addText("• Menú Zero-Typing: Chips iniciales para guiar al usuario sin escribir.\n• Filtro NLP: Stop-words filtradas e intercepta saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Submenú Cross-Selling: Sugiere temas relacionados (Suscripciones/Promos) mediante chips para no saturar al usuario.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 3.5, fontSize:15, color:"334155", bullet: false });
 
                 // Diapositivas: Categorías y Q&A
                 let separatorSlide = pptx.addSlide();
@@ -635,16 +635,20 @@
             let matchedItem = null;
             let matchedCategoryKey = null;
 
+            // Palabras ignoradas para mejorar el motor de búsqueda (Stop words)
+            const stopWords = ['como', 'cómo', 'donde', 'dónde', 'cuando', 'cuándo', 'para', 'cual', 'cuál', 'quien', 'quién', 'sobre', 'este', 'esta', 'estos', 'estas', 'tiene', 'tienen', 'hacer', 'puedo', 'quiero', 'funciona', 'juega', 'juego'];
+
             for (const key in kbData) {
                 if (kbData[key].type === 'category') {
                     for (const item of kbData[key].items) {
-                        const keywords = item.q.toLowerCase().replace(/[¿?()]/g, '').split(' ').filter(w => w.length > 3);
-                        const match = keywords.some(kw => lowerText.includes(kw));
+                        const keywords = item.q.toLowerCase().replace(/[¿?()]/g, '').split(' ').filter(w => w.length > 3 && !stopWords.includes(w));
+                        const match = keywords.length > 0 && keywords.some(kw => lowerText.includes(kw));
                         
                         const isKabala = (lowerText.includes('kabala') || lowerText.includes('kábala') || lowerText.includes('chamba')) && item.q.includes('Kábala');
                         const isGanaDiario = lowerText.includes('gana diario') && item.q.includes('Diario');
                         const isKinelo = lowerText.includes('kinelo') && item.q.includes('Kinelo');
                         const isVideo = (lowerText.includes('videoloter') || lowerText.includes('casino')) && item.q.includes('Videoloterías');
+                        const isTinka = lowerText.includes('tinka') && item.q.includes('La Tinka') && !item.q.includes('Suscripción');
                         
                         const isResultados = (lowerText.includes('resultado') || lowerText.includes('sorteo')) && item.q.includes('resultados');
                         const isGanadores = (lowerText.includes('ganador') || lowerText.includes('verdad')) && item.q.includes('ganadores');
@@ -653,7 +657,7 @@
                         const isNoticias = (lowerText.includes('noticia') || lowerText.includes('novedad')) && item.q.includes('noticias');
                         const isAliado = (lowerText.includes('agente') || lowerText.includes('aliado') || lowerText.includes('punto de venta')) && item.q.includes('Aliado');
                         
-                        if (match || isKabala || isGanaDiario || isKinelo || isVideo || isResultados || isGanadores || isSuscripcion || isTutorial || isNoticias || isAliado || (lowerText.includes('recarg') && item.q.includes('pago'))) {
+                        if (isTinka || match || isKabala || isGanaDiario || isKinelo || isVideo || isResultados || isGanadores || isSuscripcion || isTutorial || isNoticias || isAliado || (lowerText.includes('recarg') && item.q.includes('pago'))) {
                             matchedItem = item; 
                             matchedCategoryKey = key;
                             break;
@@ -676,32 +680,23 @@
 
                 if (matchedItem.linkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
 
-                // CROSS-SELLING LOGIC
+                // INTELIGENCIA DE CROSS-SELLING (SUBMENÚ DE CHIPS)
                 if (!matchedItem.promos && matchedCategoryKey !== 'suscripciones') {
-                    let rPromo;
-                    if (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras') {
-                        rPromo = {
-                            title: "Suscripción Tinkera 🔁",
-                            desc: "¡No te pierdas ningún sorteo! Juega tus números automáticamente por 1, 3, 6 o 12 meses.",
-                            linkText: "Suscribirme ahora",
-                            linkUrl: "https://blog.latinka.com.pe/tutoriales/como-funciona-la-suscripcion-tinkera/"
-                        };
-                    } else {
-                        const allPromos = kbData['promociones']?.items[0]?.promos || [];
-                        if (allPromos.length > 0) {
-                            rPromo = allPromos[Math.floor(Math.random() * allPromos.length)];
-                        }
-                    }
-
-                    if (rPromo) {
-                        const intro = currentTone === 'ludico' ? '💡 ¡Oye! Además, te sugerimos esta opción:' : 'Le sugerimos revisar este beneficio destacado:';
+                    if (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras' || matchedCategoryKey === 'resultados') {
                         botReply += `
-                            <div class="mt-4 pt-3 border-t border-gray-100">
-                                <p class="text-[11px] font-bold text-tinka-green_dark mb-2">${intro}</p>
-                                <div class="bg-yellow-50 rounded-xl p-3 border border-yellow-200 shadow-sm">
-                                    <h4 class="text-tinka-green_dark font-bold text-xs mb-1">${rPromo.title}</h4>
-                                    <p class="text-[10px] text-gray-700 mb-2 leading-tight">${rPromo.desc}</p>
-                                    <a href="${rPromo.linkUrl}" target="_blank" class="text-tinka-red text-[10px] font-bold hover:underline">▶ ${rPromo.linkText}</a>
+                            <div class="mt-3 pt-3 border-t border-gray-100">
+                                <p class="text-[10px] text-gray-500 mb-2 font-medium">Opciones relacionadas sugeridas:</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="handleChipClick('¿Cómo funciona la Suscripción Tinkera?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🔁 Suscripción Tinkera</button>
+                                    <button onclick="handleChipClick('¿Qué promociones tienen vigentes hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver Promociones</button>
+                                </div>
+                            </div>`;
+                    } else {
+                        botReply += `
+                            <div class="mt-3 pt-3 border-t border-gray-100">
+                                <p class="text-[10px] text-gray-500 mb-2 font-medium">También podría interesarte:</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="handleChipClick('¿Qué promociones tienen vigentes hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver Promociones de Hoy</button>
                                 </div>
                             </div>`;
                     }
@@ -869,7 +864,7 @@
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
                             <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🗣️</span> Filtro de Lenguaje Natural (NLP)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">El bot intercepta saludos comunes antes de buscar en la KB para dar una experiencia humana.</p>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">El bot ignora palabras comunes (stop-words) e intercepta saludos antes de buscar en la KB para dar una experiencia humana y evitar falsos positivos.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
                                 <span class="font-bold text-blue-600">SI</span> input == 'hola' | 'buenas' | 'saludos'<br>
                                 <span class="font-bold text-green-600">ENTONCES</span> Responder saludo amigable y ofrecer ayuda.
@@ -892,15 +887,15 @@
                         <!-- Cross Selling -->
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-yellow-400"></div>
-                            <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Cross-Selling Inteligente (Proactivo)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Inyecta recomendaciones comerciales estratégicas al final de cada consulta resuelta.</p>
+                            <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Submenú de Cross-Selling (Sugerencias)</h3>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">En lugar de forzar información, ofrece chips interactivos al final de la respuesta para que el usuario decida si desea explorar suscripciones o promociones.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 mb-2">
-                                <span class="font-bold text-blue-600">SI</span> consulta fue sobre == 'Mecánicas' | 'Compras'<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Ocultar promos y recomendar 'Suscripción Tinkera'
+                                <span class="font-bold text-blue-600">SI</span> consulta fue sobre == 'Mecánicas' | 'Compras' | 'Resultados'<br>
+                                <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🔁 Suscripción] [🎁 Promociones]
                             </div>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
                                 <span class="font-bold text-blue-600">SI NO</span> (es cualquier otra categoría normal)<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Recomendar una Promoción Estrella Aleatoria
+                                <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🎁 Ver Promociones]
                             </div>
                         </div>
 
