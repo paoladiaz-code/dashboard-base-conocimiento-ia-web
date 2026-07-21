@@ -67,18 +67,23 @@
             backdrop-filter: blur(4px);
         }
 
+        /* Mejora visual de la barra de scroll del Chat */
+        #chat-messages-container {
+            scroll-behavior: smooth;
+        }
         #chat-messages-container::-webkit-scrollbar {
-            width: 6px;
+            width: 8px; /* Más ancha para mejor visibilidad */
         }
         #chat-messages-container::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+            background: #f1f5f9; /* Color de fondo sutil permanente */
+            border-radius: 10px;
         }
         #chat-messages-container::-webkit-scrollbar-thumb {
-            background: #ccc; 
+            background: #cbd5e1; /* Gris oscuro para el thumb */
             border-radius: 10px;
         }
         #chat-messages-container::-webkit-scrollbar-thumb:hover {
-            background: #aaa; 
+            background: #94a3b8; 
         }
 
         .chat-bubble-bot { border-bottom-left-radius: 4px; }
@@ -199,7 +204,7 @@
                 <!-- Menú de opciones iniciales -->
                 <div class="flex flex-wrap gap-1.5 mt-1 w-full max-w-[95%]">
                     <button onclick="handleChipClick('¿Qué promociones hay hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver promociones</button>
-                    <!-- CAMBIO: Chip genérico para enrutamiento inteligente -->
+                    <!-- Chip genérico para enrutamiento inteligente -->
                     <button onclick="handleChipClick('¿Cuáles son los juegos y cómo jugar?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎲 ¿Cómo jugar?</button>
                     <button onclick="handleChipClick('¿Dónde veo los resultados?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">📈 Resultados</button>
                     <button onclick="handleChipClick('¿Cómo cobro mi premio?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🏆 Cobrar premio</button>
@@ -341,8 +346,7 @@
                 id: 'mecanicas', icon: '🎲', title: 'Mecánicas y Tutoriales', type: 'category',
                 desc: 'Tutoriales y guías de participación para Tinka, Kábala, Gana Diario, Kinelo y Videoloterías.',
                 items: [
-                    // CAMBIO: Desambiguación agregada y Tutorial limpiado para evitar falsos positivos
-                    { q: "¿Cuáles son los juegos y cómo jugar?", a: "¡Tenemos opciones para todos! Nuestro juego estrella es **La Tinka**, pero también contamos con **Kábala**, **Gana Diario**, **Kinelo** y entretenidas **Videoloterías**. Para conocer la dinámica de cada uno, no es necesario estar registrado, puedes explorar las reglas libremente. ¿De cuál te gustaría aprender hoy?", linkText: "Ver todos los juegos", linkUrl: "https://www.latinka.com.pe/" },
+                    { q: "¿Cuáles son los juegos y cómo jugar?", a: "¡Estás a un paso de ganar en grande! 🌟 Tenemos increíbles opciones para multiplicar tu suerte: desde nuestro Pozo Millonario de **La Tinka**, hasta premios diarios con **Gana Diario**, **Kábala**, sorteos rápidos en **Kinelo** y emocionantes **Videoloterías**. ¡Elige tu juego favorito y descubre cómo ganar hoy mismo!", linkText: "Ver todos los juegos", linkUrl: "https://www.latinka.com.pe/" },
                     { q: "¿Cómo me registro o creo una cuenta? (Tutorial)", a: "¡Es muy fácil! Ve a nuestra web, haz clic en 'Regístrate', ingresa tus datos reales y verifica tu cuenta. ¡Listo! Ya puedes empezar a jugar y ganar.", linkText: "Ver Tutorial de Registro", linkUrl: "https://blog.latinka.com.pe/tutoriales/" },
                     { q: "¿Cómo se juega a La Tinka?", a: "Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00.", linkText: "Jugar Tinka", linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html" },
                     { q: "¿Cómo se juega a Kábala y Chau Chamba?", a: "Elige 6 números del 1 al 40 (cuesta S/ 2.00). Por S/ 1.00 adicional juegas 'Chau Chamba' con los mismos números para ganar S/ 5,000 mensuales por 20 años.", linkText: "Jugar Kábala", linkUrl: "https://www.latinka.com.pe/p/juega-kabala.html" },
@@ -422,7 +426,7 @@
         let currentChart = null;
 
         // ==========================================
-        // FUNCIONES DE EXPORTACIÓN (ACTUALIZADAS PARA TODO EL CONTENIDO)
+        // FUNCIONES DE EXPORTACIÓN
         // ==========================================
         function openExportModal() {
             const modal = document.getElementById('export-modal');
@@ -443,30 +447,26 @@
             closeExportModal();
         }
 
-        // Exportar a CSV (Incluyendo TODO)
         function exportToCSV() {
             notifyLoading("Generando Reporte Total (CSV)...");
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Añadido BOM para acentos en Excel
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
             
-            // 1. Resumen y Tono
             csvContent += "--- 1. CONFIGURACIÓN DEL SISTEMA ---\n";
             csvContent += `Tono Activo:, "${toneConfigs[currentTone].title}", "${toneConfigs[currentTone].desc}"\n`;
             let totalInputs = 0;
             Object.keys(kbData).forEach(k => { if (kbData[k].type === 'category' && kbData[k].items) totalInputs += kbData[k].items.length; });
             csvContent += `Total de Inputs RAG:, ${totalInputs}\n\n`;
 
-            // 2. Reglas del Sistema (Lógica)
             csvContent += "--- 2. REGLAS Y LÓGICA DEL BOT ---\n";
             csvContent += "Componente,Descripción,Regla en Vivo\n";
             csvContent += `"Menú Zero-Typing","Sugerencias iniciales (Chips)","AL ABRIR CHAT ENTONCES Mostrar botones rápidos de guía"\n`;
-            csvContent += `"Enrutamiento de Juegos","Desambiguación de 'Cómo jugar'","SI input genérico ENTONCES mostrar submenú de juegos sin forzar registro"\n`;
+            csvContent += `"Enrutamiento de Juegos","Desambiguación de 'Cómo jugar'","SI input genérico ENTONCES mostrar submenú de juegos"\n`;
             csvContent += `"Filtro NLP","Intercepta saludos comunes","SI input=='hola' ENTONCES Responder amigable"\n`;
             csvContent += `"Motor RAG","Mapeo semántico de intenciones","Busca coincidencias y deriva a categorías correspondientes"\n`;
-            csvContent += `"Cross-Selling","Submenú de sugerencias","SI NO es promo ENTONCES ofrecer chips de (Suscripción/Promociones) en lugar de forzar info"\n`;
-            csvContent += `"Entrenamiento","Feedback en caso de error (Human-in-the-loop)","SI match==null ENTONCES pedir que enseñen la respuesta al RAG"\n\n`;
+            csvContent += `"Cross-Selling","Submenú de sugerencias","SI juego es Tinka ENTONCES ofrecer (Suscripción/Promos) SINO ofrecer solo (Promos)"\n`;
+            csvContent += `"Entrenamiento","Feedback en caso de error","SI match==null ENTONCES pedir que enseñen la respuesta al RAG"\n\n`;
 
-            // 3. Base RAG Completa
             csvContent += "--- 3. BASE DE CONOCIMIENTOS (Q&A) ---\n";
             csvContent += "Categoria,Pregunta (Intent),Respuesta (Base),Link de Accion,URL\n";
             Object.keys(kbData).forEach(key => {
@@ -491,32 +491,27 @@
             setTimeout(() => showToast("✅ Archivo CSV descargado"), 500);
         }
 
-        // Exportar a PPTX (Incluyendo TODO)
         function exportToPPTX() {
             notifyLoading("Generando Presentación Total (PPTX)...");
             setTimeout(() => {
                 let pptx = new PptxGenJS();
                 pptx.layout = 'LAYOUT_16x9';
                 
-                // Portada
                 let cover = pptx.addSlide();
                 cover.background = { color: "F8FAFC" };
                 cover.addText("Base de Conocimientos RAG", { x:0, y:2, w:"100%", fontSize:40, bold:true, align:"center", color:"00A859" });
                 cover.addText("Documentación de Arquitectura e Intents - La Tinka", { x:0, y:3.5, w:"100%", fontSize:20, align:"center", color:"334155" });
                 
-                // Diapositiva: Configuración y Tono
                 let confSlide = pptx.addSlide();
                 confSlide.addText("1. CONFIGURACIÓN DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
                 confSlide.addText("Personalidad y Tono Activo", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
                 confSlide.addText(`${toneConfigs[currentTone].title}\n${toneConfigs[currentTone].desc}`, { x:0.5, y:2.2, w:9, fontSize:18, color:"334155" });
 
-                // Diapositiva: Lógicas y Reglas
                 let logicSlide = pptx.addSlide();
                 logicSlide.addText("2. REGLAS Y LÓGICA DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
                 logicSlide.addText("Algoritmos Activos en el Chatbot", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
-                logicSlide.addText("• Menú Zero-Typing: Chips iniciales para guiar al usuario sin escribir.\n• Enrutamiento de Juegos: Desambigua 'cómo jugar' mostrando opciones (Tinka, Kábala, etc.) sin forzar registro.\n• Filtro NLP: Stop-words filtradas e intercepta saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave hacia intenciones correctas.\n• Submenú Cross-Selling: Sugiere temas relacionados (Suscripciones/Promos) mediante chips.\n• Human-in-the-loop: Bucle de entrenamiento en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 4, fontSize:13, color:"334155", bullet: false });
+                logicSlide.addText("• Menú Zero-Typing: Chips iniciales para guiar al usuario sin escribir.\n• Enrutamiento de Juegos: Desambigua 'cómo jugar' mostrando opciones (Tinka, Kábala, etc).\n• Filtro NLP: Stop-words filtradas e intercepta saludos comunes.\n• Motor RAG: Mapeo semántico de palabras clave.\n• Submenú Cross-Selling: Sugiere Suscripción SOLO si el contexto es La Tinka, de lo contrario sugiere Promociones.\n• Human-in-the-loop: Bucle de entrenamiento activo en caso de fallo (Fallback).", { x:0.5, y:2.2, w:9, h: 4, fontSize:13, color:"334155", bullet: false });
 
-                // Diapositivas: Categorías y Q&A
                 let separatorSlide = pptx.addSlide();
                 separatorSlide.background = { color: "00A859" };
                 separatorSlide.addText("3. BASE DE CONOCIMIENTOS (Q&A)", { x:0, y:2.5, w:"100%", fontSize:32, bold:true, align:"center", color:"FFFFFF" });
@@ -536,7 +531,6 @@
             }, 100);
         }
 
-        // Exportar a PDF (Captura de Vista Actual)
         function exportToPDF() {
             notifyLoading("Generando PDF de la vista actual...");
             setTimeout(() => {
@@ -551,7 +545,6 @@
             }, 100);
         }
 
-        // Exportar a PNG (Captura de Vista Actual)
         function exportToPNG() {
             notifyLoading("Tomando captura PNG...");
             setTimeout(() => {
@@ -594,7 +587,11 @@
             
             container.appendChild(wrap);
             setTimeout(() => { wrap.classList.remove('opacity-0', 'translate-y-2'); }, 10);
-            container.scrollTop = container.scrollHeight;
+            
+            // Auto scroll
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 50);
         }
 
         function handleChatSubmit(event) {
@@ -639,10 +636,10 @@
             let matchedItem = null;
             let matchedCategoryKey = null;
 
-            // Palabras ignoradas para mejorar el motor de búsqueda y evitar Falsos Positivos
+            // Palabras ignoradas para evitar Falsos Positivos
             const stopWords = ['como', 'cómo', 'donde', 'dónde', 'cuando', 'cuándo', 'para', 'cual', 'cuál', 'quien', 'quién', 'sobre', 'este', 'esta', 'estos', 'estas', 'tiene', 'tienen', 'hacer', 'puedo', 'quiero', 'funciona', 'juega', 'juego'];
 
-            // 1. Detección Inteligente de la intención Genérica "¿Cómo jugar?"
+            // 1. Detección de intención Genérica "¿Cómo jugar?"
             const isGenericPlay = (lowerText.includes('cómo jugar') || lowerText.includes('como jugar') || lowerText.includes('juegos tienen') || lowerText.includes('cuales son los juegos'));
 
             for (const key in kbData) {
@@ -656,7 +653,7 @@
                         const isGanaDiario = lowerText.includes('gana diario') && item.q.includes('Diario');
                         const isKinelo = lowerText.includes('kinelo') && item.q.includes('Kinelo');
                         const isVideo = (lowerText.includes('videoloter') || lowerText.includes('casino')) && item.q.includes('Videoloterías');
-                        const isTinka = lowerText.includes('tinka') && item.q.includes('a La Tinka'); // Especificar para evitar que Tinka salte en "Registro"
+                        const isTinka = lowerText.includes('tinka') && item.q.includes('a La Tinka') && !item.q.includes('Suscripción'); 
                         const isRegistro = (lowerText.includes('registr') || lowerText.includes('cuenta')) && item.q.includes('registro');
                         
                         const isResultados = (lowerText.includes('resultado') || lowerText.includes('sorteo')) && item.q.includes('resultados');
@@ -691,7 +688,7 @@
 
                 // INTELIGENCIA DE CROSS-SELLING Y ENRUTAMIENTO (SUBMENÚ DE CHIPS)
                 if (matchedItem.q.includes('juegos y cómo jugar')) {
-                    // Muestra las opciones de los juegos de manera interactiva sin forzar el registro
+                    // Muestra las opciones de los juegos de manera interactiva
                     botReply += `
                         <div class="mt-3 pt-3 border-t border-gray-100">
                             <p class="text-[10px] text-gray-500 mb-2 font-medium">Elige un juego para ver las reglas:</p>
@@ -703,7 +700,11 @@
                             </div>
                         </div>`;
                 } else if (!matchedItem.promos && matchedCategoryKey !== 'suscripciones') {
-                    if (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras' || matchedCategoryKey === 'resultados') {
+                    
+                    // REGLA: "Suscripción" solo aplica para Tinka
+                    const isTinkaContext = (matchedItem.q.includes('La Tinka') || lowerText.includes('tinka')) && !matchedItem.q.includes('Kábala') && !matchedItem.q.includes('Kinelo') && !matchedItem.q.includes('Diario') && !matchedItem.q.includes('Videoloterías');
+
+                    if (isTinkaContext && (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras' || matchedCategoryKey === 'resultados')) {
                         botReply += `
                             <div class="mt-3 pt-3 border-t border-gray-100">
                                 <p class="text-[10px] text-gray-500 mb-2 font-medium">Opciones relacionadas sugeridas:</p>
@@ -713,6 +714,7 @@
                                 </div>
                             </div>`;
                     } else {
+                        // Para cualquier otro juego (Kabala, Gana Diario, etc), solo ofrecer Promociones
                         botReply += `
                             <div class="mt-3 pt-3 border-t border-gray-100">
                                 <p class="text-[10px] text-gray-500 mb-2 font-medium">También podría interesarte:</p>
@@ -885,10 +887,10 @@
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-orange-500"></div>
                             <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🔀</span> Enrutamiento de Juegos (Desambiguación)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Prioriza enseñar los juegos y sus reglas mediante opciones dinámicas sin obligar al usuario a registrarse prematuramente.</p>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Prioriza enseñar los juegos y sus reglas mediante opciones dinámicas sin obligar al usuario a registrarse prematuramente ni aburrirlo con explicaciones genéricas.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
                                 <span class="font-bold text-blue-600">SI</span> input == 'cómo jugar' genérico<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Mostrar menú de desambiguación con Chips (🔴 Tinka, 🟣 Kábala, 🔵 Gana Diario)
+                                <span class="font-bold text-green-600">ENTONCES</span> Mostrar texto vendedor y menú de desambiguación con Chips (🔴 Tinka, 🟣 Kábala, 🔵 Gana Diario, 🟢 Kinelo)
                             </div>
                         </div>
 
@@ -920,13 +922,13 @@
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-yellow-400"></div>
                             <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Submenú de Cross-Selling (Sugerencias)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">En lugar de forzar grandes bloques de texto publicitario, ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar Suscripciones o Promociones.</p>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar Suscripciones o Promociones.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 mb-2">
-                                <span class="font-bold text-blue-600">SI</span> consulta fue resuelta sobre == 'Mecánicas' | 'Compras' | 'Resultados'<br>
+                                <span class="font-bold text-blue-600">SI</span> consulta resuelta fue == 'La Tinka'<br>
                                 <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🔁 Suscripción] [🎁 Promociones]
                             </div>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
-                                <span class="font-bold text-blue-600">SI NO</span> (es cualquier otra categoría normal)<br>
+                                <span class="font-bold text-blue-600">SI NO</span> (es cualquier otro juego o normal)<br>
                                 <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🎁 Ver Promociones]
                             </div>
                         </div>
