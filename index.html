@@ -79,11 +79,17 @@
             border-radius: 10px;
         }
         #chat-messages-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1; /* Gris oscuro para el thumb */
+            background: #00A859; /* Verde Tinka */
             border-radius: 10px;
         }
         #chat-messages-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
+            background: #007A40; 
+        }
+
+        /* Soporte Firefox */
+        #chat-messages-container {
+            scrollbar-width: thin;
+            scrollbar-color: #00A859 #f1f5f9;
         }
 
         .chat-bubble-bot { border-bottom-left-radius: 4px; }
@@ -203,8 +209,8 @@
                 </div>
                 <!-- Menú de opciones iniciales -->
                 <div class="flex flex-wrap gap-1.5 mt-1 w-full max-w-[95%]">
-                    <button onclick="handleChipClick('Quiero jugar Tinka')" class="bg-white text-tinka-red border border-tinka-red text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-red hover:text-white transition-colors shadow-sm cursor-pointer">🔴 Jugar Tinka</button>
-                    <button onclick="handleChipClick('Quiero ver todos los juegos')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎮 Ver todos los juegos</button>
+                    <button onclick="handleChipClick('Quiero jugar Tinka')" class="bg-white text-tinka-red border border-tinka-red text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-red hover:text-white transition-colors shadow-sm cursor-pointer">🔴 Quiero jugar Tinka</button>
+                    <button onclick="handleChipClick('Quiero ver todos los juegos')" class="bg-white text-purple-600 border border-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-purple-600 hover:text-white transition-colors shadow-sm cursor-pointer">🎮 Ver todos los juegos</button>
                     <button onclick="handleChipClick('¿Dónde veo los resultados?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">📈 Resultados</button>
                     <button onclick="handleChipClick('¿Qué promociones hay hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Promociones</button>
                 </div>
@@ -303,6 +309,11 @@
 
     <script>
         // ==========================================
+        // CONTROL DE VERSIONES (Fuerza actualización de caché)
+        // ==========================================
+        const KB_VERSION = "1.9"; // Aumenta la versión para limpiar la caché del usuario
+
+        // ==========================================
         // DATOS BASE RAG, LÓGICAS Y TONOS
         // ==========================================
         const defaultKbData = {
@@ -353,8 +364,8 @@
                 id: 'mecanicas', icon: '🎲', title: 'Mecánicas de Juego', type: 'category',
                 desc: 'Guías de participación para Tinka, Kábala, Gana Diario, Kinelo y Videoloterías.',
                 items: [
+                    { q: "Quiero ver todos los juegos", a: "¡Tenemos increíbles opciones para multiplicar tu suerte: desde nuestro Pozo Millonario de **La Tinka**, hasta premios diarios con **Gana Diario**, **Kábala**, sorteos rápidos en **Kinelo** y emocionantes **Videoloterías**. ¡Elige tu juego favorito para conocer las reglas!", linkText: "Explorar portal de juegos", linkUrl: "https://www.latinka.com.pe/" },
                     { q: "Quiero jugar Tinka", a: "¡Excelente elección! La Tinka es nuestro juego estrella con pozos millonarios. Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00. (Sorteos: Miércoles y Domingos).", linkText: "Jugar Tinka Ahora", linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html" },
-                    { q: "Quiero ver todos los juegos", a: "¡Tenemos opciones increíbles para que multipliques tu suerte! Explora nuestras loterías y elige tu favorita. No necesitas registrarte para aprender las reglas de cada una.", linkText: "Explorar portal de juegos", linkUrl: "https://www.latinka.com.pe/" },
                     { q: "¿Cómo se juega a La Tinka?", a: "Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00. (Sorteos: Miércoles y Domingos).", linkText: "Jugar Tinka", linkUrl: "https://www.latinka.com.pe/p/juega-tinka.html" },
                     { q: "¿Cómo se juega a Kábala y Chau Chamba?", a: "Elige 6 números del 1 al 40 (cuesta S/ 2.00). Por S/ 1.00 adicional juegas 'Chau Chamba' con los mismos números para ganar S/ 5,000 mensuales por 20 años. (Sorteos: Martes, Jueves, Sábados).", linkText: "Jugar Kábala", linkUrl: "https://www.latinka.com.pe/p/juega-kabala.html" },
                     { q: "¿Cómo funciona Gana Diario?", a: "Gana Diario es fácil: elige 5 números del 1 al 35. El costo es S/ 2.00 y puedes ganar S/ 200,000 todos los días.", linkText: "Jugar Gana Diario", linkUrl: "https://www.latinka.com.pe/p/juega-ganadiario.html" },
@@ -366,8 +377,9 @@
                 id: 'resultados', icon: '📈', title: 'Resultados y Ganadores', type: 'category',
                 desc: 'Consulta números ganadores, próximos pozos e historias de éxito reales.',
                 items: [
-                    { q: "¿Cuáles fueron los números ganadores o los resultados del sorteo?", a: "Para ver los resultados de los sorteos, la cantidad de ganadores y el video en vivo, ingresa a nuestra sección de Resultados. Si buscas una fecha específica, puedes usar nuestro Blog.", linkText: "Web Oficial: Ver últimos Resultados", linkUrl: "https://www.latinka.com.pe/p/resultados.html" },
-                    { q: "¿Es verdad que hay ganadores? ¿Dónde veo las historias de quiénes ganaron?", a: "¡Claro que sí! Contamos con cientos de historias de peruanos cuyas vidas cambiaron gracias a nuestros pozos y premios. Puedes leer sus historias reales y ver las entregas de premios en nuestro blog oficial.", linkText: "Conoce a nuestros ganadores reales", linkUrl: "https://blog.latinka.com.pe/ganadores/" }
+                    { q: "¿Dónde veo los resultados de fechas pasadas?", a: "Para ver los números exactos y la cantidad de ganadores de fechas anteriores, ingresa a nuestro Blog de Resultados. Ahí publicamos cada sorteo con la fecha en el título del post para que lo encuentres fácilmente.", linkText: "Blog: Resultados por fecha", linkUrl: "https://blog.latinka.com.pe/resultados/" },
+                    { q: "¿Dónde veo los últimos resultados de los sorteos?", a: "Puedes ver los últimos números ganadores de todos nuestros sorteos apenas finalizan directamente en la web oficial. También publicamos el video del sorteo en vivo.", linkText: "Web Oficial: Últimos Resultados", linkUrl: "https://www.latinka.com.pe/p/resultados.html" },
+                    { q: "¿Es verdad que hay ganadores? ¿Dónde veo las historias de quiénes ganaron?", a: "¡Claro que sí! Contamos con cientos de historias de peruanos cuyas vidas cambiaron gracias a nuestros pozos y premios. Puedes leer sus historias reales y ver las entregas de premios en nuestro blog oficial.", linkText: "Conoce a nuestros ganadores", linkUrl: "https://blog.latinka.com.pe/ganadores/" }
                 ]
             },
             gestion_cuenta: {
@@ -379,17 +391,19 @@
                 ]
             },
             compras: {
-                id: 'compras', icon: '💳', title: 'Compras y Billetera', type: 'category',
-                desc: 'Información sobre recargas y métodos de pago aceptados.',
+                id: 'compras', icon: '💳', title: 'Compras y Canales', type: 'category',
+                desc: 'Información sobre recargas, métodos de pago aceptados y canales de venta (WhatsApp, Express).',
                 items: [
-                    { q: "¿Cómo recargo mi saldo? (Tarjetas, Yape, Plin)", a: "Recargar tu saldo es rápido y seguro. Entra a tu cuenta, elige la opción 'Recargar Saldo' y selecciona tu método favorito: Tarjetas (Visa/Mastercard), billeteras digitales (Yape, Plin), PagoEfectivo o tu banca móvil.", linkText: "Ver tutoriales de recarga", linkUrl: "https://blog.latinka.com.pe/tutoriales/" }
+                    { q: "¿Qué es Tinka Express y cómo funciona?", a: "Tinka Express es un método rápido que te permite participar sin registrarte ni recargar saldo previo. Solo sigue estos 3 pasos: 1) Ingresa a nuestra web oficial, 2) Selecciona tus 6 números, y 3) Paga al instante directamente con Yape o Plin.", linkText: "Jugar Tinka Express", linkUrl: "https://www.latinka.com.pe/" },
+                    { q: "¿Cómo recargo mi saldo? (Tarjetas, Yape, Plin)", a: "Recargar tu saldo es rápido y seguro. Entra a tu cuenta, elige la opción 'Recargar Saldo' y selecciona tu método favorito: Tarjetas (Visa/Mastercard), billeteras digitales (Yape, Plin), PagoEfectivo o tu banca móvil.", linkText: "Ver tutoriales de recarga", linkUrl: "https://blog.latinka.com.pe/tutoriales/" },
+                    { q: "¿Puedo comprar o jugar por WhatsApp?", a: "¡Sí! Puedes comprar tu Tinka al azar directamente desde tu celular. Haz clic en el botón de abajo para abrir nuestro WhatsApp oficial y nuestro sistema te guiará paso a paso para realizar tu jugada de manera rápida y segura.", linkText: "💬 Abrir Chat de WhatsApp", linkUrl: "https://wa.me/51912448677?text=Hola%2C%20quiero%20comprar%20mi%20Tinka%20por%20WhatsApp", footerLinkText: "📖 Ver Tutorial paso a paso", footerLinkUrl: "https://blog.latinka.com.pe/tutorial/como-comprar-tu-tinka-al-azar-por-whatsapp-%F0%9F%93%B2%F0%9F%8D%80/" }
                 ]
             },
             premios: {
                 id: 'premios', icon: '🏆', title: 'Cobro de Premios', type: 'category',
                 desc: 'Flujos para gestionar el cobro seguro.',
                 items: [
-                    { q: "¿Cómo cobro mi premio si gané?", a: "¡Felicidades! Los premios menores (Bono Efectivo) se abonan automáticamente en tu billetera virtual para que sigas jugando o lo retires. Para premios mayores a S/ 5,000, requerimos validación de identidad (KYC) y el cobro se gestiona de forma segura a tu cuenta bancaria.", linkText: "Sección de Cobro de Premios", linkUrl: "https://www.latinka.com.pe/p/cobro-premios.html" }
+                    { q: "¿Cómo cobro mi premio si gané?", a: "¡Felicidades! Los premios menores (Bono Efectivo) se abonan automáticamente en tu billetera virtual en la web. Los premios mayores requieren validación de identidad y se gestionan de forma segura a tu cuenta bancaria.", linkText: "Ir a Cobro de Premios", linkUrl: "https://www.latinka.com.pe/p/cobro-premios.html" }
                 ]
             },
             noticias: {
@@ -428,7 +442,7 @@
                 transformText: (text) => text.replace(/¡/g, '').replace(/!/g, '.').replace(/rapidísimo/gi, 'sencillo').replace(/Felicidades/gi, 'Estimado usuario')
             },
             directo: {
-                title: '⚡ Tono Directo', desc: 'Datos concisos y resúmenes directos.',
+                title: '⚡ Tono Directo', desc: 'Datos concisos y resúres directos.',
                 badgeText: 'Tono: Directo', badgeClass: 'bg-blue-100 text-blue-800 border-blue-300',
                 transformText: (text) => text.replace(/¡Siempre tenemos beneficios para potenciar tu suerte!/gi, 'Promociones activas:')
             }
@@ -440,7 +454,7 @@
         let currentChart = null;
 
         // ==========================================
-        // FUNCIONES DE EXPORTACIÓN (ACTUALIZADAS PARA TODO EL CONTENIDO)
+        // FUNCIONES DE EXPORTACIÓN
         // ==========================================
         function openExportModal() {
             const modal = document.getElementById('export-modal');
@@ -461,7 +475,6 @@
             closeExportModal();
         }
 
-        // Exportar a CSV (Incluyendo TODO)
         function exportToCSV() {
             notifyLoading("Generando Reporte Total (CSV)...");
             
@@ -477,9 +490,9 @@
             csvContent += "Componente,Descripción,Regla en Vivo\n";
             csvContent += `"Menú Zero-Typing","Sugerencias iniciales (Chips)","AL ABRIR CHAT ENTONCES Mostrar botones rápidos de guía"\n`;
             csvContent += `"Enrutamiento de Juegos","Desambiguación interactiva","SI input=='todos los juegos' ENTONCES mostrar submenú de juegos digitales"\n`;
-            csvContent += `"Resolución de Resultados","Búsqueda de números","SI pide resultados ENTONCES derivar al blog o al dominio oficial mediante submenús"\n`;
-            csvContent += `"Filtro NLP Estricto","Mejora coincidencia de juegos","Exige 'gana diario' o 'ganadiario' para evitar falso positivo con 'ganadores'"\n`;
-            csvContent += `"Cross-Selling","Submenú de sugerencias","SI juego es Tinka ENTONCES ofrecer (Suscripción/Promos) SINO ofrecer solo (Promos)"\n`;
+            csvContent += `"Resolución de Resultados","Búsqueda por fechas y dominio","SI pide resultados ENTONCES derivar al blog (fechas) o al dominio oficial"\n`;
+            csvContent += `"Filtro NLP Estricto","Intercepta intenciones prioritarias","Prioridad Absoluta para: Resultados, Express, WhatsApp antes que nombres de juego"\n`;
+            csvContent += `"Cross-Selling","Submenú de sugerencias","SI juego es Tinka ENTONCES ofrecer (Suscripción/Express/Promos) SINO ofrecer solo (Promos)"\n`;
             csvContent += `"Entrenamiento","Feedback en caso de error","SI match==null ENTONCES pedir que enseñen la respuesta al RAG"\n\n`;
 
             csvContent += "--- 3. BASE DE CONOCIMIENTOS (Q&A) ---\n";
@@ -506,7 +519,6 @@
             setTimeout(() => showToast("✅ Archivo CSV descargado"), 500);
         }
 
-        // Exportar a PPTX (Incluyendo TODO)
         function exportToPPTX() {
             notifyLoading("Generando Presentación Total (PPTX)...");
             setTimeout(() => {
@@ -526,7 +538,7 @@
                 let logicSlide = pptx.addSlide();
                 logicSlide.addText("2. REGLAS Y LÓGICA DEL SISTEMA", { x:0.5, y:0.5, fontSize:12, bold:true, color:"64748B" });
                 logicSlide.addText("Algoritmos Activos en el Chatbot", { x:0.5, y:1.2, w:9, fontSize:24, bold:true, color:"007A40" });
-                logicSlide.addText("• Enrutamiento de Juegos y Resultados: Desambigua opciones mostrando submenús. Deriva resultados al blog (fechas en título) o web oficial.\n• Filtro NLP Estricto: Exige coincidencias exactas para 'Gana Diario' para evitar falsos positivos con 'ganadores'.\n• Motor RAG: Mapeo semántico de palabras clave.\n• Submenú Cross-Selling: Sugiere Suscripción SOLO si el contexto es La Tinka, de lo contrario sugiere Promos.\n• Human-in-the-loop: Entrenamiento activo en caso de fallo.", { x:0.5, y:2.2, w:9, h: 4, fontSize:13, color:"334155", bullet: false });
+                logicSlide.addText("• Enrutamiento Inteligente: Desambigua opciones mostrando submenús (Juegos, Resultados).\n• Filtro NLP Estricto (Fase 1): Prioridad absoluta para Express, WhatsApp y Resultados antes de evaluar coincidencias vagas.\n• Motor RAG: Mapeo semántico de palabras clave.\n• Submenú Cross-Selling: Sugiere Suscripción y Express (Sin Registro) SOLO para La Tinka.\n• Human-in-the-loop: Entrenamiento activo en caso de fallo.", { x:0.5, y:2.2, w:9, h: 4.5, fontSize:12, color:"334155", bullet: false });
 
                 let separatorSlide = pptx.addSlide();
                 separatorSlide.background = { color: "00A859" };
@@ -581,13 +593,13 @@
             const fab = document.getElementById('chatbot-fab');
             if (panel.classList.contains('hidden')) {
                 panel.classList.remove('hidden');
-                panel.classList.add('flex'); // <-- SOLUCIÓN: Activa la caja flexible para el scroll
+                panel.classList.add('flex'); // Activa la caja flexible para el scroll
                 fab.innerHTML = '✕';
                 fab.classList.replace('text-3xl', 'text-2xl');
                 document.getElementById('chat-input').focus();
             } else {
                 panel.classList.add('hidden');
-                panel.classList.remove('flex'); // <-- SOLUCIÓN: La desactiva al cerrar
+                panel.classList.remove('flex'); // La desactiva al cerrar
                 fab.innerHTML = '💬';
                 fab.classList.replace('text-2xl', 'text-3xl');
             }
@@ -607,9 +619,7 @@
             setTimeout(() => { wrap.classList.remove('opacity-0', 'translate-y-2'); }, 10);
             
             // Auto scroll
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 50);
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
         }
 
         function handleChatSubmit(event) {
@@ -645,81 +655,98 @@
             if (ind) ind.remove();
             const lowerText = userText.toLowerCase();
             
+            // 1. Mensaje de bienvenida
             const greetings = ['hola', 'holas', 'buenas'];
             if (greetings.some(g => lowerText === g || lowerText.startsWith(g + ' '))) {
-                appendChatMessage(toneConfigs[currentTone].transformText("¡Hola! 👋 Soy tu Asistente Inteligente. Hazme cualquier pregunta o elige una de estas opciones para empezar:"), 'bot', false);
+                appendChatMessage(toneConfigs[currentTone].transformText("¡Hola! 👋 Soy tu Asistente Inteligente. Hazme cualquier pregunta o elige una de estas opciones para empezar:\n\n<div class=\"flex flex-wrap gap-1.5 mt-2\">\n<button onclick=\"handleChipClick('Quiero jugar Tinka')\" class=\"bg-white text-tinka-red border border-tinka-red text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-red hover:text-white transition-colors shadow-sm cursor-pointer\">🔴 Quiero jugar Tinka</button>\n<button onclick=\"handleChipClick('Quiero ver todos los juegos')\" class=\"bg-white text-purple-600 border border-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-purple-600 hover:text-white transition-colors shadow-sm cursor-pointer\">🎮 Ver todos los juegos</button>\n<button onclick=\"handleChipClick('¿Dónde veo los resultados?')\" class=\"bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer\">📈 Resultados</button>\n<button onclick=\"handleChipClick('¿Qué promociones hay hoy?')\" class=\"bg-white text-tinka-green_dark border border-tinka-green text-[11px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer\">🎁 Promociones</button>\n</div>"), 'bot', true);
                 return;
             }
 
             let matchedItem = null;
             let matchedCategoryKey = null;
 
-            // Palabras ignoradas
-            const stopWords = ['como', 'cómo', 'donde', 'dónde', 'cuando', 'cuándo', 'para', 'cual', 'cuál', 'quien', 'quién', 'sobre', 'este', 'esta', 'estos', 'estas', 'tiene', 'tienen', 'hacer', 'puedo', 'quiero', 'funciona', 'juega', 'juego', 'fueron', 'fueron los', 'fue el'];
-
-            // Detección estricta y priorizada para evitar Falsos Positivos
-            const isResultadosGeneric = (lowerText.includes('resultado') || lowerText.includes('sorteo') || lowerText.includes('qué salió') || lowerText.includes('que salio') || lowerText.includes('qué número salió') || lowerText.includes('que numero salio') || lowerText.includes('qué números salieron') || lowerText.includes('que numeros salieron') || lowerText.includes('números ganadores') || lowerText.includes('numeros ganadores'));
-            const isGanadores = (lowerText.includes('quiénes ganaron') || lowerText.includes('quienes ganaron') || lowerText.includes('quien gano') || lowerText.includes('ganador') || lowerText.includes('verdad')) && !isResultadosGeneric;
-
-            // Si es resultados genéricos, no evaluaremos otros juegos todavía.
-            const isGanaDiario = !isResultadosGeneric && !isGanadores && (lowerText.includes('gana diario') || lowerText.includes('ganadiario'));
-            const isTinka = !isResultadosGeneric && !isGanadores && lowerText.includes('tinka') && !lowerText.includes('suscrip');
-            const isKabala = !isResultadosGeneric && !isGanadores && (lowerText.includes('kabala') || lowerText.includes('kábala') || lowerText.includes('chamba'));
-            const isKinelo = !isResultadosGeneric && !isGanadores && lowerText.includes('kinelo');
+            // 2. Definición Estricta de Intenciones (Banderas)
+            const isExpress = lowerText.includes('express') || lowerText.includes('sin registro');
+            const isWhatsapp = lowerText.includes('whatsapp') || lowerText.includes('wsp') || lowerText.includes('wasap');
+            
+            // Intenciones de Resultados
+            const hasResultWord = lowerText.includes('resultado') || lowerText.includes('ganadores') || lowerText.includes('salieron') || lowerText.includes('qué salió') || lowerText.includes('que salio') || lowerText.includes('ganaron');
+            const hasDateWord = lowerText.includes('domingo') || lowerText.includes('ayer') || lowerText.includes('pasado') || lowerText.includes('ultimo') || lowerText.includes('último') || lowerText.includes('fecha');
+            const isResultadosDomingo = hasResultWord && hasDateWord;
+            const isGanadoresHistorias = lowerText.includes('quiénes ganaron') || lowerText.includes('quienes ganaron') || lowerText.includes('verdad') || lowerText.includes('historias');
+            const isResultadosStrict = hasResultWord && !isGanadoresHistorias; // Evita confundir resultados con historias de ganadores
+            
+            // Juegos - Totalmente protegidos para evitar que crucen con Resultados o Express
+            const isGanaDiario = !hasResultWord && (lowerText.includes('gana diario') || lowerText.includes('ganadiario'));
+            const isTinka = !hasResultWord && lowerText.includes('tinka') && !lowerText.includes('suscrip') && !isExpress && !isWhatsapp;
+            const isKabala = !hasResultWord && (lowerText.includes('kabala') || lowerText.includes('kábala') || lowerText.includes('chamba'));
+            const isKinelo = !hasResultWord && lowerText.includes('kinelo');
             
             const isTodosLosJuegos = lowerText.includes('todos los juegos');
+            const isJugarTinka = lowerText.includes('quiero jugar tinka');
 
+            // FASE 1: BÚSQUEDA PRIORITARIA ABSOLUTA
+            // Obliga al sistema a verificar las intenciones más específicas y problemáticas primero
             for (const key in kbData) {
                 if (kbData[key].type === 'category') {
                     for (const item of kbData[key].items) {
-                        const keywords = item.q.toLowerCase().replace(/[¿?()]/g, '').split(' ').filter(w => w.length > 3 && !stopWords.includes(w));
-                        const match = keywords.length > 0 && keywords.some(kw => lowerText.includes(kw));
+                        const qLower = item.q.toLowerCase();
                         
-                        const isVideo = (lowerText.includes('videoloter') || lowerText.includes('casino')) && item.q.includes('Videoloterías');
-                        const isRegistro = (lowerText.includes('registr') || lowerText.includes('cuenta')) && item.q.includes('registro');
+                        // Prioridad Máxima: Canales alternativos
+                        if (isExpress && qLower.includes('express')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isWhatsapp && qLower.includes('whatsapp')) { matchedItem = item; matchedCategoryKey = key; break; }
                         
-                        const isSuscripcion = (lowerText.includes('suscribir') || lowerText.includes('suscrip')) && item.q.includes('Suscripción');
-                        const isTutorial = (lowerText.includes('tutorial') || lowerText.includes('paso a paso')) && item.q.includes('Tutorial');
-                        const isNoticias = (lowerText.includes('noticia') || lowerText.includes('novedad')) && item.q.includes('noticias');
-                        const isAliado = (lowerText.includes('agente') || lowerText.includes('aliado') || lowerText.includes('punto de venta')) && item.q.includes('Aliado');
+                        // Prioridad Alta: Resultados y fechas
+                        if (isGanadoresHistorias && qLower.includes('historias')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isResultadosDomingo && qLower.includes('fechas pasadas')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isResultadosStrict && qLower.includes('últimos resultados')) { matchedItem = item; matchedCategoryKey = key; break; }
                         
-                        // Evaluar prioridades
-                        if (isTodosLosJuegos && item.q.includes('todos los juegos')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isResultadosGeneric && item.q.includes('números ganadores')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isGanadores && item.q.includes('historias')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isTinka && item.q.includes('Quiero jugar Tinka')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isGanaDiario && item.q.includes('Gana Diario')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isKabala && item.q.includes('Kábala')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-                        if (isKinelo && item.q.includes('Kinelo')) {
-                            matchedItem = item; matchedCategoryKey = key; break;
-                        }
-
-                        // Si no cae en los estrictos, evalúa los sueltos
-                        if (isVideo || isRegistro || isSuscripcion || isTutorial || isNoticias || isAliado || (lowerText.includes('recarg') && item.q.includes('pago')) || (!isResultadosGeneric && !isGanadores && match)) {
-                            matchedItem = item; 
-                            matchedCategoryKey = key;
-                            break;
-                        }
+                        // Navegación principal
+                        if (isTodosLosJuegos && qLower.includes('todos los juegos')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isJugarTinka && qLower.includes('quiero jugar tinka')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        
+                        // Juegos Específicos
+                        if (isGanaDiario && qLower.includes('gana diario')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isTinka && qLower.includes('cómo se juega a la tinka')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isKabala && qLower.includes('kábala')) { matchedItem = item; matchedCategoryKey = key; break; }
+                        if (isKinelo && qLower.includes('kinelo')) { matchedItem = item; matchedCategoryKey = key; break; }
                     }
                 }
                 if (matchedItem) break;
             }
 
+            // FASE 2: BÚSQUEDA SEMÁNTICA GENERAL
+            // Solo se ejecuta si ninguna regla estricta de la Fase 1 atrapó la intención
+            if (!matchedItem) {
+                const stopWords = ['como', 'cómo', 'donde', 'dónde', 'cuando', 'cuándo', 'para', 'cual', 'cuál', 'quien', 'quién', 'sobre', 'este', 'esta', 'estos', 'estas', 'tiene', 'tienen', 'hacer', 'puedo', 'quiero', 'funciona', 'juega', 'juego', 'fueron', 'fue', 'que', 'qué', 'los', 'las', 'del', 'el', 'la', 'un', 'una'];
+                const keywords = lowerText.replace(/[¿?()!¡]/g, '').split(' ').filter(w => w.length > 3 && !stopWords.includes(w));
+
+                for (const key in kbData) {
+                    if (kbData[key].type === 'category') {
+                        for (const item of kbData[key].items) {
+                            // Buscar si alguna keyword del usuario coincide con el texto de la pregunta en KB
+                            const match = keywords.length > 0 && keywords.some(kw => item.q.toLowerCase().includes(kw));
+
+                            if (match) {
+                                // Cortafuegos Final: Previene que búsquedas semánticas vagas invoquen Express o WhatsApp por error
+                                if (lowerText.includes('express') && !item.q.toLowerCase().includes('express')) continue;
+                                if (lowerText.includes('whatsapp') && !item.q.toLowerCase().includes('whatsapp')) continue;
+                                
+                                matchedItem = item; 
+                                matchedCategoryKey = key;
+                                break;
+                            }
+                        }
+                    }
+                    if (matchedItem) break;
+                }
+            }
+
+            // FASE 3: CONSTRUCCIÓN DE RESPUESTA
             if (matchedItem) {
                 let botReply = toneConfigs[currentTone].transformText(matchedItem.a);
                 
+                // Si la respuesta tiene promociones (Tarjetas)
                 if (matchedItem.promos) {
                     botReply += `<div class="mt-3 flex flex-col gap-2">`;
                     matchedItem.promos.forEach(p => {
@@ -728,25 +755,26 @@
                     botReply += `</div>`;
                 }
 
-                if (matchedItem.linkText && !matchedItem.footerLinkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
-                if (matchedItem.footerLinkText) botReply += `<div class="mt-2 pt-2 border-t border-gray-100"><a href="${matchedItem.footerLinkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.footerLinkText}</a></div>`;
+                // Enlaces de la respuesta Base
+                if (matchedItem.linkText) botReply += `<div class="mt-2"><a href="${matchedItem.linkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.linkText}</a></div>`;
+                if (matchedItem.footerLinkText) botReply += `<div class="mt-1 pt-2 border-t border-gray-100"><a href="${matchedItem.footerLinkUrl}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline">👉 ${matchedItem.footerLinkText}</a></div>`;
 
                 // INTELIGENCIA DE CROSS-SELLING Y ENRUTAMIENTO (SUBMENÚ DE CHIPS)
                 if (matchedItem.q.includes('todos los juegos')) {
-                    // Muestra TODOS los juegos
+                    // Submenú para elegir reglas de juegos
                     botReply += `
                         <div class="mt-3 pt-3 border-t border-gray-100">
                             <p class="text-[10px] text-gray-500 mb-2 font-medium">Elige un juego para ver las reglas:</p>
                             <div class="flex flex-wrap gap-1.5">
                                 <button onclick="handleChipClick('¿Cómo se juega a La Tinka?')" class="bg-white text-tinka-red border border-tinka-red text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-red hover:text-white transition-colors shadow-sm cursor-pointer">🔴 La Tinka</button>
-                                <button onclick="handleChipClick('¿Cómo se juega Kábala?')" class="bg-white text-purple-600 border border-purple-600 text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-purple-600 hover:text-white transition-colors shadow-sm cursor-pointer">🟣 Kábala</button>
+                                <button onclick="handleChipClick('¿Cómo se juega a Kábala y Chau Chamba?')" class="bg-white text-purple-600 border border-purple-600 text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-purple-600 hover:text-white transition-colors shadow-sm cursor-pointer">🟣 Kábala</button>
                                 <button onclick="handleChipClick('¿Cómo funciona Gana Diario?')" class="bg-white text-blue-500 border border-blue-500 text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer">🔵 Gana Diario</button>
-                                <button onclick="handleChipClick('¿Qué es Kinelo?')" class="bg-white text-tinka-green border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🟢 Kinelo</button>
-                                <button onclick="handleChipClick('¿Qué son las Videoloterías?')" class="bg-white text-orange-500 border border-orange-500 text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-orange-500 hover:text-white transition-colors shadow-sm cursor-pointer">🎰 Videoloterías</button>
+                                <button onclick="handleChipClick('¿Qué es Kinelo y cómo se juega?')" class="bg-white text-tinka-green border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🟢 Kinelo</button>
+                                <button onclick="handleChipClick('¿Qué son las Videoloterías (Casino)?')" class="bg-white text-orange-500 border border-orange-500 text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-orange-500 hover:text-white transition-colors shadow-sm cursor-pointer">🎰 Videoloterías</button>
                             </div>
                         </div>`;
-                } else if (matchedCategoryKey === 'resultados' && !lowerText.includes('tinka') && !lowerText.includes('kabala') && !lowerText.includes('diario') && !lowerText.includes('kinelo') && !matchedItem.q.includes('historias')) {
-                    // Submenú específico para resultados diferenciando Blog y Web Oficial
+                } else if (matchedCategoryKey === 'resultados' && !matchedItem.q.includes('historias')) {
+                    // Submenú para seleccionar de QUÉ juego quieres ver el resultado
                     botReply += `
                         <div class="mt-3 pt-3 border-t border-gray-100">
                             <p class="text-[10px] text-gray-500 mb-2 font-medium">¿De qué juego deseas ver los resultados?</p>
@@ -759,20 +787,29 @@
                         </div>`;
                 } else if (!matchedItem.promos && matchedCategoryKey !== 'suscripciones' && !matchedItem.q.includes('historias')) {
                     
-                    // REGLA: "Suscripción" solo aplica para Tinka
+                    // REGLA DE CROSS-SELLING PARA TINKA (Excluyendo los demás juegos)
                     const isTinkaContext = (matchedItem.q.includes('La Tinka') || lowerText.includes('tinka')) && !matchedItem.q.includes('Kábala') && !matchedItem.q.includes('Kinelo') && !matchedItem.q.includes('Diario') && !matchedItem.q.includes('Videoloterías');
 
                     if (isTinkaContext && (matchedCategoryKey === 'mecanicas' || matchedCategoryKey === 'compras' || matchedCategoryKey === 'resultados')) {
+                        let tinkaChips = '';
+                        tinkaChips += `<button onclick="handleChipClick('¿Cómo funciona la Suscripción Tinkera?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🔁 Suscripción Tinkera</button>`;
+                        
+                        // Solo sugerir "Express / Sin Registro" si la persona no está preguntando YA por Express
+                        if (!isExpress) {
+                            tinkaChips += `<button onclick="handleChipClick('¿Qué es Tinka Express y cómo funciona?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🚀 Jugar sin registro</button>`;
+                        }
+                        
+                        tinkaChips += `<button onclick="handleChipClick('¿Qué promociones tienen vigentes hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver Promociones</button>`;
+
                         botReply += `
                             <div class="mt-3 pt-3 border-t border-gray-100">
                                 <p class="text-[10px] text-gray-500 mb-2 font-medium">Opciones relacionadas sugeridas:</p>
                                 <div class="flex flex-wrap gap-1.5">
-                                    <button onclick="handleChipClick('¿Cómo funciona la Suscripción Tinkera?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🔁 Suscripción Tinkera</button>
-                                    <button onclick="handleChipClick('¿Qué promociones tienen vigentes hoy?')" class="bg-white text-tinka-green_dark border border-tinka-green text-[10px] font-bold px-3 py-1.5 rounded-full hover:bg-tinka-green hover:text-white transition-colors shadow-sm cursor-pointer">🎁 Ver Promociones</button>
+                                    ${tinkaChips}
                                 </div>
                             </div>`;
                     } else {
-                        // Para cualquier otro juego, solo ofrecer Promociones
+                        // Para cualquier otro juego o canal, sugerir solo Promociones
                         botReply += `
                             <div class="mt-3 pt-3 border-t border-gray-100">
                                 <p class="text-[10px] text-gray-500 mb-2 font-medium">Otras promociones que podrían interesarte:</p>
@@ -811,18 +848,28 @@
         }
 
         function loadSavedData() {
-            const savedData = localStorage.getItem('tinka_kb_data');
-            if (savedData) { 
-                try { 
-                    kbData = JSON.parse(savedData); 
-                    if (!kbData.logicas) kbData.logicas = defaultKbData.logicas;
-                    if (!kbData.ejecutiva) kbData.ejecutiva = defaultKbData.ejecutiva;
-                    if (!kbData.arquitectura) kbData.arquitectura = defaultKbData.arquitectura;
-                } catch (e) { 
-                    kbData = JSON.parse(JSON.stringify(defaultKbData)); 
+            // VERIFICACIÓN ESTRICTA DE CACHÉ
+            const savedVersion = localStorage.getItem('tinka_kb_version');
+            if (savedVersion !== KB_VERSION) {
+                // Si la versión no coincide, sobrescribe el caché con los datos por defecto
+                kbData = JSON.parse(JSON.stringify(defaultKbData));
+                localStorage.setItem('tinka_kb_data', JSON.stringify(kbData));
+                localStorage.setItem('tinka_kb_version', KB_VERSION);
+                console.log("Caché limpiada y actualizada a versión " + KB_VERSION);
+            } else {
+                const savedData = localStorage.getItem('tinka_kb_data');
+                if (savedData) { 
+                    try { 
+                        kbData = JSON.parse(savedData); 
+                        if (!kbData.logicas) kbData.logicas = defaultKbData.logicas;
+                        if (!kbData.ejecutiva) kbData.ejecutiva = defaultKbData.ejecutiva;
+                        if (!kbData.arquitectura) kbData.arquitectura = defaultKbData.arquitectura;
+                    } catch (e) { 
+                        kbData = JSON.parse(JSON.stringify(defaultKbData)); 
+                    } 
                 } 
-            } 
-            else { kbData = JSON.parse(JSON.stringify(defaultKbData)); }
+                else { kbData = JSON.parse(JSON.stringify(defaultKbData)); }
+            }
             
             const savedTone = localStorage.getItem('tinka_kb_tone');
             if (savedTone && toneConfigs[savedTone]) { currentTone = savedTone; document.getElementById('tone-select').value = currentTone; }
@@ -831,6 +878,7 @@
         function saveData() {
             localStorage.setItem('tinka_kb_data', JSON.stringify(kbData));
             localStorage.setItem('tinka_kb_tone', currentTone);
+            localStorage.setItem('tinka_kb_version', KB_VERSION);
             updateTotalCount();
         }
 
@@ -1055,7 +1103,7 @@
                             <p class="text-xs text-slate-600 mb-3 leading-relaxed">Presenta sugerencias predefinidas al inicio para guiar al usuario y reducir la fricción de escritura.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
                                 <span class="font-bold text-blue-600">AL ABRIR CHAT</span><br>
-                                <span class="font-bold text-green-600">MOSTRAR CHIPS:</span> [Promociones] [Jugar Tinka] [Resultados] [Ver todos los juegos]
+                                <span class="font-bold text-green-600">MOSTRAR CHIPS:</span> [Jugar Tinka] [Ver todos los juegos] [Resultados] [Promociones]
                             </div>
                         </div>
 
@@ -1069,7 +1117,7 @@
                                 <span class="font-bold text-green-600">ENTONCES</span> Mostrar menú de juegos (Tinka, Kábala, Gana Diario, Kinelo, Videoloterías)
                             </div>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
-                                <span class="font-bold text-blue-600">SI</span> input == 'qué salió' o 'resultados'<br>
+                                <span class="font-bold text-blue-600">SI</span> input pide resultados<br>
                                 <span class="font-bold text-green-600">ENTONCES</span> Mostrar opciones para derivar a la web oficial por cada juego y al blog.
                             </div>
                         </div>
@@ -1078,26 +1126,12 @@
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
                             <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🗣️</span> Filtro de Lenguaje Natural (NLP) Estricto</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">El bot ignora palabras comunes y tiene reglas de prioridad absolutas para diferenciar juegos de consultas generales (Ej. 'gana diario' vs 'números ganadores').</p>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">El bot ignora palabras comunes y tiene reglas de prioridad absolutas para evitar cruces.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 mb-2">
-                                <span class="font-bold text-blue-600">SI</span> input == 'hola' | 'buenas' | 'saludos'<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Responder saludo amigable y ofrecer ayuda.
+                                <span class="font-bold text-blue-600">PRIORIDAD ABSOLUTA:</span> Intercepta 'Express', 'WhatsApp', y 'Resultados' ANTES de buscar coincidencias de nombres de juegos para evitar Falsos Positivos.
                             </div>
-                            <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
-                                <span class="font-bold text-blue-600">REGLA:</span> La intención "Gana Diario" exige coincidencia de ambas palabras para evitar falso positivo con "Ganadores".
-                            </div>
-                        </div>
-
-                        <!-- Búsqueda RAG -->
-                        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-purple-500"></div>
-                            <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🔍</span> Motor de Búsqueda RAG & Mapeo Semántico</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Asigna intenciones y palabras clave del usuario a las categorías correctas incluso con lenguaje coloquial.</p>
-                            <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 grid grid-cols-2 gap-2">
-                                <div>'recarga', 'yape' -> 'compras'</div>
-                                <div>'ganador', 'sorteo' -> 'resultados'</div>
-                                <div>'suscribir' -> 'suscripciones'</div>
-                                <div>'agente' -> 'aliados'</div>
+                            <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 mb-2">
+                                <span class="font-bold text-blue-600">REGLA:</span> La intención "Gana Diario" exige coincidencia exacta para no cruzar con "Ganadores".
                             </div>
                         </div>
 
@@ -1105,25 +1139,14 @@
                         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-2 h-full bg-yellow-400"></div>
                             <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Submenú de Cross-Selling (Sugerencias)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar Suscripciones o Promociones.</p>
+                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar opciones extra.</p>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700 mb-2">
                                 <span class="font-bold text-blue-600">SI</span> consulta resuelta fue == 'La Tinka'<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🔁 Suscripción] [🎁 Promociones]
+                                <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🔁 Suscripción] [🚀 Jugar sin registro] [🎁 Promociones]
                             </div>
                             <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
                                 <span class="font-bold text-blue-600">SI NO</span> (es cualquier otro juego o normal)<br>
                                 <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [🎁 Ver Promociones]
-                            </div>
-                        </div>
-
-                        <!-- Fallback Loop -->
-                        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
-                            <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🧠</span> Human-in-the-loop (Entrenamiento Activo)</h3>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Captura preguntas no resueltas y permite a los administradores enseñarle al bot al instante.</p>
-                            <div class="bg-white rounded-xl p-3 border border-slate-200 text-[11px] font-mono text-slate-700">
-                                <span class="font-bold text-blue-600">SI</span> no hay coincidencia (match == null)<br>
-                                <span class="font-bold text-green-600">ENTONCES</span> Disculparse + Mostrar botón "¿Te gustaría enseñarme la respuesta?" (Abre Editor RAG)
                             </div>
                         </div>
                     </div>
@@ -1163,8 +1186,8 @@
                         item.promos.forEach(p => { html += `<div class="bg-white p-4 rounded-2xl border shadow-sm"><h4 class="font-extrabold text-tinka-green_dark mb-1">${p.title}</h4><p class="text-[11px] mb-3">${p.desc}</p><a href="${p.linkUrl}" class="text-tinka-red text-[11px] font-bold">▶ ${p.linkText}</a></div>`; });
                         html += `</div>`;
                     }
-                    if (item.linkText && !item.footerLinkText) html += `<div class="mt-4"><a href="${item.linkUrl}" class="text-tinka-red font-extrabold" target="_blank">▶ ${item.linkText}</a></div>`;
-                    if (item.footerLinkText) html += `<div class="mt-4 pt-3 border-t border-gray-100"><a href="${item.footerLinkUrl}" class="text-tinka-red font-extrabold" target="_blank">▶ ${item.footerLinkText}</a></div>`;
+                    if (item.linkText) html += `<div class="mt-4"><a href="${item.linkUrl}" class="text-tinka-red font-extrabold" target="_blank">▶ ${item.linkText}</a></div>`;
+                    if (item.footerLinkText) html += `<div class="mt-2 pt-3 border-t border-gray-100"><a href="${item.footerLinkUrl}" class="text-tinka-red font-extrabold" target="_blank">▶ ${item.footerLinkText}</a></div>`;
                     html += `</div></div></div>`;
                 });
             }
