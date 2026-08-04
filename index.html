@@ -6,6 +6,9 @@
     <title>Loterías IA - Gestor RAG y Simulador Gemini</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -152,6 +155,18 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
+        /* Dropdown Exportar */
+        .export-dropdown { display: none; position: absolute; right: 0; top: 100%; mt-2; width: max-content; background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 50; overflow: hidden; }
+        .export-dropdown.show { display: block; animation: slideDown 0.2s ease-out; }
+        .export-dropdown-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 600; color: #475569; transition: all 0.2s; cursor: pointer; }
+        .export-dropdown-item:hover { background-color: #f8fafc; color: var(--tinka-green); }
+        .export-dropdown-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -203,19 +218,57 @@
         <!-- Top Bar -->
         <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm z-10">
             <div class="flex items-center gap-4">
-                <div class="flex bg-slate-100 p-1 rounded-xl">
-                    <button class="px-4 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-database text-blue-500"></i> Vector DB
-                    </button>
-                    <button class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-yellow-500"></i> Gemini API (Mock)
-                    </button>
-                </div>
+                <h2 class="text-lg font-bold text-slate-700" id="topbar-title">Gestión de Conocimiento</h2>
             </div>
             
             <div class="flex items-center gap-3">
-                <button onclick="toggleChat()" class="bg-tinka-green hover:bg-tinka-green_dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-md">
-                    <i class="fa-solid fa-plus"></i> Probar Chat
+                <!-- Dropdown de Tono -->
+                <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                    🎭 Entusiasta (Lúdico) <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                </div>
+
+                <!-- Botón Agregar Pregunta -->
+                <button onclick="openAddIntentModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-plus"></i> Nueva Pregunta
+                </button>
+
+                <!-- Menú Exportar Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleExportMenu()" id="btn-exportar" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-file-export"></i> Exportar
+                        <i class="fa-solid fa-chevron-down text-xs ml-1 opacity-70"></i>
+                    </button>
+                    <!-- Contenido del Dropdown -->
+                    <div id="export-menu" class="export-dropdown mt-2">
+                        <div onclick="exportToCSV()" class="export-dropdown-item border-b border-slate-100">
+                            <i class="fa-solid fa-file-csv text-green-600"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Exportar a Excel</div>
+                                <div class="text-[10px] text-slate-400 font-normal">Formato CSV para análisis</div>
+                            </div>
+                        </div>
+                        <div onclick="exportToPDF()" class="export-dropdown-item border-b border-slate-100">
+                            <i class="fa-solid fa-file-pdf text-red-500"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Exportar a PDF</div>
+                                <div class="text-[10px] text-slate-400 font-normal">Reporte visual listo para imprimir</div>
+                            </div>
+                        </div>
+                        <div onclick="exportToPPT()" class="export-dropdown-item">
+                            <i class="fa-solid fa-file-powerpoint text-orange-500"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Exportar a PowerPoint</div>
+                                <div class="text-[10px] text-slate-400 font-normal">Slides para presentaciones</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-px h-8 bg-slate-200 mx-1"></div>
+
+                <!-- Botón Probar Chat -->
+                <button onclick="toggleChat()" class="bg-white border-2 border-tinka-green text-tinka-green hover:bg-green-50 px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
+                    🤖 Probar Chat
                 </button>
             </div>
         </header>
@@ -229,7 +282,56 @@
         <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-2xl flex items-center justify-center text-4xl transition-transform hover:scale-105 z-40 border-4 border-white">
             🤖
         </button>
+        
+        <!-- Elemento Oculto para Generación de PDF -->
+        <div id="pdf-export-container" style="display: none;"></div>
+        
     </main>
+
+    <!-- MODAL NUEVA PREGUNTA -->
+    <div id="add-intent-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-800">Agregar Nueva Intención</h3>
+                <button onclick="closeAddIntentModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="add-intent-form" onsubmit="saveNewIntent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Categoría RAG</label>
+                    <select id="new-intent-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pregunta del Usuario (Input)</label>
+                    <input type="text" id="new-intent-q" required placeholder="Ej. ¿Cómo recupero mi contraseña?" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Respuesta IA</label>
+                    <textarea id="new-intent-a" required placeholder="La IA responderá esto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-tinka-green focus:outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Botón (Opcional)</label>
+                        <input type="text" id="new-intent-linkText" placeholder="Ej. Recuperar clave" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">URL Destino</label>
+                        <input type="text" id="new-intent-linkUrl" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-3 justify-end">
+                    <button type="button" onclick="closeAddIntentModal()" class="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-500 hover:bg-slate-100 transition-colors">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-tinka-green hover:bg-tinka-green_dark transition-colors shadow-md">Guardar Intención</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notification" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl font-semibold text-sm transform translate-y-[100px] opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <i class="fa-solid fa-check-circle text-tinka-green"></i> <span id="toast-message"></span>
+    </div>
 
     <!-- CHAT SIMULADOR GEMINI -->
     <div id="chat-modal" class="bg-white flex-col border border-slate-200 shadow-2xl">
@@ -288,7 +390,7 @@
     </div>
 
     <script>
-        const KB_VERSION = "4.0"; // Fuerza recarga y Gemini UI
+        const KB_VERSION = "4.1"; // Fuerza recarga y nuevas librerías de exportación
         
         let currentView = 'overview';
         let isChatOpen = true; // Abrir por defecto para mostrar
@@ -605,7 +707,7 @@
                                 <div class="absolute left-1/2 -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-md z-10"></div>
                                 <div class="w-[45%] pl-10">
                                     <h4 class="font-bold text-lg text-slate-800">Fase 2: Asistente Transaccional (Integrado)</h4>
-                                    <p class="text-sm text-slate-500 mt-2">Conexión con APIs seguras. El bot podrá validar identidad (KYC), mostrar saldo en billetera, gestionar suscripciones activas y guiar en retiros de premios directamente desde la cuenta del usuario logueado.</p>
+                                    <p class="text-sm text-slate-500 mt-2">Conexión con APIs seguras. El bot podrá validar identidad (KYC), mostrar saldo en billetera, gestionar suscripciones activas y guiar en retiros de premios directamente desde la cuenta del usuario logueado. <strong class="text-blue-600">Además, incluirá la derivación a un asesor humano mediante integración directa, transfiriendo todo el historial de la charla y la información del cliente para una atención sin fricciones.</strong></p>
                                 </div>
                             </div>
 
@@ -1005,6 +1107,339 @@
         renderSidebar();
         renderView();
         
+        function toggleExportMenu() {
+            const menu = document.getElementById('export-menu');
+            menu.classList.toggle('show');
+            
+            // Cerrar si hace clic fuera
+            document.addEventListener('click', function closeMenu(e) {
+                if (!e.target.closest('#btn-exportar') && !e.target.closest('#export-menu')) {
+                    menu.classList.remove('show');
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }
+
+        function exportToCSV() {
+            document.getElementById('export-menu').classList.remove('show');
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "SECCION,CATEGORIA,PREGUNTA_USUARIO,RESPUESTA_IA,BOTON_CTA,URL_DESTINO\n";
+            
+            // Stats Header
+            let totalInputs = 0;
+            for (const key in kbData) totalInputs += kbData[key].items.length;
+            csvContent += `RESUMEN,Metricas Globales,Total Categorias: ${Object.keys(kbData).length},Total Preguntas: ${totalInputs},,\n`;
+            
+            // RAG Data
+            for (const [catKey, catData] of Object.entries(kbData)) {
+                catData.items.forEach(item => {
+                    let q = `"${item.q.replace(/"/g, '""')}"`;
+                    let a = `"${item.a.replace(/"/g, '""')}"`;
+                    let cta = item.linkText ? `"${item.linkText.replace(/"/g, '""')}"` : "N/A";
+                    let url = item.linkUrl ? `"${item.linkUrl.replace(/"/g, '""')}"` : "N/A";
+                    csvContent += `RAG_INTENCIONES,${catData.title},${q},${a},${cta},${url}\n`;
+                });
+            }
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Reporte_Integral_IA_Tinka.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("¡Reporte exportado a Excel (CSV) con éxito!");
+        }
+
+        function exportToPDF() {
+            document.getElementById('export-menu').classList.remove('show');
+            showToast("Generando reporte PDF Integral... Por favor espera.");
+            
+            const container = document.getElementById('pdf-export-container');
+            let date = new Date().toLocaleDateString();
+            
+            // Capturar la imagen del gráfico de Chart.js si existe
+            let chartImgHTML = '';
+            try {
+                if (chartInstance) {
+                    chartImgHTML = `<img src="${chartInstance.toBase64Image()}" style="max-width: 450px; display: block; margin: 20px auto; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">`;
+                }
+            } catch (e) { console.log("No se pudo exportar el gráfico al PDF"); }
+            
+            // Construir el HTML integral
+            let htmlContent = `
+                <div style="font-family: 'Helvetica', sans-serif; padding: 40px; color: #333;">
+                    <!-- PORTADA / CABECERA -->
+                    <div style="border-bottom: 3px solid #00A859; padding-bottom: 20px; margin-bottom: 30px;">
+                        <h1 style="color: #0033A0; margin: 0; font-size: 28px;">Reporte Integral del Proyecto IA</h1>
+                        <p style="color: #666; margin-top: 5px; font-size: 14px;">Asistente Virtual IA - Loterías | Generado: ${date}</p>
+                    </div>
+
+                    <!-- 1. RESUMEN DE CONFIGURACION -->
+                    <div style="page-break-after: always;">
+                        <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">1. Resumen de Configuración</h2>
+                        <p style="font-size: 14px; color: #555;">Distribución del estado actual de la Base de Conocimientos del motor LLM.</p>
+                        ${chartImgHTML}
+                    </div>
+
+                    <!-- 2. VISTA EJECUTIVA -->
+                    <div style="page-break-after: always;">
+                        <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">2. Vista Ejecutiva (Business Case)</h2>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+                            <tr>
+                                <td style="background-color: #FFF0F0; padding: 15px; border: 1px solid #FFCCCC; width: 50%; vertical-align: top;">
+                                    <h3 style="color: #CC0000; margin-top:0; font-size: 16px;">El Problema Actual</h3>
+                                    <ul style="font-size:12px; line-height: 1.5; padding-left: 15px;">
+                                        <li>Fricción en conversión por información dispersa (reglas, cobros).</li>
+                                        <li>Pérdida de oportunidad en cross-selling automatizado.</li>
+                                        <li>Sobrecarga Operativa en Call Center con preguntas repetitivas.</li>
+                                    </ul>
+                                </td>
+                                <td style="background-color: #F0FFF0; padding: 15px; border: 1px solid #CCFFCC; width: 50%; vertical-align: top;">
+                                    <h3 style="color: #008800; margin-top:0; font-size: 16px;">La Solución IA</h3>
+                                    <ul style="font-size:12px; line-height: 1.5; padding-left: 15px;">
+                                        <li>Copiloto Cognitivo para resolver dudas al instante sin salir de la web.</li>
+                                        <li>Cross-Selling Inteligente (Suscripciones, Combos, Promociones).</li>
+                                        <li>Derivación Eficiente: Escala a humanos solo casos de retención.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        <h3 style="color: #0033A0; font-size: 16px;">KPIs Objetivo</h3>
+                        <ul style="font-size:12px; line-height: 1.6;">
+                            <li><strong>Aumento de Ventas:</strong> Impulso directo en tickets por inmediatez de respuesta.</li>
+                            <li><strong>+12% Cross-Selling:</strong> Incremento en afiliación a Combos y Suscripciones.</li>
+                            <li><strong>> 4.5/5 CSAT:</strong> Mejora de la experiencia de usuario general.</li>
+                            <li><strong>> 75% Deflection:</strong> Resolución automatizada frente a tráfico de Call Center.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. ARQUITECTURA Y REGLAS -->
+                    <div style="page-break-after: always;">
+                        <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">3. Arquitectura y Reglas de Negocio</h2>
+                        <h3 style="color: #0033A0; font-size: 16px;">Arquitectura Tecnológica (4 Capas)</h3>
+                        <ul style="font-size:12px; line-height: 1.6; margin-bottom: 25px;">
+                            <li><strong>Capa de Presentación:</strong> Frontend Omnicanal (Web Components / WhatsApp).</li>
+                            <li><strong>Capa Cognitiva:</strong> Orquestación de Inteligencia (Gemini / LangChain / Guardrails).</li>
+                            <li><strong>Capa de Datos:</strong> Almacenamiento Vectorial y Memoria RAG (Pinecone / Redis).</li>
+                            <li><strong>Capa Transaccional:</strong> Integraciones seguras (API Gateway / Validación KYC).</li>
+                        </ul>
+                        <h3 style="color: #0033A0; font-size: 16px;">Reglas del Sistema NLP</h3>
+                        <ul style="font-size:12px; line-height: 1.6;">
+                            <li><strong>Zero-Typing UI:</strong> Menú interactivo con botones sugeridos para reducir fricción.</li>
+                            <li><strong>Filtro de 2 Fases:</strong> Búsqueda rígida prioritaria (Anti falsos positivos) + Búsqueda Semántica Vectorial.</li>
+                            <li><strong>Cross-Selling Dinámico:</strong> Inyección de botones (CTAs) contextuales dependiendo de la respuesta.</li>
+                            <li><strong>Fallback a Humano:</strong> Transferencia a plataforma Zendesk/Genesys tras 3 intentos fallidos.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 4. BASE DE CONOCIMIENTOS (RAG) -->
+                    <div>
+                        <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">4. Diccionario RAG (Base de Conocimientos)</h2>
+            `;
+            
+            // Loop a través de los datos RAG
+            for (const [catKey, catData] of Object.entries(kbData)) {
+                if(catData.items.length === 0) continue;
+                
+                htmlContent += `
+                    <div style="margin-bottom: 30px; page-break-inside: avoid;">
+                        <h3 style="color: #0033A0; padding-bottom: 5px; margin-bottom: 10px; font-size: 16px;">
+                            ${catData.icon} ${catData.title} <span style="color: #999; font-size: 11px; float:right;">(${catData.items.length} intenciones)</span>
+                        </h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; line-height: 1.3;">
+                            <thead>
+                                <tr style="background-color: #f8fafc;">
+                                    <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left; width: 30%;">Input (Pregunta)</th>
+                                    <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left; width: 50%;">Respuesta Bot (IA)</th>
+                                    <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left; width: 20%;">Acción (CTA)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                catData.items.forEach(item => {
+                    let cta = item.linkText ? `<strong style="color:#00A859">${item.linkText}</strong><br><span style="font-size:8px; color:#888; word-break: break-all;">${item.linkUrl}</span>` : '-';
+                    htmlContent += `
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #e2e8f0; vertical-align: top; background-color: #fff;"><strong>${item.q}</strong></td>
+                            <td style="padding: 8px; border: 1px solid #e2e8f0; vertical-align: top; background-color: #fff;">${item.a}</td>
+                            <td style="padding: 8px; border: 1px solid #e2e8f0; vertical-align: top; background-color: #fff;">${cta}</td>
+                        </tr>
+                    `;
+                });
+                
+                htmlContent += `</tbody></table></div>`;
+            }
+            
+            htmlContent += `</div></div>`;
+            container.innerHTML = htmlContent;
+            container.style.display = 'block';
+
+            // Opciones de html2pdf
+            var opt = {
+                margin:       [10, 10, 15, 10],
+                filename:     'Reporte_Integral_IA_Tinka.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generar y descargar
+            html2pdf().set(opt).from(container).save().then(() => {
+                container.style.display = 'none';
+                container.innerHTML = ''; // Limpiar RAM
+                showToast("¡Reporte PDF Integral descargado con éxito!");
+            });
+        }
+
+        function exportToPPT() {
+            document.getElementById('export-menu').classList.remove('show');
+            showToast("Construyendo presentación PPTX Integral... Por favor espera.");
+            
+            let pptx = new PptxGenJS();
+            pptx.layout = 'LAYOUT_16x9';
+            let date = new Date().toLocaleDateString();
+
+            // Slide Master
+            pptx.defineSlideMaster({
+                title: "TINKA_MASTER",
+                background: { color: "FFFFFF" },
+                objects: [
+                    { rect: { x: 0, y: 0, w: "100%", h: 0.6, fill: { color: "00A859" } } },
+                    { text: { text: "Asistente Virtual IA - Reporte Ejecutivo", options: { x: 0.5, y: 0.1, w: 8, h: 0.4, fontFace: "Arial", fontSize: 12, color: "FFFFFF", bold: true } } },
+                    { text: { text: `Generado: ${date}`, options: { x: "85%", y: 0.1, w: 1.5, h: 0.4, fontFace: "Arial", fontSize: 10, color: "FFFFFF" } } },
+                    { rect: { x: 0, y: 5.2, w: "100%", h: 0.4, fill: { color: "F4F7F6" } } },
+                    { text: { text: "Confidencial - Uso Interno Loterías", options: { x: 0.5, y: 5.2, w: 5, h: 0.4, fontFace: "Arial", fontSize: 9, color: "888888" } } }
+                ],
+                slideNumber: { x: 9.5, y: 5.2, color: "888888" }
+            });
+
+            // Slide 1: Portada
+            let slide1 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slide1.addText("Reporte Integral del Proyecto IA", { x: 1, y: 2, w: 8, h: 1, fontFace: "Arial", fontSize: 40, color: "0033A0", bold: true });
+            slide1.addText("Asistente Cognitivo Estratégico - La Tinka", { x: 1, y: 3, w: 8, h: 0.5, fontFace: "Arial", fontSize: 24, color: "00A859" });
+
+            // Slide 2: Resumen Gráfico
+            let slide2 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slide2.addText("1. Resumen de Configuración", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
+            try {
+                if(chartInstance) slide2.addImage({ data: chartInstance.toBase64Image(), x: 2.5, y: 1.5, w: 5, h: 3.5 });
+            } catch(e) {}
+
+            // Slide 3: Vista Ejecutiva
+            let slide3 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slide3.addText("2. Vista Ejecutiva (Business Case)", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
+            slide3.addText("EL PROBLEMA ACTUAL:\n• Fricción en búsqueda de reglas y cobros.\n• Pérdida de oportunidad en cross-selling.\n• Sobrecarga Operativa en Call Center.", { x: 0.5, y: 1.5, w: 4.5, h: 1.8, fontSize: 13, color: "333333", fill: "FFF0F0", line: "FFCCCC" });
+            slide3.addText("LA SOLUCIÓN IA:\n• Copiloto Cognitivo resolviendo dudas al instante.\n• Cross-Selling automatizado (Combos, Suscripción).\n• Eficiencia de canal: 75% deflection rate.", { x: 5.2, y: 1.5, w: 4.5, h: 1.8, fontSize: 13, color: "333333", fill: "F0FFF0", line: "CCFFCC" });
+            slide3.addText("KPIs Objetivo:  🚀 Aumento Ventas   |   🛒 +12% Cross-Selling   |   😊 > 4.5/5 CSAT   |   🎧 > 75% Deflection", { x: 0.5, y: 3.8, w: 9, h: 0.8, fontSize: 12, color: "0033A0", bold: true, fill: "F4F7F6" });
+
+            // Slide 4: Arquitectura y Reglas
+            let slide4 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slide4.addText("3. Arquitectura y Reglas de Negocio", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
+            slide4.addText("Arquitectura (4 Capas):", { x: 0.5, y: 1.5, w: 4.5, h: 0.4, fontSize: 14, color: "00A859", bold: true });
+            slide4.addText("1. Presentación (Web/WhatsApp)\n2. Cognitiva (Gemini/Orquestador)\n3. Datos Vectoriales (RAG)\n4. Transaccional (Integraciones Core)", { x: 0.5, y: 2.0, w: 4.5, h: 2, fontSize: 13, color: "333333", bullet: true });
+            slide4.addText("Reglas NLP (Guardrails):", { x: 5.2, y: 1.5, w: 4.5, h: 0.4, fontSize: 14, color: "00A859", bold: true });
+            slide4.addText("• Menú Interactivo (Zero-Typing UI)\n• Búsqueda de 2 Fases (Anti-Falsos)\n• Enrutamiento Inteligente\n• Cross-Selling Dinámico (CTAs)\n• Escalamiento a Humano tras fallos", { x: 5.2, y: 2.0, w: 4.5, h: 2, fontSize: 13, color: "333333", bullet: true });
+
+            // Slides de Contenido (RAG)
+            for (const [catKey, catData] of Object.entries(kbData)) {
+                if(catData.items.length === 0) continue;
+                
+                const chunkSize = 4;
+                for (let i = 0; i < catData.items.length; i += chunkSize) {
+                    const chunk = catData.items.slice(i, i + chunkSize);
+                    let slide = pptx.addSlide({ masterName: "TINKA_MASTER" });
+                    
+                    slide.addText(`4. Base de Conocimientos: ${catData.title} ${i > 0 ? '(Cont.)' : ''}`, { 
+                        x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true 
+                    });
+
+                    let tableRows = [];
+                    tableRows.push([
+                        { text: "Pregunta (Input)", options: { fill: "F0F0F0", bold: true, color: "333333", valign: "middle" } },
+                        { text: "Respuesta Bot (IA)", options: { fill: "F0F0F0", bold: true, color: "333333", valign: "middle" } },
+                        { text: "Botón (CTA)", options: { fill: "F0F0F0", bold: true, color: "333333", valign: "middle" } }
+                    ]);
+                    
+                    chunk.forEach(item => {
+                        let ctaText = item.linkText ? `${item.linkText}\n(${item.linkUrl})` : "N/A";
+                        tableRows.push([
+                            { text: item.q, options: { valign: "top", fontSize: 10 } },
+                            { text: item.a, options: { valign: "top", fontSize: 10 } },
+                            { text: ctaText, options: { valign: "top", fontSize: 9, color: item.linkText ? "00A859" : "999999" } }
+                        ]);
+                    });
+
+                    let tabOpts = {
+                        x: 0.5, y: 1.5, w: 9, rowH: 0.5,
+                        colW: [2.5, 4.5, 2],
+                        border: { type: 'solid', pt: 1, color: 'E2E8F0' },
+                        fontFace: "Arial", fontSize: 10
+                    };
+                    slide.addTable(tableRows, tabOpts);
+                }
+            }
+
+            // Descargar archivo
+            pptx.writeFile({ fileName: "Reporte_Integral_IA_Tinka.pptx" }).then(() => {
+                showToast("¡Presentación PowerPoint Integral descargada con éxito!");
+            });
+        }
+
+        function openAddIntentModal() {
+            const select = document.getElementById('new-intent-category');
+            select.innerHTML = '';
+            for(const [key, data] of Object.entries(kbData)) {
+                select.innerHTML += `<option value="${key}">${data.title}</option>`;
+            }
+            document.getElementById('add-intent-modal').style.display = 'flex';
+        }
+
+        function closeAddIntentModal() {
+            document.getElementById('add-intent-modal').style.display = 'none';
+            document.getElementById('add-intent-form').reset();
+        }
+
+        function saveNewIntent(e) {
+            e.preventDefault();
+            const cat = document.getElementById('new-intent-category').value;
+            const q = document.getElementById('new-intent-q').value;
+            const a = document.getElementById('new-intent-a').value;
+            const linkText = document.getElementById('new-intent-linkText').value;
+            const linkUrl = document.getElementById('new-intent-linkUrl').value;
+
+            const newItem = { q, a };
+            if (linkText && linkUrl) {
+                newItem.linkText = linkText;
+                newItem.linkUrl = linkUrl;
+            }
+
+            // Agregamos a la base de datos local
+            kbData[cat].items.push(newItem);
+            
+            // Actualizamos la UI
+            closeAddIntentModal();
+            renderSidebar();
+            if(currentView === cat || currentView === 'overview') {
+                renderView();
+            }
+            
+            showToast("¡Nueva pregunta agregada exitosamente!");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').textContent = message;
+            toast.style.transform = 'translate(-50%, 0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translate(-50%, 100px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
     </script>
 </body>
 </html>
