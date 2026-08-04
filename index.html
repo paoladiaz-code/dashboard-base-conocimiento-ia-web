@@ -299,11 +299,13 @@
         const kbData = {
             'promociones': {
                 icon: '🎁', title: 'Promociones y Beneficios',
-                desc: 'Lógica para mostrar bonos de bienvenida, raspaditas gratis y campañas vigentes.',
+                desc: 'Lógica para mostrar bonos de bienvenida, sorteos especiales (iPhone) y campañas vigentes.',
                 items: [
-                    { q: "¿Cuáles son las promociones vigentes?", a: "¡Tenemos muchas sorpresas para ti! Puedes encontrar Bonos de Bienvenida, jugadas gratis y campañas especiales en nuestra cartelera. Te invito a revisarlas todas aquí.", linkText: "Ver todas las promociones", linkUrl: "https://www.latinka.com.pe/p/promociones" },
+                    { q: "¿Cuáles son las promociones vigentes?", a: "¡Tenemos muchas sorpresas para ti! Puedes encontrar Bonos de Bienvenida, sorteos de tecnología y campañas especiales en nuestra cartelera. Te invito a revisarlas todas aquí.", linkText: "Ver todas las promociones", linkUrl: "https://www.latinka.com.pe/p/promociones" },
                     { q: "Quiero el bono de bienvenida", a: "¡Sí! Al registrarte y realizar tu primer depósito, te regalamos un Bono de Bienvenida del 100% hasta S/ 300 para que juegues a lo grande.", linkText: "Ver Bono de Bienvenida", linkUrl: "https://www.latinka.com.pe/p/promociones/bono-bienvenida" },
-                    { q: "¿Cómo activo un código promocional?", a: "Si tienes un código promocional, ingresa a tu perfil, ve a la sección 'Bonos y Promociones', ingresa el código en la casilla y haz clic en 'Activar'." }
+                    { q: "¿Cómo activo un código promocional?", a: "Si tienes un código promocional, ingresa a tu perfil, ve a la sección 'Bonos y Promociones', ingresa el código en la casilla y haz clic en 'Activar'." },
+                    { q: "Sorteo de iPhone 17 Pro", a: "¡Llévate el nuevo iPhone 17 Pro! 📱 Participas automáticamente en el sorteo por cada recarga desde S/ 30 usando PagoEfectivo, Visa o Mastercard durante este mes. ¡A más recargas, más opciones de ganar!", linkText: "Ver Promo iPhone 17 Pro", linkUrl: "https://www.latinka.com.pe/p/promociones/iphone" },
+                    { q: "Jugadas gratis o Raspaditas", a: "¡Claro que sí! Constantemente lanzamos campañas de 'Hora Loca' o 'Fin de semana' donde regalamos Raspaditas virtuales o jugadas gratis por tus compras. Mantente atento a nuestra sección de promos.", linkText: "Ver Promociones de Hoy", linkUrl: "https://www.latinka.com.pe/p/promociones" }
                 ]
             },
             'suscripciones': {
@@ -898,9 +900,11 @@
             if (normalizedInput.includes('asesor') || normalizedInput.includes('humano') || normalizedInput.includes('operador')) return kbData.contacto.items[0];
 
             // Sub-Fase 1.5: Atajos rápidos para Promociones y Suscripciones
+            if (normalizedInput.includes('iphone') || normalizedInput.includes('celular') || normalizedInput.includes('smartphone')) return kbData.promociones.items[3];
+            if (normalizedInput.includes('gratis') || normalizedInput.includes('raspadita')) return kbData.promociones.items[4];
             if (normalizedInput.includes('bono') || normalizedInput.includes('bienvenida')) return kbData.promociones.items[1];
             if (normalizedInput.includes('codigo')) return kbData.promociones.items[2];
-            if (normalizedInput.includes('promocion')) return kbData.promociones.items[0];
+            if (normalizedInput.includes('promocion') || normalizedInput.includes('promo')) return kbData.promociones.items[0];
             if (normalizedInput.includes('suscrib') || normalizedInput.includes('suscrip')) return kbData.suscripciones.items[0];
             if (normalizedInput.includes('cobrar') || normalizedInput.includes('retiro') || normalizedInput.includes('retirar')) return kbData.cobros.items[0];
             if (normalizedInput.includes('registro') || normalizedInput.includes('registrarme') || normalizedInput.includes('cuenta')) return kbData.cuenta.items[0];
