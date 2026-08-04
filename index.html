@@ -128,8 +128,9 @@
         
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 480px; /* Altura aumentada para pantallas grandes */
             width: 100%;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -507,15 +508,26 @@
                         backgroundColor: chartColors,
                         borderWidth: 2,
                         borderColor: '#ffffff',
-                        hoverOffset: 4
+                        hoverOffset: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '65%',
+                    cutout: '55%', /* Anillo más grueso */
+                    layout: {
+                        padding: { top: 10, bottom: 20 }
+                    },
                     plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { family: 'Inter', size: 12 } } },
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                usePointStyle: true, 
+                                padding: 25, 
+                                font: { family: 'Inter', size: 13, weight: '500' },
+                                color: '#475569'
+                            } 
+                        },
                         tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { size: 13 }, bodyFont: { size: 14, weight: 'bold' }, padding: 12, cornerRadius: 8, displayColors: true }
                     }
                 }
