@@ -234,7 +234,7 @@
         // ==========================================
         // CONTROL DE VERSIONES (Fuerza actualización de caché)
         // ==========================================
-        const KB_VERSION = "3.6"; // Ajuste Vista Ejecutiva y Arquitectura Gerencial
+        const KB_VERSION = "3.7"; // Layout expansivo y tipografía
 
         // ==========================================
         // DATOS BASE RAG, LÓGICAS Y TONOS
@@ -473,17 +473,17 @@
             });
 
             section.innerHTML = `
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="text-3xl">${kbData['overview'].icon}</div>
+                <div class="max-w-6xl mx-auto pb-10">
+                    <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+                        <div class="flex justify-between items-start mb-8 border-b border-slate-100 pb-5">
+                            <div class="flex items-center gap-4">
+                                <div class="text-4xl">${kbData['overview'].icon}</div>
                                 <div>
-                                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">${kbData['overview'].title}</h2>
-                                    <p class="text-sm text-slate-500">${kbData['overview'].desc}</p>
+                                    <h2 class="text-3xl font-black text-slate-800 tracking-tight">${kbData['overview'].title}</h2>
+                                    <p class="text-base text-slate-500 mt-1">${kbData['overview'].desc}</p>
                                 </div>
                             </div>
-                            <div class="bg-tinka-yellow/20 text-slate-800 font-bold px-4 py-2 rounded-full text-xs">
+                            <div class="bg-tinka-yellow/20 text-slate-800 font-bold px-5 py-2.5 rounded-full text-sm">
                                 Tono: <span class="capitalize">${currentTone}</span>
                             </div>
                         </div>
@@ -514,7 +514,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '55%', /* Anillo más grueso */
+                    cutout: '55%',
                     layout: {
                         padding: { top: 10, bottom: 20 }
                     },
@@ -524,11 +524,11 @@
                             labels: { 
                                 usePointStyle: true, 
                                 padding: 25, 
-                                font: { family: 'Inter', size: 13, weight: '500' },
+                                font: { family: 'Inter', size: 14, weight: '500' },
                                 color: '#475569'
                             } 
                         },
-                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { size: 13 }, bodyFont: { size: 14, weight: 'bold' }, padding: 12, cornerRadius: 8, displayColors: true }
+                        tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { size: 14 }, bodyFont: { size: 15, weight: 'bold' }, padding: 14, cornerRadius: 8, displayColors: true }
                     }
                 }
             });
@@ -536,118 +536,122 @@
 
         function renderRoadmap(section) {
             section.innerHTML = `
-                <div class="max-w-4xl mx-auto pb-8">
+                <div class="max-w-6xl mx-auto pb-10">
                     <!-- Cabecera -->
-                    <div class="bg-white p-8 rounded-t-3xl shadow-sm border border-slate-200 border-b-0">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="text-3xl">${kbData['roadmap'].icon}</div>
-                            <h2 class="text-2xl font-black text-slate-800 tracking-tight">${kbData['roadmap'].title}</h2>
+                    <div class="bg-white p-10 rounded-t-3xl shadow-sm border border-slate-200 border-b-0">
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-4xl">${kbData['roadmap'].icon}</div>
+                            <h2 class="text-3xl font-black text-slate-800 tracking-tight">${kbData['roadmap'].title}</h2>
                         </div>
-                        <p class="text-sm text-slate-500">${kbData['roadmap'].desc}</p>
+                        <p class="text-base text-slate-500">${kbData['roadmap'].desc}</p>
                     </div>
 
-                    <div class="bg-white p-8 rounded-b-3xl shadow-sm border border-slate-200 border-t-0 pt-4">
+                    <div class="bg-white p-10 rounded-b-3xl shadow-sm border border-slate-200 border-t-0 pt-6">
                         
                         <!-- Diagnóstico (Problema vs Solución) -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div class="bg-red-50/50 p-5 rounded-2xl border border-red-100">
-                                <h3 class="text-xs font-black text-red-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> El Problema Actual</h3>
-                                <ul class="text-sm text-slate-600 space-y-2.5 leading-relaxed">
-                                    <li class="flex items-start gap-2"><i class="fas fa-times text-red-400 mt-1 text-[10px]"></i> <span><strong>Fricción en la búsqueda:</strong> Información dispersa (reglas, cómo cobrar, resultados) genera abandono en el embudo.</span></li>
-                                    <li class="flex items-start gap-2"><i class="fas fa-times text-red-400 mt-1 text-[10px]"></i> <span><strong>Pérdida de oportunidad:</strong> Falta de proactividad para ofrecer servicios (suscripciones, combos) en momentos clave.</span></li>
-                                    <li class="flex items-start gap-2"><i class="fas fa-times text-red-400 mt-1 text-[10px]"></i> <span><strong>Sobrecarga operativa:</strong> El Call Center atiende un alto volumen de preguntas repetitivas de bajo valor.</span></li>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            <div class="bg-red-50/50 p-6 rounded-2xl border border-red-100">
+                                <h3 class="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2"><i class="fas fa-exclamation-circle text-lg"></i> El Problema Actual</h3>
+                                <ul class="text-sm text-slate-700 space-y-3.5 leading-relaxed">
+                                    <li class="flex items-start gap-3"><i class="fas fa-times text-red-400 mt-1"></i> <span><strong>Fricción en la búsqueda:</strong> Información dispersa (reglas, cómo cobrar, resultados) genera abandono en el embudo.</span></li>
+                                    <li class="flex items-start gap-3"><i class="fas fa-times text-red-400 mt-1"></i> <span><strong>Pérdida de oportunidad:</strong> Falta de proactividad para ofrecer servicios (suscripciones, combos) en momentos clave.</span></li>
+                                    <li class="flex items-start gap-3"><i class="fas fa-times text-red-400 mt-1"></i> <span><strong>Sobrecarga operativa:</strong> El Call Center atiende un alto volumen de preguntas repetitivas de bajo valor.</span></li>
                                 </ul>
                             </div>
-                            <div class="bg-tinka-green/5 p-5 rounded-2xl border border-tinka-green/20">
-                                <h3 class="text-xs font-black text-tinka-green uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-lightbulb"></i> La Solución IA</h3>
-                                <ul class="text-sm text-slate-600 space-y-2.5 leading-relaxed">
-                                    <li class="flex items-start gap-2"><i class="fas fa-check text-tinka-green mt-1 text-[10px]"></i> <span><strong>Copiloto Cognitivo 24/7:</strong> Centraliza la información (RAG) resolviendo dudas al instante sin salir de la pantalla de juego.</span></li>
-                                    <li class="flex items-start gap-2"><i class="fas fa-check text-tinka-green mt-1 text-[10px]"></i> <span><strong>Cross-Selling Inteligente:</strong> Sugiere compras y suscripciones contextualizadas justo cuando el cliente está motivado.</span></li>
-                                    <li class="flex items-start gap-2"><i class="fas fa-check text-tinka-green mt-1 text-[10px]"></i> <span><strong>Derivación Eficiente:</strong> Filtra el "ruido" y escala a humanos solo los casos críticos o de retención.</span></li>
+                            <div class="bg-tinka-green/5 p-6 rounded-2xl border border-tinka-green/20">
+                                <h3 class="text-sm font-black text-tinka-green uppercase tracking-widest mb-4 flex items-center gap-2"><i class="fas fa-lightbulb text-lg"></i> La Solución IA</h3>
+                                <ul class="text-sm text-slate-700 space-y-3.5 leading-relaxed">
+                                    <li class="flex items-start gap-3"><i class="fas fa-check text-tinka-green mt-1"></i> <span><strong>Copiloto Cognitivo 24/7:</strong> Centraliza la información (RAG) resolviendo dudas al instante sin salir de la pantalla de juego.</span></li>
+                                    <li class="flex items-start gap-3"><i class="fas fa-check text-tinka-green mt-1"></i> <span><strong>Cross-Selling Inteligente:</strong> Sugiere compras y suscripciones contextualizadas justo cuando el cliente está motivado.</span></li>
+                                    <li class="flex items-start gap-3"><i class="fas fa-check text-tinka-green mt-1"></i> <span><strong>Derivación Eficiente:</strong> Filtra el "ruido" y escala a humanos solo los casos críticos o de retención.</span></li>
                                 </ul>
                             </div>
                         </div>
 
                         <!-- KPIs -->
-                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3 border-b pb-2">Objetivos Clave del Negocio (KPIs)</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 text-center">
-                                <i class="fas fa-chart-line text-2xl text-blue-500 mb-2"></i>
-                                <p class="text-xs font-bold text-slate-800 mb-1">Aumento de Ventas</p>
-                                <p class="text-[10px] text-slate-500">Impulso directo en tickets por reducción de dudas.</p>
+                        <h3 class="text-base font-bold text-slate-800 uppercase tracking-wide mb-5 border-b pb-3">Objetivos Clave del Negocio (KPIs)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-14">
+                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <i class="fas fa-chart-line text-3xl text-blue-500 mb-3"></i>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Aumento de Ventas</p>
+                                <p class="text-xs text-slate-500 leading-snug">Impulso directo en tickets por reducción de dudas.</p>
                             </div>
-                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 text-center">
-                                <i class="fas fa-shopping-cart text-2xl text-tinka-yellow mb-2"></i>
-                                <p class="text-xs font-bold text-slate-800 mb-1">Cross-Selling</p>
-                                <p class="text-[10px] text-slate-500">Incremento en afiliación a Suscripciones y Combos.</p>
+                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <i class="fas fa-shopping-cart text-3xl text-tinka-yellow mb-3"></i>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Cross-Selling</p>
+                                <p class="text-xs text-slate-500 leading-snug">Incremento en afiliación a Suscripciones y Combos.</p>
                             </div>
-                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 text-center">
-                                <i class="fas fa-smile text-2xl text-tinka-green mb-2"></i>
-                                <p class="text-xs font-bold text-slate-800 mb-1">Satisfacción (CSAT)</p>
-                                <p class="text-[10px] text-slate-500">Mejora de la experiencia de usuario general.</p>
+                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <i class="fas fa-smile text-3xl text-tinka-green mb-3"></i>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Satisfacción (CSAT)</p>
+                                <p class="text-xs text-slate-500 leading-snug">Mejora de la experiencia de usuario general.</p>
                             </div>
-                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 text-center">
-                                <i class="fas fa-headset text-2xl text-slate-600 mb-2"></i>
-                                <p class="text-xs font-bold text-slate-800 mb-1">Eficiencia (Deflection)</p>
-                                <p class="text-[10px] text-slate-500">Resolución automatizada vs tráfico Call Center.</p>
+                            <div class="border border-slate-100 bg-slate-50 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                                <i class="fas fa-headset text-3xl text-slate-600 mb-3"></i>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Eficiencia (Deflection)</p>
+                                <p class="text-xs text-slate-500 leading-snug">Resolución automatizada vs tráfico Call Center.</p>
                             </div>
                         </div>
 
                         <!-- Fases -->
-                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-5 border-b pb-2">Roadmap Evolutivo</h3>
+                        <h3 class="text-base font-bold text-slate-800 uppercase tracking-wide mb-8 border-b pb-3">Roadmap Evolutivo</h3>
                         
-                        <div class="relative pl-6 space-y-8 before:absolute before:inset-0 before:ml-8 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent mb-10">
+                        <!-- Timeline Centrado -->
+                        <div class="relative space-y-12 before:absolute before:inset-0 md:before:mx-auto before:ml-5 before:-translate-x-px md:before:translate-x-0 before:h-full before:w-1 before:bg-gradient-to-b before:from-tinka-green before:via-slate-200 before:to-transparent mb-14">
                             <!-- Fase 1 -->
                             <div class="relative">
                                 <div class="md:flex items-center justify-between w-full">
-                                    <div class="w-2.5 h-2.5 absolute left-[-29px] rounded-full bg-tinka-green ring-4 ring-white shadow"></div>
-                                    <div class="ml-4 md:ml-0 bg-slate-50 p-4 rounded-xl border border-slate-100 w-full shadow-sm">
-                                        <h4 class="font-bold text-sm text-slate-800">Fase 1: Asistente Informativo & Captación</h4>
-                                        <p class="text-xs text-slate-600 mt-1">Despliegue del motor RAG. Respuestas sobre cómo jugar, reglas, lectura de resultados y enrutamiento inteligente a tutoriales. Inclusión de Cross-selling proactivo en el flujo del chat.</p>
+                                    <div class="md:w-[45%] md:text-right md:pr-10 ml-12 md:ml-0">
+                                        <h4 class="font-bold text-xl text-slate-800">Fase 1: Asistente Informativo & Captación</h4>
+                                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">Despliegue del motor RAG. Respuestas sobre cómo jugar, reglas, lectura de resultados y enrutamiento inteligente a tutoriales. Inclusión de Cross-selling proactivo en el flujo del chat.</p>
                                     </div>
+                                    <div class="w-5 h-5 absolute left-3 md:left-1/2 md:-ml-2.5 rounded-full bg-tinka-green ring-4 ring-white shadow-md"></div>
+                                    <div class="hidden md:block md:w-[45%]"></div>
                                 </div>
                             </div>
                             <!-- Fase 2 -->
                             <div class="relative">
                                 <div class="md:flex items-center justify-between w-full">
-                                    <div class="w-2.5 h-2.5 absolute left-[-29px] rounded-full bg-slate-300 ring-4 ring-white"></div>
-                                    <div class="ml-4 md:ml-0 bg-white p-4 rounded-xl border border-slate-100 w-full opacity-70">
-                                        <h4 class="font-bold text-sm text-slate-600">Fase 2: Asistente Transaccional (Logueado)</h4>
-                                        <p class="text-xs text-slate-500 mt-1">Conexión con APIs seguras. El bot podrá validar identidad (KYC), mostrar saldo en billetera, gestionar suscripciones activas y guiar en retiros de premios directamente desde la cuenta del usuario.</p>
+                                    <div class="hidden md:block md:w-[45%]"></div>
+                                    <div class="w-5 h-5 absolute left-3 md:left-1/2 md:-ml-2.5 rounded-full bg-slate-300 ring-4 ring-white shadow-sm"></div>
+                                    <div class="md:w-[45%] md:pl-10 ml-12 md:ml-0 opacity-80">
+                                        <h4 class="font-bold text-xl text-slate-600">Fase 2: Asistente Transaccional (Logueado)</h4>
+                                        <p class="text-sm text-slate-500 mt-2 leading-relaxed">Conexión con APIs seguras. El bot podrá validar identidad (KYC), mostrar saldo en billetera, gestionar suscripciones activas y guiar en retiros de premios directamente desde la cuenta del usuario.</p>
                                     </div>
                                 </div>
                             </div>
                             <!-- Fase 3 -->
                             <div class="relative">
                                 <div class="md:flex items-center justify-between w-full">
-                                    <div class="w-2.5 h-2.5 absolute left-[-29px] rounded-full bg-slate-300 ring-4 ring-white"></div>
-                                    <div class="ml-4 md:ml-0 bg-white p-4 rounded-xl border border-slate-100 w-full opacity-70">
-                                        <h4 class="font-bold text-sm text-slate-600">Fase 3: Personalización de la Oferta</h4>
-                                        <p class="text-xs text-slate-500 mt-1">Alineación con el proyecto de Segmentación y Agrupación. El bot ofrecerá bonos predictivos, sugerencias de juegos según el historial del cliente y adaptará su comunicación al perfil del jugador.</p>
+                                    <div class="md:w-[45%] md:text-right md:pr-10 ml-12 md:ml-0 opacity-80">
+                                        <h4 class="font-bold text-xl text-slate-600">Fase 3: Personalización de la Oferta</h4>
+                                        <p class="text-sm text-slate-500 mt-2 leading-relaxed">Alineación con el proyecto de Segmentación y Agrupación. El bot ofrecerá bonos predictivos, sugerencias de juegos según el historial del cliente y adaptará su comunicación al perfil del jugador.</p>
                                     </div>
+                                    <div class="w-5 h-5 absolute left-3 md:left-1/2 md:-ml-2.5 rounded-full bg-slate-300 ring-4 ring-white shadow-sm"></div>
+                                    <div class="hidden md:block md:w-[45%]"></div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Alcance del Proyecto -->
-                        <div class="bg-blue-50/30 rounded-2xl border border-blue-100 p-6">
-                            <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fas fa-bullseye"></i> Alcance del Proyecto (Scope)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50/30 rounded-2xl border border-blue-100 p-8">
+                            <h3 class="text-base font-bold text-blue-800 uppercase tracking-wide mb-6 flex items-center gap-3"><i class="fas fa-bullseye text-xl"></i> Alcance del Proyecto (Scope)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <h4 class="text-xs font-bold text-green-700 mb-2">✅ Incluido (In Scope)</h4>
-                                    <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside ml-2">
-                                        <li>Atención para juegos: Tinka, Kábala, Gana Diario, Kinelo y Videoloterías.</li>
-                                        <li>Consultas de mecánicas, resultados, registros y cobros.</li>
-                                        <li>Despliegue en Web Oficial y derivación a WhatsApp.</li>
-                                        <li>Integración progresiva con API Transaccional (Fase 2).</li>
+                                    <h4 class="text-sm font-bold text-green-700 mb-3 flex items-center gap-2"><i class="fas fa-check-circle"></i> Incluido (In Scope)</h4>
+                                    <ul class="text-sm text-slate-700 space-y-3 list-none ml-2">
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-green-500 before:text-lg before:-top-0.5">Atención para juegos: Tinka, Kábala, Gana Diario, Kinelo y Videoloterías.</li>
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-green-500 before:text-lg before:-top-0.5">Consultas de mecánicas, resultados, registros y cobros.</li>
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-green-500 before:text-lg before:-top-0.5">Despliegue en Web Oficial y derivación a WhatsApp.</li>
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-green-500 before:text-lg before:-top-0.5">Integración progresiva con API Transaccional (Fase 2).</li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h4 class="text-xs font-bold text-red-600 mb-2">❌ Fuera de Alcance (Out of Scope)</h4>
-                                    <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside ml-2">
-                                        <li>Gestión o apuestas deportivas (Te Apuesto). Se rutea fuera del bot.</li>
-                                        <li>Juegos de casino en vivo (Live Casino).</li>
-                                        <li>Soporte técnico profundo o reclamos legales (se escala a humano).</li>
+                                    <h4 class="text-sm font-bold text-red-600 mb-3 flex items-center gap-2"><i class="fas fa-times-circle"></i> Fuera de Alcance (Out of Scope)</h4>
+                                    <ul class="text-sm text-slate-700 space-y-3 list-none ml-2">
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-red-400 before:text-lg before:-top-0.5">Gestión o apuestas deportivas (Te Apuesto). Se rutea fuera del bot.</li>
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-red-400 before:text-lg before:-top-0.5">Juegos de casino en vivo (Live Casino).</li>
+                                        <li class="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-red-400 before:text-lg before:-top-0.5">Soporte técnico profundo o reclamos legales (se escala a humano).</li>
                                     </ul>
                                 </div>
                             </div>
@@ -660,40 +664,40 @@
 
         function renderRules(section) {
             section.innerHTML = `
-                <div class="max-w-4xl mx-auto pb-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                        <h2 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3"><span>⚙️</span> Lógicas Centrales del Sistema</h2>
+                <div class="max-w-6xl mx-auto pb-10">
+                    <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+                        <h2 class="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"><span>⚙️</span> Lógicas Centrales del Sistema</h2>
                         
-                        <div class="space-y-6">
+                        <div class="space-y-8">
                             <!-- Rule 1: Zero-Typing UI -->
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden shadow-sm">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
-                                <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🖱️</span> Menú Interactivo (Zero-Typing UI)</h3>
-                                <p class="text-xs text-slate-600 mb-3">Presenta sugerencias predefinidas al inicio para guiar al usuario y reducir la fricción de escritura.</p>
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700">
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden shadow-sm">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-2 flex items-center gap-2"><span>🖱️</span> Menú Interactivo (Zero-Typing UI)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Presenta sugerencias predefinidas al inicio para guiar al usuario y reducir la fricción de escritura.</p>
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700">
                                     <span class="font-bold text-blue-600">AL ABRIR CHAT</span><br>
                                     <span class="font-bold text-green-600">MOSTRAR CHIPS:</span> [🔴 Quiero jugar Tinka] [🎮 Ver todos los juegos] [🎁 Promociones] [📈 Ver Resultados]
                                 </div>
                             </div>
 
                             <!-- Rule 2: Motor NLP 2 Fases -->
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden shadow-sm">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
-                                <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🧠</span> Motor NLP: Búsqueda en 2 Fases (Anti Falsos Positivos)</h3>
-                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">El bot emplea una arquitectura de dos etapas para evitar que términos críticos se confundan con nombres de juegos (ej. "números ganadores" vs "Gana Diario" o "Express" vs "La Tinka").</p>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden shadow-sm">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-2 flex items-center gap-2"><span>🧠</span> Motor NLP: Búsqueda en 2 Fases (Anti Falsos Positivos)</h3>
+                                <p class="text-sm text-slate-600 mb-5 leading-relaxed">El bot emplea una arquitectura de dos etapas para evitar que términos críticos se confundan con nombres de juegos (ej. "números ganadores" vs "Gana Diario" o "Express" vs "La Tinka").</p>
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                        <div class="font-bold text-[10px] text-red-500 uppercase tracking-widest border-b pb-2 mb-3">FASE 1: INTERCEPCIÓN PRIORITARIA (CORTAFUEGOS)</div>
-                                        <ul class="text-[11px] font-mono text-slate-700 space-y-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                                        <div class="font-bold text-xs text-red-500 uppercase tracking-widest border-b pb-3 mb-4">FASE 1: INTERCEPCIÓN PRIORITARIA (CORTAFUEGOS)</div>
+                                        <ul class="text-xs font-mono text-slate-700 space-y-3">
                                             <li><span class="text-slate-500 italic">Evalúa intenciones absolutas ANTES de buscar nombres de juegos.</span></li>
                                             <li><span class="font-bold text-blue-600">- Prioridad Máxima:</span> "Express", "Sin registro", "WhatsApp", "Asesor"</li>
                                             <li><span class="font-bold text-blue-600">- Prioridad Alta:</span> "Resultados", "Ganadores", "Último sorteo", "Tutoriales"</li>
                                         </ul>
                                     </div>
-                                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                        <div class="font-bold text-[10px] text-blue-500 uppercase tracking-widest border-b pb-2 mb-3">FASE 2: BÚSQUEDA SEMÁNTICA</div>
-                                        <ul class="text-[11px] font-mono text-slate-700 space-y-2">
+                                    <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                                        <div class="font-bold text-xs text-blue-500 uppercase tracking-widest border-b pb-3 mb-4">FASE 2: BÚSQUEDA SEMÁNTICA</div>
+                                        <ul class="text-xs font-mono text-slate-700 space-y-3">
                                             <li><span class="text-slate-500 italic">Si (y solo si) la Fase 1 no encuentra nada, el motor limpia *stop words* (como, qué, cuándo) y mapea por coincidencia de palabras clave.</span></li>
                                         </ul>
                                     </div>
@@ -701,44 +705,44 @@
                             </div>
 
                             <!-- Rule 3: Enrutamiento Inteligente -->
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden shadow-sm">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-500"></div>
-                                <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🔀</span> Enrutamiento Inteligente (Juegos y Resultados)</h3>
-                                <p class="text-xs text-slate-600 mb-3">Desambigua consultas genéricas mostrando opciones dinámicas. Para resultados, diferencia entre fechas pasadas (Blog) y la última jugada (Web Oficial).</p>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden shadow-sm">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-orange-500"></div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-2 flex items-center gap-2"><span>🔀</span> Enrutamiento Inteligente (Juegos y Resultados)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Desambigua consultas genéricas mostrando opciones dinámicas. Para resultados, diferencia entre fechas pasadas (Blog) y la última jugada (Web Oficial).</p>
                                 
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700 mb-2">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700 mb-3">
                                     <span class="font-bold text-blue-600">SI</span> input == 'ver todos los juegos'<br>
                                     <span class="font-bold text-green-600">ENTONCES</span> Mostrar menú de juegos (Tinka, Kábala, Gana Diario, Kinelo, Videoloterías)
                                 </div>
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700">
                                     <span class="font-bold text-blue-600">SI</span> input pide resultados<br>
                                     <span class="font-bold text-green-600">ENTONCES</span> Mostrar opciones para derivar a la web oficial por cada juego y al blog.
                                 </div>
                             </div>
 
                             <!-- Rule 4: Cross Selling -->
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden shadow-sm">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-tinka-yellow"></div>
-                                <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Submenú de Cross-Selling Dinámico</h3>
-                                <p class="text-xs text-slate-600 mb-3">Ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar opciones extra, adaptadas al contexto.</p>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden shadow-sm">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-tinka-yellow"></div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-2 flex items-center gap-2"><span>💡</span> Submenú de Cross-Selling Dinámico</h3>
+                                <p class="text-sm text-slate-600 mb-4">Ofrece chips interactivos al final de la respuesta para que el usuario decida libremente si desea explorar opciones extra, adaptadas al contexto.</p>
                                 
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700 mb-2">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700 mb-3">
                                     <span class="font-bold text-blue-600">SI</span> consulta resuelta fue sobre == 'La Tinka'<br>
                                     <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [Suscripción] [Jugar sin registro] [Promociones]
                                 </div>
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700">
                                     <span class="font-bold text-blue-600">SI NO</span> (es cualquier otro juego, canal, o normal)<br>
                                     <span class="font-bold text-green-600">ENTONCES</span> Añadir submenú: [Ver Promociones]
                                 </div>
                             </div>
 
                             <!-- Rule 5: Escalamiento a Humano -->
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 relative overflow-hidden shadow-sm">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                                <h3 class="font-extrabold text-sm text-slate-800 mb-2 flex items-center gap-2"><span>🎧</span> Escalamiento a Humano (Fallback)</h3>
-                                <p class="text-xs text-slate-600 mb-3">Deriva al usuario a canales de atención oficiales si la IA no logra resolver su duda reiteradamente o si se pide explícitamente.</p>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden shadow-sm">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-2 flex items-center gap-2"><span>🎧</span> Escalamiento a Humano (Fallback)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Deriva al usuario a canales de atención oficiales si la IA no logra resolver su duda reiteradamente o si se pide explícitamente.</p>
                                 
-                                <div class="bg-white rounded-xl p-3 border border-slate-200 text-[10px] font-mono text-slate-700">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-xs font-mono text-slate-700">
                                     <span class="font-bold text-blue-600">SI</span> fallos_consecutivos >= 3 <span class="font-bold text-blue-600">O</span> input incluye 'asesor|humano'<br>
                                     <span class="font-bold text-green-600">ENTONCES</span> Mostrar enlace directo a la página de Contacto.
                                 </div>
@@ -752,67 +756,67 @@
 
         function renderArchitecture(section) {
             section.innerHTML = `
-                <div class="max-w-4xl mx-auto pb-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="text-3xl">🏗️</div>
-                            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Arquitectura Tecnológica</h2>
+                <div class="max-w-6xl mx-auto pb-10">
+                    <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-4xl">🏗️</div>
+                            <h2 class="text-3xl font-black text-slate-800 tracking-tight">Arquitectura Tecnológica</h2>
                         </div>
-                        <p class="text-sm text-slate-500 mb-8 border-b pb-4">Estructura de componentes propuesta para garantizar escalabilidad, bajo tiempo de respuesta y seguridad de la información.</p>
+                        <p class="text-base text-slate-500 mb-10 border-b pb-6">Estructura de componentes propuesta para garantizar escalabilidad, bajo tiempo de respuesta y seguridad de la información.</p>
                         
-                        <div class="space-y-4">
+                        <div class="space-y-6">
                             <!-- Capa 1 -->
-                            <div class="flex items-start gap-4 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fas fa-desktop"></i></div>
+                            <div class="flex items-start gap-5 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                                <div class="w-14 h-14 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shrink-0"><i class="fas fa-desktop"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-sm text-slate-800 mb-1">1. Capa de Presentación (Frontend Omnicanal)</h3>
-                                    <p class="text-xs text-slate-600 mb-2">El punto de contacto directo con el jugador en sus canales preferidos.</p>
-                                    <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-500">
-                                        <span class="bg-white px-2 py-1 rounded border">Web Components (Shadow DOM)</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Meta WhatsApp API</span>
-                                        <span class="bg-white px-2 py-1 rounded border">TailwindCSS</span>
+                                    <h3 class="font-bold text-base text-slate-800 mb-2">1. Capa de Presentación (Frontend Omnicanal)</h3>
+                                    <p class="text-sm text-slate-600 mb-3">El punto de contacto directo con el jugador en sus canales preferidos.</p>
+                                    <div class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                                        <span class="bg-white px-3 py-1.5 rounded border">Web Components (Shadow DOM)</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Meta WhatsApp API</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">TailwindCSS</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Capa 2 -->
-                            <div class="flex items-start gap-4 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                                <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fas fa-brain"></i></div>
+                            <div class="flex items-start gap-5 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                                <div class="w-14 h-14 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl shrink-0"><i class="fas fa-brain"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-sm text-slate-800 mb-1">2. Capa Cognitiva & Orquestación (Middleware)</h3>
-                                    <p class="text-xs text-slate-600 mb-2">El "Cerebro". Controla el flujo, evita alucinaciones (Reglas de 2 Fases) y decide si enviar la consulta al RAG, a una API o a un Humano.</p>
-                                    <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-500">
-                                        <span class="bg-white px-2 py-1 rounded border">Orquestador (LangChain / Flowise)</span>
-                                        <span class="bg-white px-2 py-1 rounded border">LLM Principal (GPT-4o Mini / Gemini)</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Guardrails (Filtro de Seguridad)</span>
+                                    <h3 class="font-bold text-base text-slate-800 mb-2">2. Capa Cognitiva & Orquestación (Middleware)</h3>
+                                    <p class="text-sm text-slate-600 mb-3">El "Cerebro". Controla el flujo, evita alucinaciones (Reglas de 2 Fases) y decide si enviar la consulta al RAG, a una API o a un Humano.</p>
+                                    <div class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                                        <span class="bg-white px-3 py-1.5 rounded border">Orquestador (LangChain / Flowise)</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">LLM Principal (GPT-4o Mini / Gemini)</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Guardrails (Filtro de Seguridad)</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Capa 3 -->
-                            <div class="flex items-start gap-4 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                                <div class="w-12 h-12 rounded-xl bg-tinka-green/20 text-tinka-green flex items-center justify-center text-xl shrink-0"><i class="fas fa-database"></i></div>
+                            <div class="flex items-start gap-5 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                                <div class="w-14 h-14 rounded-xl bg-tinka-green/20 text-tinka-green flex items-center justify-center text-2xl shrink-0"><i class="fas fa-database"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-sm text-slate-800 mb-1">3. Capa de Datos y Memoria (RAG)</h3>
-                                    <p class="text-xs text-slate-600 mb-2">Almacena las bases de conocimiento (documentos, tutoriales) y recuerda la conversación reciente del usuario.</p>
-                                    <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-500">
-                                        <span class="bg-white px-2 py-1 rounded border">Vector DB (Pinecone / Weaviate)</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Redis (Memoria de Sesión)</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Embeddings (OpenAI)</span>
+                                    <h3 class="font-bold text-base text-slate-800 mb-2">3. Capa de Datos y Memoria (RAG)</h3>
+                                    <p class="text-sm text-slate-600 mb-3">Almacena las bases de conocimiento (documentos, tutoriales) y recuerda la conversación reciente del usuario.</p>
+                                    <div class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                                        <span class="bg-white px-3 py-1.5 rounded border">Vector DB (Pinecone / Weaviate)</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Redis (Memoria de Sesión)</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Embeddings (OpenAI)</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Capa 4 -->
-                            <div class="flex items-start gap-4 p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                                <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0"><i class="fas fa-network-wired"></i></div>
+                            <div class="flex items-start gap-5 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+                                <div class="w-14 h-14 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl shrink-0"><i class="fas fa-network-wired"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-sm text-slate-800 mb-1">4. Capa Transaccional (Integraciones)</h3>
-                                    <p class="text-xs text-slate-600 mb-2">Conexión directa con los sistemas core de La Tinka (Implementación progresiva desde la Fase 2).</p>
-                                    <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-500">
-                                        <span class="bg-white px-2 py-1 rounded border">La Tinka API Gateway</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Validación KYC</span>
-                                        <span class="bg-white px-2 py-1 rounded border">Plataforma Zendesk/Genesys (Call Center)</span>
+                                    <h3 class="font-bold text-base text-slate-800 mb-2">4. Capa Transaccional (Integraciones)</h3>
+                                    <p class="text-sm text-slate-600 mb-3">Conexión directa con los sistemas core de La Tinka (Implementación progresiva desde la Fase 2).</p>
+                                    <div class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                                        <span class="bg-white px-3 py-1.5 rounded border">La Tinka API Gateway</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Validación KYC</span>
+                                        <span class="bg-white px-3 py-1.5 rounded border">Plataforma Zendesk/Genesys (Call Center)</span>
                                     </div>
                                 </div>
                             </div>
@@ -825,56 +829,56 @@
 
         function renderCategoryForm(cat, key, section) {
             let html = `
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white p-8 rounded-t-3xl shadow-sm border border-slate-200 border-b-0 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="text-3xl">${cat.icon}</div>
+                <div class="max-w-6xl mx-auto pb-10">
+                    <div class="bg-white p-10 rounded-t-3xl shadow-sm border border-slate-200 border-b-0 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl">${cat.icon}</div>
                             <div>
-                                <h2 class="text-2xl font-black text-slate-800 tracking-tight">${cat.title}</h2>
-                                <p class="text-sm text-slate-500 mt-1">${cat.desc}</p>
+                                <h2 class="text-3xl font-black text-slate-800 tracking-tight">${cat.title}</h2>
+                                <p class="text-base text-slate-500 mt-2">${cat.desc}</p>
                             </div>
                         </div>
-                        <button onclick="addNewInput('${key}')" class="bg-tinka-green hover:bg-tinka-green_dark text-white px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm shrink-0">
-                            <i class="fas fa-plus mr-1"></i> Añadir
+                        <button onclick="addNewInput('${key}')" class="bg-tinka-green hover:bg-tinka-green_dark text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm shrink-0">
+                            <i class="fas fa-plus mr-2"></i> Añadir Intención
                         </button>
                     </div>
-                    <div class="bg-white rounded-b-3xl shadow-sm border border-slate-200 p-8 pt-4">
-                        <div class="space-y-4" id="inputs-container">
+                    <div class="bg-white rounded-b-3xl shadow-sm border border-slate-200 p-10 pt-6">
+                        <div class="space-y-5" id="inputs-container">
             `;
 
             if (cat.items && cat.items.length > 0) {
                 cat.items.forEach((item, idx) => {
                     html += `
                         <details class="bg-slate-50 rounded-2xl border border-slate-200 group relative shadow-sm transition-all open:bg-white open:shadow-md">
-                            <summary class="p-4 px-5 font-semibold cursor-pointer text-sm text-slate-700 flex justify-between items-center outline-none hover:bg-slate-100 rounded-2xl transition-colors">
-                                <div class="flex items-center gap-3 w-full pr-4">
-                                    <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px] shrink-0">${idx+1}</span>
-                                    <span class="truncate">${item.q}</span>
+                            <summary class="p-5 px-6 font-semibold cursor-pointer text-sm text-slate-700 flex justify-between items-center outline-none hover:bg-slate-100 rounded-2xl transition-colors">
+                                <div class="flex items-center gap-4 w-full pr-4">
+                                    <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">${idx+1}</span>
+                                    <span class="truncate text-base">${item.q}</span>
                                 </div>
                                 <span class="text-slate-400 group-open:rotate-180 transition-transform flex-shrink-0">
-                                    <i class="fas fa-chevron-down"></i>
+                                    <i class="fas fa-chevron-down text-lg"></i>
                                 </span>
                             </summary>
-                            <div class="p-5 border-t border-slate-100 bg-white rounded-b-2xl">
-                                <button onclick="removeInput('${key}', ${idx})" class="absolute top-4 right-12 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Intención">
-                                    <i class="fas fa-trash-alt"></i>
+                            <div class="p-6 border-t border-slate-100 bg-white rounded-b-2xl">
+                                <button onclick="removeInput('${key}', ${idx})" class="absolute top-5 right-14 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Intención">
+                                    <i class="fas fa-trash-alt text-lg"></i>
                                 </button>
-                                <div class="mb-4">
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Usuario pregunta (Keyword / Pregunta entrenada):</label>
-                                    <input type="text" value="${item.q.replace(/"/g, '&quot;')}" onchange="updateData('${key}', ${idx}, 'q', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-tinka-green/50 outline-none transition-all">
+                                <div class="mb-5">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Usuario pregunta (Keyword / Pregunta entrenada):</label>
+                                    <input type="text" value="${item.q.replace(/"/g, '&quot;')}" onchange="updateData('${key}', ${idx}, 'q', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-tinka-green/50 outline-none transition-all">
                                 </div>
-                                <div class="mb-4">
-                                    <label class="block text-[10px] font-bold text-tinka-green uppercase tracking-widest mb-1.5">Bot responde (Contexto RAG):</label>
+                                <div class="mb-5">
+                                    <label class="block text-xs font-bold text-tinka-green uppercase tracking-widest mb-2">Bot responde (Contexto RAG):</label>
                                     <textarea onchange="updateData('${key}', ${idx}, 'a', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-tinka-green/50 outline-none transition-all leading-relaxed" rows="3">${item.a}</textarea>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Texto del Enlace (Opcional):</label>
-                                        <input type="text" value="${item.linkText ? item.linkText : ''}" onchange="updateData('${key}', ${idx}, 'linkText', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-tinka-green transition-colors">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Texto del Enlace (Opcional):</label>
+                                        <input type="text" value="${item.linkText ? item.linkText : ''}" onchange="updateData('${key}', ${idx}, 'linkText', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-tinka-green transition-colors">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">URL de Destino (Opcional):</label>
-                                        <input type="text" value="${item.linkUrl ? item.linkUrl : ''}" onchange="updateData('${key}', ${idx}, 'linkUrl', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-tinka-green transition-colors">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">URL de Destino (Opcional):</label>
+                                        <input type="text" value="${item.linkUrl ? item.linkUrl : ''}" onchange="updateData('${key}', ${idx}, 'linkUrl', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-tinka-green transition-colors">
                                     </div>
                                 </div>
                             </div>
@@ -882,7 +886,7 @@
                     `;
                 });
             } else {
-                html += `<div class="text-center py-10"><p class="text-sm text-slate-400">No hay intenciones configuradas. Añade una nueva.</p></div>`;
+                html += `<div class="text-center py-10"><p class="text-base text-slate-400">No hay intenciones configuradas. Añade una nueva.</p></div>`;
             }
 
             html += `</div></div></div>`;
