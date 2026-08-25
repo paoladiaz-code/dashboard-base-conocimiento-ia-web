@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
+    <!-- Incluimos explícitamente JSZip para exportar el código -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -201,7 +203,6 @@
     </style>
 </head>
 <body class="flex h-screen text-slate-800">
-
     <!-- PANEL IZQUIERDO (SIDEBAR AMPLIADO) -->
     <aside class="w-[400px] bg-white border-r border-slate-200 flex flex-col h-full z-10 shadow-sm">
         <!-- Logo y Cabecera -->
@@ -302,11 +303,18 @@
                                 <div class="text-[10px] text-slate-400 font-normal">Reporte visual listo para imprimir</div>
                             </div>
                         </div>
-                        <div onclick="exportToPPT()" class="export-dropdown-item">
+                        <div onclick="exportToPPT()" class="export-dropdown-item border-b border-slate-100">
                             <i class="fa-solid fa-file-powerpoint text-orange-500"></i>
                             <div>
                                 <div class="font-bold text-slate-800">Exportar a PowerPoint</div>
                                 <div class="text-[10px] text-slate-400 font-normal">Slides para presentaciones</div>
+                            </div>
+                        </div>
+                        <div onclick="exportCodeZip()" class="export-dropdown-item">
+                            <i class="fa-solid fa-file-code text-blue-500"></i>
+                            <div>
+                                <div class="font-bold text-slate-800">Exportar Código (.zip)</div>
+                                <div class="text-[10px] text-slate-400 font-normal">Descargar Guía de Integración</div>
                             </div>
                         </div>
                     </div>
@@ -477,10 +485,10 @@
     </div>
 
     <script>
-        const KB_VERSION = "4.1"; // Fuerza recarga y nuevas librerías de exportación
+        const KB_VERSION = "4.2"; 
         
         let currentView = 'overview';
-        let isChatOpen = true; // Abrir por defecto para mostrar
+        let isChatOpen = true; 
         let chartInstance = null;
         let isGeminiGenerating = false;
 
@@ -941,7 +949,25 @@
                                     <pre id="code-ui" class="text-xs text-green-400 font-mono overflow-x-auto whitespace-pre pb-2">
 &lt;!-- BOTÓN FLOTANTE TINKONG --&gt;
 &lt;button id="tinkong-fab" onclick="document.getElementById('tinkong-chatbox').style.display='flex'; this.style.display='none';" style="position:fixed; bottom:20px; right:20px; width:70px; height:70px; border-radius:50%; background-color:#fff; border:3px solid #00A859; box-shadow:0 10px 15px -3px rgba(0,0,0,0.15); cursor:pointer; z-index:9999; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:2px;"&gt;
-    &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
+    &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;
+        &lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;
+        &lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;
+        &lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;
+        &lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;
+        &lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;
+        &lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;
+        &lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;
+        &lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;
+        &lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;
+        &lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;
+        &lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;
+        &lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;
+        &lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;
+        &lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;
+        &lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;
+        &lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;
+        &lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;
+    &lt;/svg&gt;
 &lt;/button&gt;
 
 &lt;!-- CONTENEDOR DEL CHATBOX (Oculto por defecto) --&gt;
@@ -951,7 +977,25 @@
     &lt;div style="background:#00A859; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;"&gt;
         &lt;div style="display:flex; align-items:center; gap:10px;"&gt;
             &lt;div style="width:36px; height:36px; background:#fff; border-radius:50%; overflow:hidden; border:2px solid #fff; display:flex; align-items:center; justify-content:center;"&gt;
-                &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
+                &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;
+                    &lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;
+                    &lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;
+                    &lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;
+                    &lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;
+                    &lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;
+                    &lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;
+                    &lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;
+                    &lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;
+                    &lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;
+                    &lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;
+                    &lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;
+                    &lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;
+                    &lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;
+                    &lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;
+                    &lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;
+                    &lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;
+                    &lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;
+                &lt;/svg&gt;
             &lt;/div&gt;
             &lt;div&gt;
                 &lt;div style="color:#fff; font-weight:bold; font-size:14px; line-height:1;"&gt;Asistente Tinka IA&lt;/div&gt;
@@ -1108,7 +1152,6 @@ async function sendMsgToAPI() {
             container.innerHTML = html;
         }
 
-        // Funciones del Chat
         function toggleChat() {
             const chat = document.getElementById('chat-modal');
             isChatOpen = !isChatOpen;
@@ -1438,7 +1481,7 @@ async function sendMsgToAPI() {
                     </div>
 
                     <!-- 4. BASE DE CONOCIMIENTOS (RAG) -->
-                    <div>
+                    <div style="page-break-after: always;">
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">4. Diccionario RAG (Base de Conocimientos)</h2>
             `;
             
@@ -1476,14 +1519,35 @@ async function sendMsgToAPI() {
                 htmlContent += `</tbody></table></div>`;
             }
             
-            htmlContent += `</div></div>`;
+            htmlContent += `</div>`;
+
+            // AÑADIR SECCIÓN GUÍA DE INTEGRACIÓN AL PDF
+            htmlContent += `
+                    <!-- 5. GUÍA DE INTEGRACIÓN (DEV) -->
+                    <div>
+                        <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">5. Guía de Integración Frontend (Snippet Code)</h2>
+                        <p style="font-size: 12px; color: #555; margin-bottom: 10px;">A continuación se detalla el código base HTML y JavaScript requerido para integrar la interfaz del asistente virtual en los portales web, aislando los estilos y definiendo la conexión al middleware.</p>
+                        
+                        <h3 style="color: #0033A0; font-size: 14px; margin-top: 20px;">Estructura HTML (Chat UI)</h3>
+                        <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 9px; overflow-wrap: break-word; color: #334155;">
+${escapeHtmlForPDF(document.getElementById('code-ui') ? document.getElementById('code-ui').innerText : 'Código no disponible en la vista actual.')}
+                        </div>
+
+                        <h3 style="color: #0033A0; font-size: 14px; margin-top: 20px;">Lógica de Conexión (JavaScript)</h3>
+                        <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 9px; overflow-wrap: break-word; color: #334155;">
+${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById('code-js').innerText : 'Código no disponible en la vista actual.')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
             container.innerHTML = htmlContent;
             container.style.display = 'block';
 
             // Opciones de html2pdf
             var opt = {
                 margin:       [10, 10, 15, 10],
-                filename:     'Reporte_Integral_IA_Tinka.pdf',
+                filename:     'Reporte_Integral_IA_Tinka_Con_Codigo.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -1493,8 +1557,19 @@ async function sendMsgToAPI() {
             html2pdf().set(opt).from(container).save().then(() => {
                 container.style.display = 'none';
                 container.innerHTML = ''; // Limpiar RAM
-                showToast("¡Reporte PDF Integral descargado con éxito!");
+                showToast("¡Reporte PDF (con código) descargado con éxito!");
             });
+        }
+
+        // Función auxiliar para escapar HTML en el PDF
+        function escapeHtmlForPDF(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+                .replace(/\n/g, "<br>");
         }
 
         function exportToPPT() {
@@ -1585,9 +1660,72 @@ async function sendMsgToAPI() {
                 }
             }
 
+            // AÑADIR SLIDES DE GUÍA DE INTEGRACIÓN AL PPT
+            let slideCode1 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slideCode1.addText("5. Guía de Integración (Frontend UI)", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
+            
+            let htmlCode = document.getElementById('code-ui') ? document.getElementById('code-ui').innerText : 'Código HTML no disponible';
+            // Truncar si es muy largo para una sola diapositiva
+            if(htmlCode.length > 1500) htmlCode = htmlCode.substring(0, 1500) + "\n\n... (Código truncado para presentación)";
+            
+            slideCode1.addText(htmlCode, {
+                x: 0.5, y: 1.5, w: 9, h: 3.5, 
+                fontFace: "Courier New", fontSize: 8, color: "333333", 
+                fill: "F4F7F6", align: "left", valign: "top"
+            });
+
+            let slideCode2 = pptx.addSlide({ masterName: "TINKA_MASTER" });
+            slideCode2.addText("5. Guía de Integración (Lógica JavaScript)", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
+            
+            let jsCode = document.getElementById('code-js') ? document.getElementById('code-js').innerText : 'Código JS no disponible';
+            
+            slideCode2.addText(jsCode, {
+                x: 0.5, y: 1.5, w: 9, h: 3.5, 
+                fontFace: "Courier New", fontSize: 9, color: "333333", 
+                fill: "F4F7F6", align: "left", valign: "top"
+            });
+
             // Descargar archivo
-            pptx.writeFile({ fileName: "Reporte_Integral_IA_Tinka.pptx" }).then(() => {
-                showToast("¡Presentación PowerPoint Integral descargada con éxito!");
+            pptx.writeFile({ fileName: "Reporte_Integral_IA_Tinka_Con_Codigo.pptx" }).then(() => {
+                showToast("¡Presentación PPTX (con código) descargada con éxito!");
+            });
+        }
+
+        // Nueva función para exportar solo el código en un ZIP
+        function exportCodeZip() {
+            document.getElementById('export-menu').classList.remove('show');
+            if (typeof JSZip === 'undefined') {
+                showToast("Librería ZIP no disponible. Recarga la página.");
+                return;
+            }
+
+            showToast("Comprimiendo archivos de integración...");
+            
+            var zip = new JSZip();
+            
+            // Archivo 1: tinkong-chat.html
+            let htmlContent = document.getElementById('code-ui') ? document.getElementById('code-ui').innerText : '<!-- HTML no encontrado -->';
+            zip.file("tinkong-chat.html", htmlContent);
+            
+            // Archivo 2: chat-logic.js
+            let jsContent = document.getElementById('code-js') ? document.getElementById('code-js').innerText : '// JS no encontrado';
+            zip.file("chat-logic.js", jsContent);
+            
+            // Archivo 3: README.txt
+            let readmeContent = `TINKONG IA - GUÍA DE INTEGRACIÓN FRONTEND\n\nInstrucciones:\n1. Inserta el contenido de 'tinkong-chat.html' justo antes de cerrar la etiqueta </body> en tu web principal.\n2. Incluye el archivo 'chat-logic.js' en tu flujo de scripts o empaquetador (Webpack/Vite).\n3. Reemplaza el endpoint '/api/v1/gemini/chat' en el archivo JS por tu URL real de backend.\n\nNota: Los estilos CSS están en línea para evitar conflictos con Tailwind o Bootstrap de la web host.`;
+            zip.file("README.txt", readmeContent);
+
+            // Generar y descargar el ZIP
+            zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                // Crear un enlace temporal para forzar la descarga
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "Tinkong_Integracion_Frontend.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("¡Archivos de código descargados en formato ZIP!");
             });
         }
 
