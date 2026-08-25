@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; overflow: hidden; }
@@ -103,12 +102,17 @@
             border-radius: 0 1rem 1rem 1rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
             position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            display: block; /* Forzar bloque para que el texto ocupe el ancho disponible */
         }
         .chat-bubble-user {
             background: var(--tinka-yellow);
             color: #333;
             border-radius: 1rem 0 1rem 1rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         /* Typing Indicator */
@@ -180,8 +184,20 @@
             z-index: 0;
         }
         .timeline-item:last-child::before { display: none; }
+
+        /* Estilo específico para los avatares SVG */
+        .svg-avatar {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
         
-        .svg-avatar { width: 100%; height: 100%; display: block; }
+        .avatar-container {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="flex h-screen text-slate-800">
@@ -191,26 +207,37 @@
         <!-- Logo y Cabecera -->
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden p-1">
+                <div class="w-14 h-14 bg-slate-100 rounded-2xl shadow-inner relative overflow-hidden p-1 avatar-container">
+                    <!-- SVG DE TINKONG (Optimizado y confinado) -->
                     <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Rostro Base -->
                         <circle cx="50" cy="60" r="38" fill="#795548"/>
+                        <!-- Hocico -->
                         <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
+                        <!-- Ojos -->
                         <circle cx="35" cy="50" r="6" fill="#000"/>
                         <circle cx="65" cy="50" r="6" fill="#000"/>
                         <circle cx="37" cy="48" r="2" fill="#fff"/>
                         <circle cx="67" cy="48" r="2" fill="#fff"/>
+                        <!-- Sonrisa -->
                         <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
                         <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
+                        <!-- Pañoleta Roja -->
                         <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
+                        <!-- Nudo Pañoleta -->
                         <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
+                        <!-- Diadema (Headset) -->
                         <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
+                        <!-- Auriculares Amarillos -->
                         <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
                         <circle cx="17" cy="59" r="4" fill="#34495E"/>
                         <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
                         <circle cx="83" cy="59" r="4" fill="#34495E"/>
+                        <!-- Micrófono -->
                         <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
                         <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
                     </svg>
+                    <!-- Fin SVG Tinkong -->
                     <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
@@ -299,8 +326,9 @@
             <!-- Se inyecta por JS -->
         </div>
 
-        <!-- Botón Flotante Chat (FAB Ampliado) -->
-        <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-slate-100 hover:bg-slate-200 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 z-40 border-4 border-tinka-green overflow-hidden p-1">
+        <!-- Botón Flotante Chat (FAB Ampliado) - CONFINADO -->
+        <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-slate-100 hover:bg-slate-200 rounded-full shadow-2xl transition-transform hover:scale-105 z-40 border-4 border-tinka-green overflow-hidden p-1 avatar-container flex items-center justify-center">
+            <!-- SVG Tinkong Flotante -->
              <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="50" cy="60" r="38" fill="#795548"/>
                 <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
@@ -375,10 +403,12 @@
     <!-- CHAT SIMULADOR GEMINI -->
     <div id="chat-modal" class="bg-white flex-col border border-slate-200 shadow-2xl">
         <!-- Header Chat -->
-        <div class="bg-tinka-green p-4 flex items-center justify-between shadow-md relative z-10">
+        <div class="bg-tinka-green px-4 py-3 flex items-center justify-between shadow-md relative z-10">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center relative shadow-inner overflow-hidden p-0.5">
-                    <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
+                <!-- CONTENEDOR AVATAR CHAT: Tamaño fijo alineado -->
+                <div class="w-12 h-12 bg-white rounded-full shadow-inner relative overflow-hidden border-2 border-white p-0.5 avatar-container">
+                    <!-- SVG Tinkong Cabecera Chat -->
+                     <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="50" cy="60" r="38" fill="#795548"/>
                         <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
                         <circle cx="35" cy="50" r="6" fill="#000"/>
@@ -389,7 +419,7 @@
                         <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
                         <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
                         <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
-                        <path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="#2C3E50" stroke-width="5"/>
+                        <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
                         <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
                         <circle cx="17" cy="59" r="4" fill="#34495E"/>
                         <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
@@ -397,7 +427,7 @@
                         <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
                         <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
                     </svg>
-                    <div class="absolute top-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
+                    <div class="absolute top-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white z-10"></div>
                 </div>
                 <div>
                     <h3 class="font-bold text-white text-lg leading-tight">Asistente Tinka IA</h3>
@@ -428,8 +458,8 @@
         <div class="flex-1 p-4 overflow-y-auto bg-slate-50 chat-scroll flex flex-col gap-4" id="chat-messages">
             <!-- Mensaje Bienvenida -->
             <div class="flex flex-col gap-1 items-start">
-                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700 flex items-start gap-2">
-                     ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>¿En qué te puedo ayudar hoy? Selecciona una opción rápida o escríbeme tu duda.
+                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700">
+                    ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>¿En qué te puedo ayudar hoy? Selecciona una opción rápida o escríbeme tu duda.
                 </div>
                 <span class="text-[10px] text-slate-400 ml-2">Bot • Ahora</span>
             </div>
@@ -901,44 +931,48 @@
                             <!-- Sección HTML/CSS -->
                             <div class="p-6 border border-slate-200 bg-slate-50 rounded-2xl">
                                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-code text-blue-500"></i> Código Base: Interfaz del Chat (HTML/CSS)</h3>
-                                <p class="text-sm text-slate-600 mb-4">Inserta este bloque al final del <code class="bg-slate-200 px-1 rounded text-slate-700">&lt;body&gt;</code> de la web. Utiliza estilos embebidos para no interferir con las hojas de estilo existentes.</p>
+                                <p class="text-sm text-slate-600 mb-4">Inserta este bloque al final del <code class="bg-slate-200 px-1 rounded text-slate-700">&lt;body&gt;</code> de la web principal. Utiliza estilos embebidos para no interferir con las hojas de estilo existentes.</p>
                                 
                                 <div class="bg-[#1e1e1e] p-4 rounded-xl overflow-hidden relative shadow-inner">
                                     <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
-                                        <span class="text-xs text-gray-400 font-mono">index.html</span>
+                                        <span class="text-xs text-gray-400 font-mono">tinkong-chat.html</span>
                                         <button onclick="navigator.clipboard.writeText(document.getElementById('code-ui').innerText); showToast('Código UI copiado');" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition"><i class="fa-solid fa-copy"></i> Copiar</button>
                                     </div>
                                     <pre id="code-ui" class="text-xs text-green-400 font-mono overflow-x-auto whitespace-pre pb-2">
 &lt;!-- BOTÓN FLOTANTE TINKONG --&gt;
-&lt;button id="tinkong-fab" onclick="document.getElementById('tinkong-chatbox').style.display='flex'; this.style.display='none';" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background-color:#14b8a6; border:none; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); cursor:pointer; z-index:9999; display:flex; align-items:center; justify-content:center; overflow:hidden;"&gt;
+&lt;button id="tinkong-fab" onclick="document.getElementById('tinkong-chatbox').style.display='flex'; this.style.display='none';" style="position:fixed; bottom:20px; right:20px; width:70px; height:70px; border-radius:50%; background-color:#fff; border:3px solid #00A859; box-shadow:0 10px 15px -3px rgba(0,0,0,0.15); cursor:pointer; z-index:9999; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:2px;"&gt;
     &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
 &lt;/button&gt;
 
 &lt;!-- CONTENEDOR DEL CHATBOX (Oculto por defecto) --&gt;
-&lt;div id="tinkong-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:340px; height:500px; max-height:85vh; background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); flex-direction:column; overflow:hidden; font-family:sans-serif; z-index:10000; border:1px solid #e2e8f0;"&gt;
+&lt;div id="tinkong-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:350px; height:520px; max-height:85vh; background:#fff; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.15); flex-direction:column; overflow:hidden; font-family:sans-serif; z-index:10000; border:1px solid #e2e8f0;"&gt;
+    
     &lt;!-- Cabecera --&gt;
-    &lt;div style="background:#14b8a6; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;"&gt;
+    &lt;div style="background:#00A859; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;"&gt;
         &lt;div style="display:flex; align-items:center; gap:10px;"&gt;
-            &lt;div style="width:32px; height:32px; background:#fff; border-radius:50%; overflow:hidden;"&gt;
-                &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
+            &lt;div style="width:36px; height:36px; background:#fff; border-radius:50%; overflow:hidden; border:2px solid #fff; display:flex; align-items:center; justify-content:center;"&gt;
+                &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
             &lt;/div&gt;
-            &lt;span style="color:#fff; font-weight:bold; font-size:14px;"&gt;Tinkong IA&lt;/span&gt;
+            &lt;div&gt;
+                &lt;div style="color:#fff; font-weight:bold; font-size:14px; line-height:1;"&gt;Asistente Tinka IA&lt;/div&gt;
+                &lt;div style="color:#e0f2fe; font-size:10px;"&gt;Powered by Gemini&lt;/div&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
-        &lt;button onclick="document.getElementById('tinkong-chatbox').style.display='none'; document.getElementById('tinkong-fab').style.display='flex';" style="background:none; border:none; color:#fff; font-weight:bold; cursor:pointer;"&gt;X&lt;/button&gt;
+        &lt;button onclick="document.getElementById('tinkong-chatbox').style.display='none'; document.getElementById('tinkong-fab').style.display='flex';" style="background:none; border:none; color:#fff; font-weight:bold; font-size:18px; cursor:pointer;"&gt;&amp;times;&lt;/button&gt;
     &lt;/div&gt;
     
     &lt;!-- Área de mensajes --&gt;
     &lt;div id="tinkong-msgs" style="flex:1; padding:16px; overflow-y:auto; background:#f8fafc; display:flex; flex-direction:column; gap:12px;"&gt;
-        &lt;!-- Mensaje Bot --&gt;
-        &lt;div style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
-            ¡Hola! Soy Tinkong, tu copiloto de loterías. ¿En qué te ayudo?
+        &lt;!-- Mensaje Bot Inicial --&gt;
+        &lt;div style="background:#fff; padding:12px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
+            ¡Hola! Soy Tinkong 🤖, tu Asistente Virtual. ¿En qué te ayudo hoy?
         &lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Input --&gt;
     &lt;div style="padding:12px; border-top:1px solid #e2e8f0; background:#fff; display:flex; gap:8px;"&gt;
-        &lt;input type="text" id="tinkong-input" placeholder="Escribe aquí..." style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:20px; font-size:13px; outline:none;"&gt;
-        &lt;button id="tinkong-send" style="background:#14b8a6; color:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; display:flex; align-items:center; justify-content:center;"&gt;
+        &lt;input type="text" id="tinkong-input" placeholder="Pregunta algo al modelo..." style="flex:1; padding:10px 14px; background:#f1f5f9; border:1px solid transparent; border-radius:24px; font-size:13px; outline:none;"&gt;
+        &lt;button id="tinkong-send" style="background:#00A859; color:#fff; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center;"&gt;
             &amp;#10148;
         &lt;/button&gt;
     &lt;/div&gt;
@@ -949,7 +983,7 @@
                             <!-- Sección JS -->
                             <div class="p-6 border border-slate-200 bg-slate-50 rounded-2xl">
                                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-server text-yellow-500"></i> Lógica de Conexión (JavaScript)</h3>
-                                <p class="text-sm text-slate-600 mb-4">Este script maneja el envío del mensaje, muestra el indicador "Pensando..." y consume la API del middleware. Puedes integrarlo en tu <code class="bg-slate-200 px-1 rounded text-slate-700">app.js</code>.</p>
+                                <p class="text-sm text-slate-600 mb-4">Script básico para manejar el evento de enviar, renderizar el mensaje del usuario, mostrar el indicador de carga y consumir la API del middleware. <strong class="text-red-500">Nota:</strong> Se requiere implementar el endpoint real.</p>
                                 
                                 <div class="bg-[#1e1e1e] p-4 rounded-xl overflow-hidden relative shadow-inner">
                                     <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
@@ -971,14 +1005,14 @@ async function sendMsgToAPI() {
     
     // 1. Mostrar mensaje del usuario
     msgsContainer.innerHTML += \`
-        &lt;div style="background:#14b8a6; color:#fff; padding:10px 14px; border-radius:12px 12px 2px 12px; font-size:13px; max-width:85%; align-self:flex-end; line-height:1.4;"&gt;
+        &lt;div style="background:#FFD100; color:#333; padding:10px 14px; border-radius:12px 12px 2px 12px; font-size:13px; max-width:85%; align-self:flex-end; line-height:1.4;"&gt;
             \${msg}
         &lt;/div&gt;
     \`;
     input.value = '';
     msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-    // 2. Mostrar indicador de latencia
+    // 2. Mostrar indicador de latencia "Pensando..."
     const loadingId = 'loading-' + Date.now();
     msgsContainer.innerHTML += \`
         &lt;div id="\${loadingId}" style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#94a3b8; align-self:flex-start; font-style:italic;"&gt;
@@ -987,9 +1021,9 @@ async function sendMsgToAPI() {
     \`;
     msgsContainer.scrollTop = msgsContainer.scrollHeight;
 
-    // 3. Llamada al Backend (Reemplazar con tu endpoint real)
+    // 3. Llamada al Backend (Reemplazar URL con la de tu middleware)
     try {
-        const response = await fetch('/api/v1/bot/chat', {
+        const response = await fetch('/api/v1/gemini/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: msg, session_id: 'user_123' })
@@ -997,8 +1031,8 @@ async function sendMsgToAPI() {
         
         const data = await response.json();
         
+        // Quitar loading y mostrar respuesta de la IA
         document.getElementById(loadingId).remove();
-        
         msgsContainer.innerHTML += \`
             &lt;div style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
                 \${data.answer}
@@ -1008,11 +1042,13 @@ async function sendMsgToAPI() {
 
     } catch (error) {
         document.getElementById(loadingId).remove();
-        console.error("Error conectando con la IA:", error);
+        console.error("Error API Chat:", error);
+        // Manejo de errores visual opcional aquí
     }
 }</pre>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
