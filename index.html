@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; overflow: hidden; }
@@ -179,6 +180,8 @@
             z-index: 0;
         }
         .timeline-item:last-child::before { display: none; }
+        
+        .svg-avatar { width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body class="flex h-screen text-slate-800">
@@ -188,8 +191,26 @@
         <!-- Logo y Cabecera -->
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-3xl shadow-inner relative">
-                    🤖
+                <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden p-1">
+                    <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="60" r="38" fill="#795548"/>
+                        <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
+                        <circle cx="35" cy="50" r="6" fill="#000"/>
+                        <circle cx="65" cy="50" r="6" fill="#000"/>
+                        <circle cx="37" cy="48" r="2" fill="#fff"/>
+                        <circle cx="67" cy="48" r="2" fill="#fff"/>
+                        <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
+                        <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
+                        <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
+                        <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
+                        <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                        <circle cx="17" cy="59" r="4" fill="#34495E"/>
+                        <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                        <circle cx="83" cy="59" r="4" fill="#34495E"/>
+                        <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
+                    </svg>
                     <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
@@ -279,8 +300,26 @@
         </div>
 
         <!-- Botón Flotante Chat (FAB Ampliado) -->
-        <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-tinka-green hover:bg-tinka-green_dark text-white rounded-full shadow-2xl flex items-center justify-center text-4xl transition-transform hover:scale-105 z-40 border-4 border-white">
-            🤖
+        <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-slate-100 hover:bg-slate-200 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 z-40 border-4 border-tinka-green overflow-hidden p-1">
+             <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="60" r="38" fill="#795548"/>
+                <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
+                <circle cx="35" cy="50" r="6" fill="#000"/>
+                <circle cx="65" cy="50" r="6" fill="#000"/>
+                <circle cx="37" cy="48" r="2" fill="#fff"/>
+                <circle cx="67" cy="48" r="2" fill="#fff"/>
+                <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
+                <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
+                <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
+                <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
+                <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                <circle cx="17" cy="59" r="4" fill="#34495E"/>
+                <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                <circle cx="83" cy="59" r="4" fill="#34495E"/>
+                <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
+            </svg>
         </button>
         
         <!-- Elemento Oculto para Generación de PDF -->
@@ -338,9 +377,27 @@
         <!-- Header Chat -->
         <div class="bg-tinka-green p-4 flex items-center justify-between shadow-md relative z-10">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl relative shadow-inner">
-                    🤖
-                    <div class="absolute 0 top-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center relative shadow-inner overflow-hidden p-0.5">
+                    <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="60" r="38" fill="#795548"/>
+                        <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
+                        <circle cx="35" cy="50" r="6" fill="#000"/>
+                        <circle cx="65" cy="50" r="6" fill="#000"/>
+                        <circle cx="37" cy="48" r="2" fill="#fff"/>
+                        <circle cx="67" cy="48" r="2" fill="#fff"/>
+                        <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
+                        <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
+                        <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
+                        <path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="#2C3E50" stroke-width="5"/>
+                        <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                        <circle cx="17" cy="59" r="4" fill="#34495E"/>
+                        <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
+                        <circle cx="83" cy="59" r="4" fill="#34495E"/>
+                        <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
+                    </svg>
+                    <div class="absolute top-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
                     <h3 class="font-bold text-white text-lg leading-tight">Asistente Tinka IA</h3>
@@ -371,8 +428,8 @@
         <div class="flex-1 p-4 overflow-y-auto bg-slate-50 chat-scroll flex flex-col gap-4" id="chat-messages">
             <!-- Mensaje Bienvenida -->
             <div class="flex flex-col gap-1 items-start">
-                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700">
-                    ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>¿En qué te puedo ayudar hoy? Selecciona una opción rápida o escríbeme tu duda.
+                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700 flex items-start gap-2">
+                     ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>¿En qué te puedo ayudar hoy? Selecciona una opción rápida o escríbeme tu duda.
                 </div>
                 <span class="text-[10px] text-slate-400 ml-2">Bot • Ahora</span>
             </div>
@@ -525,6 +582,10 @@
                     <span class="w-8">🏗️</span>
                     <span>Arquitectura Tecnológica</span>
                 </div>
+                <div onclick="switchView('guiaDev')" class="nav-item ${currentView === 'guiaDev' ? 'active' : ''}">
+                    <span class="w-8">💻</span>
+                    <span>Guía Integración</span>
+                </div>
                 <div class="my-4 border-b border-slate-200"></div>
             `;
             
@@ -561,6 +622,8 @@
                 renderRules(content);
             } else if (currentView === 'architecture') {
                 renderArchitecture(content);
+            } else if (currentView === 'guiaDev') {
+                renderGuiaDev(content);
             } else {
                 renderCategory(content, currentView);
             }
@@ -689,91 +752,6 @@
                             </div>
                         </div>
 
-                        <h3 class="font-bold text-slate-800 mb-6 uppercase tracking-wide text-sm">Roadmap Evolutivo (Timeline)</h3>
-                        <div class="relative py-4 pl-4 max-w-4xl mx-auto">
-                            <div class="absolute left-[50%] top-0 bottom-0 w-1 bg-slate-200 -translate-x-1/2"></div>
-                            
-                            <div class="flex items-center justify-between mb-12 relative w-full timeline-item">
-                                <div class="w-[45%] text-right pr-10">
-                                    <h4 class="font-bold text-lg text-slate-800">Fase 1: Asistente Informativo & Cross-selling</h4>
-                                    <p class="text-sm text-slate-500 mt-2">Despliegue del motor RAG (LLM). Respuestas sobre cómo jugar, reglas, lectura de resultados y enrutamiento inteligente. Inclusión de Cross-selling proactivo en el flujo del chat.</p>
-                                </div>
-                                <div class="absolute left-1/2 -translate-x-1/2 w-6 h-6 bg-tinka-green rounded-full border-4 border-white shadow-md z-10"></div>
-                                <div class="w-[45%]"></div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between mb-12 relative w-full timeline-item">
-                                <div class="w-[45%]"></div>
-                                <div class="absolute left-1/2 -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-md z-10"></div>
-                                <div class="w-[45%] pl-10">
-                                    <h4 class="font-bold text-lg text-slate-800">Fase 2: Asistente Transaccional (Integrado)</h4>
-                                    <p class="text-sm text-slate-500 mt-2">Conexión con APIs seguras. El bot podrá validar identidad (KYC), mostrar saldo en billetera, gestionar suscripciones activas y guiar en retiros de premios directamente desde la cuenta del usuario logueado. <strong class="text-blue-600">Además, incluirá la derivación a un asesor humano mediante integración directa, transfiriendo todo el historial de la charla y la información del cliente para una atención sin fricciones.</strong></p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between relative w-full timeline-item">
-                                <div class="w-[45%] text-right pr-10">
-                                    <h4 class="font-bold text-lg text-slate-800">Fase 3: Personalización de la Oferta</h4>
-                                    <p class="text-sm text-slate-500 mt-2">Alineación con el proyecto de Segmentación y Agrupación. El bot ofrecerá bonos y sugerencias hiper-personalizadas (Data-Driven) basadas en el comportamiento histórico del jugador.</p>
-                                </div>
-                                <div class="absolute left-1/2 -translate-x-1/2 w-6 h-6 bg-tinka-yellow rounded-full border-4 border-white shadow-md z-10"></div>
-                                <div class="w-[45%]"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderArchitecture(container) {
-            container.innerHTML = `
-                <div class="max-w-6xl mx-auto">
-                    <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-100">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="text-4xl">🏗️</div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Arquitectura Tecnológica Multi-Capa</h2>
-                                <p class="text-slate-500 mt-1 font-medium">Diseño robusto para garantizar seguridad de datos, escalabilidad y tiempos de respuesta (baja latencia).</p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-6">
-                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-slate-50/50">
-                                <div class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-desktop"></i></div>
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-lg">1. Capa de Presentación (Frontend Omnicanal)</h3>
-                                    <p class="text-slate-600 text-sm mt-1 mb-3">El punto de contacto directo con el jugador en sus canales preferidos. Diseñado para integrarse sin fricción en los portales existentes.</p>
-                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Web Components</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Meta WhatsApp API</span></div>
-                                </div>
-                            </div>
-                            
-                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-purple-50/50">
-                                <div class="w-14 h-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-brain"></i></div>
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-lg">2. Capa Cognitiva & Orquestación (Middleware Gemini)</h3>
-                                    <p class="text-slate-600 text-sm mt-1 mb-3">El "Cerebro". Aquí reside la Inteligencia Artificial. Evalúa intenciones, previene alucinaciones mediante Guardrails estrictos y decide si recuperar información (RAG) o llamar a una API del core.</p>
-                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Google Gemini Pro / Flash</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">LangChain Orquestador</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">NVIDIA NeMo Guardrails</span></div>
-                                </div>
-                            </div>
-
-                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-green-50/50">
-                                <div class="w-14 h-14 rounded-full bg-green-100 text-tinka-green flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-database"></i></div>
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-lg">3. Capa de Datos Vectoriales y Memoria (RAG)</h3>
-                                    <p class="text-slate-600 text-sm mt-1 mb-3">Donde viven las reglas de juego, tutoriales y políticas. Convierte el texto en vectores matemáticos para búsqueda semántica ultrarrápida y almacena el contexto de la charla.</p>
-                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Pinecone / Weaviate (Vector DB)</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Redis (Memoria de Sesión)</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Gemini Embeddings</span></div>
-                                </div>
-                            </div>
-
-                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-yellow-50/50">
-                                <div class="w-14 h-14 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-network-wired"></i></div>
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-lg">4. Capa Transaccional (Integraciones Core)</h3>
-                                    <p class="text-slate-600 text-sm mt-1 mb-3">Conexión directa y segura mediante OAuth2 con los sistemas bancarios y de identidad de La Tinka (Se activa progresivamente desde la Fase 2).</p>
-                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">La Tinka API Gateway</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Plataforma KYC</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Zendesk/Genesys (Fallback a Humano)</span></div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             `;
@@ -844,6 +822,195 @@
                                 <div class="bg-white p-4 rounded-xl border border-slate-200 font-mono text-xs text-blue-700">
                                     SI fallos_consecutivos >= 3 O input incluye 'asesor|humano'<br>
                                     <strong class="text-tinka-green">ENTONCES</strong> Mostrar enlace directo a la página de Contacto Zendesk.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderArchitecture(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto">
+                    <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-100">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="text-4xl">🏗️</div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Arquitectura Tecnológica Multi-Capa</h2>
+                                <p class="text-slate-500 mt-1 font-medium">Diseño robusto para garantizar seguridad de datos, escalabilidad y tiempos de respuesta (baja latencia).</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-slate-50/50">
+                                <div class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-desktop"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">1. Capa de Presentación (Frontend Omnicanal)</h3>
+                                    <p class="text-slate-600 text-sm mt-1 mb-3">El punto de contacto directo con el jugador en sus canales preferidos. Diseñado para integrarse sin fricción en los portales existentes.</p>
+                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Web Components</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Meta WhatsApp API</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-purple-50/50">
+                                <div class="w-14 h-14 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-brain"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">2. Capa Cognitiva & Orquestación (Middleware Gemini)</h3>
+                                    <p class="text-slate-600 text-sm mt-1 mb-3">El "Cerebro". Aquí reside la Inteligencia Artificial. Evalúa intenciones, previene alucinaciones mediante Guardrails estrictos y decide si recuperar información (RAG) o llamar a una API del core.</p>
+                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Google Gemini Pro / Flash</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">LangChain Orquestador</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">NVIDIA NeMo Guardrails</span></div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-green-50/50">
+                                <div class="w-14 h-14 rounded-full bg-green-100 text-tinka-green flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-database"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">3. Capa de Datos Vectoriales y Memoria (RAG)</h3>
+                                    <p class="text-slate-600 text-sm mt-1 mb-3">Donde viven las reglas de juego, tutoriales y políticas. Convierte el texto en vectores matemáticos para búsqueda semántica ultrarrápida y almacena el contexto de la charla.</p>
+                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Pinecone / Weaviate (Vector DB)</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Redis (Memoria de Sesión)</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Gemini Embeddings</span></div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl border border-slate-100 flex gap-6 hover:shadow-md transition-shadow bg-yellow-50/50">
+                                <div class="w-14 h-14 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-network-wired"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">4. Capa Transaccional (Integraciones Core)</h3>
+                                    <p class="text-slate-600 text-sm mt-1 mb-3">Conexión directa y segura mediante OAuth2 con los sistemas bancarios y de identidad de La Tinka (Se activa progresivamente desde la Fase 2).</p>
+                                    <div class="flex gap-2 text-xs font-mono"><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">La Tinka API Gateway</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Plataforma KYC</span><span class="px-3 py-1 bg-white border border-slate-200 rounded-lg">Zendesk/Genesys (Fallback a Humano)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGuiaDev(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto">
+                    <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-100">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="text-4xl">💻</div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Guía de Integración Frontend</h2>
+                                <p class="text-slate-500 mt-1 font-medium">Código y estructura recomendada para integrar el asistente en la web actual.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            
+                            <!-- Sección HTML/CSS -->
+                            <div class="p-6 border border-slate-200 bg-slate-50 rounded-2xl">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-code text-blue-500"></i> Código Base: Interfaz del Chat (HTML/CSS)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Inserta este bloque al final del <code class="bg-slate-200 px-1 rounded text-slate-700">&lt;body&gt;</code> de la web. Utiliza estilos embebidos para no interferir con las hojas de estilo existentes.</p>
+                                
+                                <div class="bg-[#1e1e1e] p-4 rounded-xl overflow-hidden relative shadow-inner">
+                                    <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
+                                        <span class="text-xs text-gray-400 font-mono">index.html</span>
+                                        <button onclick="navigator.clipboard.writeText(document.getElementById('code-ui').innerText); showToast('Código UI copiado');" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition"><i class="fa-solid fa-copy"></i> Copiar</button>
+                                    </div>
+                                    <pre id="code-ui" class="text-xs text-green-400 font-mono overflow-x-auto whitespace-pre pb-2">
+&lt;!-- BOTÓN FLOTANTE TINKONG --&gt;
+&lt;button id="tinkong-fab" onclick="document.getElementById('tinkong-chatbox').style.display='flex'; this.style.display='none';" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background-color:#14b8a6; border:none; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); cursor:pointer; z-index:9999; display:flex; align-items:center; justify-content:center; overflow:hidden;"&gt;
+    &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- CONTENEDOR DEL CHATBOX (Oculto por defecto) --&gt;
+&lt;div id="tinkong-chatbox" style="display:none; position:fixed; bottom:20px; right:20px; width:340px; height:500px; max-height:85vh; background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); flex-direction:column; overflow:hidden; font-family:sans-serif; z-index:10000; border:1px solid #e2e8f0;"&gt;
+    &lt;!-- Cabecera --&gt;
+    &lt;div style="background:#14b8a6; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;"&gt;
+        &lt;div style="display:flex; align-items:center; gap:10px;"&gt;
+            &lt;div style="width:32px; height:32px; background:#fff; border-radius:50%; overflow:hidden;"&gt;
+                &lt;svg viewBox="0 0 100 100" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg"&gt;&lt;circle cx="50" cy="60" r="38" fill="#795548"/&gt;&lt;ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/&gt;&lt;circle cx="35" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="65" cy="50" r="6" fill="#000"/&gt;&lt;circle cx="37" cy="48" r="2" fill="#fff"/&gt;&lt;circle cx="67" cy="48" r="2" fill="#fff"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/&gt;&lt;path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/&gt;&lt;path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/&gt;&lt;path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/&gt;&lt;path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="#2C3E50" stroke-width="5"/&gt;&lt;rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="17" cy="59" r="4" fill="#34495E"/&gt;&lt;rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/&gt;&lt;circle cx="83" cy="59" r="4" fill="#34495E"/&gt;&lt;path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/&gt;&lt;circle cx="65" cy="90" r="5" fill="#7F8C8D"/&gt;&lt;/svg&gt;
+            &lt;/div&gt;
+            &lt;span style="color:#fff; font-weight:bold; font-size:14px;"&gt;Tinkong IA&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;button onclick="document.getElementById('tinkong-chatbox').style.display='none'; document.getElementById('tinkong-fab').style.display='flex';" style="background:none; border:none; color:#fff; font-weight:bold; cursor:pointer;"&gt;X&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Área de mensajes --&gt;
+    &lt;div id="tinkong-msgs" style="flex:1; padding:16px; overflow-y:auto; background:#f8fafc; display:flex; flex-direction:column; gap:12px;"&gt;
+        &lt;!-- Mensaje Bot --&gt;
+        &lt;div style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
+            ¡Hola! Soy Tinkong, tu copiloto de loterías. ¿En qué te ayudo?
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Input --&gt;
+    &lt;div style="padding:12px; border-top:1px solid #e2e8f0; background:#fff; display:flex; gap:8px;"&gt;
+        &lt;input type="text" id="tinkong-input" placeholder="Escribe aquí..." style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:20px; font-size:13px; outline:none;"&gt;
+        &lt;button id="tinkong-send" style="background:#14b8a6; color:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; display:flex; align-items:center; justify-content:center;"&gt;
+            &amp;#10148;
+        &lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                                </div>
+                            </div>
+
+                            <!-- Sección JS -->
+                            <div class="p-6 border border-slate-200 bg-slate-50 rounded-2xl">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-server text-yellow-500"></i> Lógica de Conexión (JavaScript)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Este script maneja el envío del mensaje, muestra el indicador "Pensando..." y consume la API del middleware. Puedes integrarlo en tu <code class="bg-slate-200 px-1 rounded text-slate-700">app.js</code>.</p>
+                                
+                                <div class="bg-[#1e1e1e] p-4 rounded-xl overflow-hidden relative shadow-inner">
+                                    <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
+                                        <span class="text-xs text-gray-400 font-mono">chat-logic.js</span>
+                                        <button onclick="navigator.clipboard.writeText(document.getElementById('code-js').innerText); showToast('Código JS copiado');" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition"><i class="fa-solid fa-copy"></i> Copiar</button>
+                                    </div>
+                                    <pre id="code-js" class="text-xs text-yellow-300 font-mono overflow-x-auto whitespace-pre pb-2">
+document.getElementById('tinkong-send').addEventListener('click', sendMsgToAPI);
+document.getElementById('tinkong-input').addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') sendMsgToAPI();
+});
+
+async function sendMsgToAPI() {
+    const input = document.getElementById('tinkong-input');
+    const msg = input.value.trim();
+    if(!msg) return;
+
+    const msgsContainer = document.getElementById('tinkong-msgs');
+    
+    // 1. Mostrar mensaje del usuario
+    msgsContainer.innerHTML += \`
+        &lt;div style="background:#14b8a6; color:#fff; padding:10px 14px; border-radius:12px 12px 2px 12px; font-size:13px; max-width:85%; align-self:flex-end; line-height:1.4;"&gt;
+            \${msg}
+        &lt;/div&gt;
+    \`;
+    input.value = '';
+    msgsContainer.scrollTop = msgsContainer.scrollHeight;
+
+    // 2. Mostrar indicador de latencia
+    const loadingId = 'loading-' + Date.now();
+    msgsContainer.innerHTML += \`
+        &lt;div id="\${loadingId}" style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#94a3b8; align-self:flex-start; font-style:italic;"&gt;
+            Tinkong está pensando...
+        &lt;/div&gt;
+    \`;
+    msgsContainer.scrollTop = msgsContainer.scrollHeight;
+
+    // 3. Llamada al Backend (Reemplazar con tu endpoint real)
+    try {
+        const response = await fetch('/api/v1/bot/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: msg, session_id: 'user_123' })
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById(loadingId).remove();
+        
+        msgsContainer.innerHTML += \`
+            &lt;div style="background:#fff; padding:10px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
+                \${data.answer}
+            &lt;/div&gt;
+        \`;
+        msgsContainer.scrollTop = msgsContainer.scrollHeight;
+
+    } catch (error) {
+        document.getElementById(loadingId).remove();
+        console.error("Error conectando con la IA:", error);
+    }
+}</pre>
                                 </div>
                             </div>
                         </div>
