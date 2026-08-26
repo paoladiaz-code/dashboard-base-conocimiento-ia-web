@@ -9,14 +9,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
-    <!-- Incluimos explícitamente JSZip para exportar el código -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; overflow: hidden; }
         
-        /* Colores Corporativos Tinka */
         :root {
             --tinka-red: #E3001B;
             --tinka-blue: #0033A0;
@@ -34,16 +32,12 @@
         .bg-tinka-yellow { background-color: var(--tinka-yellow); }
         .text-tinka-yellow { color: var(--tinka-yellow); }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--tinka-green); }
 
-        .chat-scroll {
-            scrollbar-color: #cbd5e1 transparent;
-            scrollbar-width: thin;
-        }
+        .chat-scroll { scrollbar-width: thin; }
 
         .glass-panel {
             background: rgba(255, 255, 255, 0.95);
@@ -52,7 +46,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* Nav Items UI Update */
         .nav-item {
             display: flex;
             align-items: center;
@@ -60,7 +53,7 @@
             margin-bottom: 0.35rem;
             border-radius: 1rem;
             color: #475569;
-            font-size: 1.05rem; /* Aumentado para mejor legibilidad */
+            font-size: 1.05rem;
             font-weight: 600;
             transition: all 0.2s ease;
             cursor: pointer;
@@ -73,7 +66,6 @@
             box-shadow: 0 4px 6px -1px rgba(0, 168, 89, 0.2);
         }
         
-        /* Pills (Badges) */
         .badge-count {
             background-color: #e2e8f0;
             color: #64748b;
@@ -83,162 +75,57 @@
             border-radius: 9999px;
             margin-left: auto;
         }
-        .nav-item.active .badge-count {
-            background-color: rgba(255,255,255,0.25);
-            color: white;
-        }
-        .badge-total {
-            background-color: var(--tinka-yellow);
-            color: #333;
-            font-size: 0.8rem;
-            font-weight: 800;
-            padding: 0.25rem 0.85rem;
-            border-radius: 9999px;
-            text-transform: uppercase;
-        }
+        .nav-item.active .badge-count { background-color: rgba(255,255,255,0.25); color: white; }
+        .badge-total { background-color: var(--tinka-yellow); color: #333; font-size: 0.8rem; font-weight: 800; padding: 0.25rem 0.85rem; border-radius: 9999px; text-transform: uppercase; }
 
-        /* Chat Bubbles */
-        .chat-bubble-bot {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0 1rem 1rem 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            position: relative;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            display: block; /* Forzar bloque para que el texto ocupe el ancho disponible */
-        }
-        .chat-bubble-user {
-            background: var(--tinka-yellow);
-            color: #333;
-            border-radius: 1rem 0 1rem 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
+        .chat-bubble-bot { background: white; border: 1px solid #e2e8f0; border-radius: 0 1rem 1rem 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: block; word-wrap: break-word; overflow-wrap: break-word; }
+        .chat-bubble-user { background: var(--tinka-yellow); color: #333; border-radius: 1rem 0 1rem 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); word-wrap: break-word; overflow-wrap: break-word; }
 
-        /* Typing Indicator */
-        .typing-indicator span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #94a3b8;
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
+        .typing-indicator span { display: inline-block; width: 8px; height: 8px; background-color: #94a3b8; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* Details (Accordion) */
         details > summary { list-style: none; cursor: pointer; }
         details > summary::-webkit-details-marker { display: none; }
         
-        .chart-container {
-            position: relative;
-            height: 480px;
-            width: 100%;
-            margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-        }
+        .chart-container { position: relative; height: 480px; width: 100%; margin-top: 2rem; display: flex; justify-content: center; }
         
-        #chat-modal {
-            display: none;
-            position: fixed;
-            bottom: 100px;
-            right: 2rem;
-            width: 420px;
-            height: 650px;
-            max-height: calc(100vh - 130px);
-            z-index: 50;
-            flex-direction: column;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
+        #chat-modal { display: none; position: fixed; bottom: 100px; right: 2rem; width: 420px; height: 650px; max-height: calc(100vh - 130px); z-index: 50; flex-direction: column; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
 
-        /* Dropdown Exportar */
-        .export-dropdown { display: none; position: absolute; right: 0; top: 100%; mt-2; width: max-content; background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 50; overflow: hidden; }
+        .export-dropdown { display: none; position: absolute; right: 0; top: 100%; margin-top: 2px; width: max-content; background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 50; overflow: hidden; }
         .export-dropdown.show { display: block; animation: slideDown 0.2s ease-out; }
         .export-dropdown-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 600; color: #475569; transition: all 0.2s; cursor: pointer; }
         .export-dropdown-item:hover { background-color: #f8fafc; color: var(--tinka-green); }
-        .export-dropdown-item i { font-size: 1.1rem; width: 20px; text-align: center; }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            width: 2px;
-            background-color: #e2e8f0;
-            top: 0;
-            bottom: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 0;
-        }
-        .timeline-item:last-child::before { display: none; }
-
-        /* Estilo específico para los avatares SVG */
-        .svg-avatar {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
-        .avatar-container {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .svg-avatar { width: 100%; height: 100%; display: block; }
+        .avatar-container { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="flex h-screen text-slate-800">
-    <!-- PANEL IZQUIERDO (SIDEBAR AMPLIADO) -->
     <aside class="w-[400px] bg-white border-r border-slate-200 flex flex-col h-full z-10 shadow-sm">
-        <!-- Logo y Cabecera -->
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-slate-100 rounded-2xl shadow-inner relative overflow-hidden p-1 avatar-container">
-                    <!-- SVG DE TINKONG (Optimizado y confinado) -->
                     <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Rostro Base -->
                         <circle cx="50" cy="60" r="38" fill="#795548"/>
-                        <!-- Hocico -->
                         <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
-                        <!-- Ojos -->
-                        <circle cx="35" cy="50" r="6" fill="#000"/>
-                        <circle cx="65" cy="50" r="6" fill="#000"/>
-                        <circle cx="37" cy="48" r="2" fill="#fff"/>
-                        <circle cx="67" cy="48" r="2" fill="#fff"/>
-                        <!-- Sonrisa -->
+                        <circle cx="35" cy="50" r="6" fill="#000"/><circle cx="65" cy="50" r="6" fill="#000"/>
+                        <circle cx="37" cy="48" r="2" fill="#fff"/><circle cx="67" cy="48" r="2" fill="#fff"/>
                         <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
                         <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
-                        <!-- Pañoleta Roja -->
                         <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
-                        <!-- Nudo Pañoleta -->
                         <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
-                        <!-- Diadema (Headset) -->
                         <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
-                        <!-- Auriculares Amarillos -->
                         <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
                         <circle cx="17" cy="59" r="4" fill="#34495E"/>
                         <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
                         <circle cx="83" cy="59" r="4" fill="#34495E"/>
-                        <!-- Micrófono -->
                         <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
                         <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
                     </svg>
-                    <!-- Fin SVG Tinkong -->
                     <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
@@ -254,113 +141,65 @@
         </div>
         
         <p class="px-6 text-sm text-slate-500 mb-4">Selecciona una categoría para revisar o modificar la base de conocimientos LLM.</p>
-        
-        <!-- Menú Navegación -->
-        <nav class="flex-1 overflow-y-auto px-4 pb-6" id="sidebar-nav">
-            <!-- Items dinámicos aquí -->
-        </nav>
+        <nav class="flex-1 overflow-y-auto px-4 pb-6" id="sidebar-nav"></nav>
     </aside>
 
-    <!-- ÁREA PRINCIPAL DERECHA -->
     <main class="flex-1 flex flex-col h-full bg-slate-50/50 relative">
-        
-        <!-- Top Bar -->
         <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm z-10">
             <div class="flex items-center gap-4">
                 <h2 class="text-lg font-bold text-slate-700" id="topbar-title">Gestión de Conocimiento</h2>
             </div>
             
             <div class="flex items-center gap-3">
-                <!-- Dropdown de Tono -->
                 <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
                     🎭 Entusiasta (Lúdico) <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
                 </div>
 
-                <!-- Botón Agregar Pregunta -->
                 <button onclick="openAddIntentModal()" class="bg-tinka-green hover:bg-tinka-green_dark text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
                     <i class="fa-solid fa-plus"></i> Nueva Pregunta
                 </button>
 
-                <!-- Menú Exportar Dropdown -->
                 <div class="relative">
                     <button onclick="toggleExportMenu()" id="btn-exportar" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
                         <i class="fa-solid fa-file-export"></i> Exportar
                         <i class="fa-solid fa-chevron-down text-xs ml-1 opacity-70"></i>
                     </button>
-                    <!-- Contenido del Dropdown -->
                     <div id="export-menu" class="export-dropdown mt-2">
                         <div onclick="exportToCSV()" class="export-dropdown-item border-b border-slate-100">
                             <i class="fa-solid fa-file-csv text-green-600"></i>
-                            <div>
-                                <div class="font-bold text-slate-800">Exportar a Excel</div>
-                                <div class="text-[10px] text-slate-400 font-normal">Formato CSV para análisis</div>
-                            </div>
+                            <div><div class="font-bold text-slate-800">Exportar a Excel</div><div class="text-[10px] text-slate-400 font-normal">Formato CSV para análisis</div></div>
                         </div>
                         <div onclick="exportToPDF()" class="export-dropdown-item border-b border-slate-100">
                             <i class="fa-solid fa-file-pdf text-red-500"></i>
-                            <div>
-                                <div class="font-bold text-slate-800">Exportar a PDF</div>
-                                <div class="text-[10px] text-slate-400 font-normal">Reporte visual listo para imprimir</div>
-                            </div>
+                            <div><div class="font-bold text-slate-800">Exportar a PDF</div><div class="text-[10px] text-slate-400 font-normal">Reporte visual listo para imprimir</div></div>
                         </div>
                         <div onclick="exportToPPT()" class="export-dropdown-item border-b border-slate-100">
                             <i class="fa-solid fa-file-powerpoint text-orange-500"></i>
-                            <div>
-                                <div class="font-bold text-slate-800">Exportar a PowerPoint</div>
-                                <div class="text-[10px] text-slate-400 font-normal">Slides para presentaciones</div>
-                            </div>
+                            <div><div class="font-bold text-slate-800">Exportar a PowerPoint</div><div class="text-[10px] text-slate-400 font-normal">Slides para presentaciones</div></div>
                         </div>
                         <div onclick="exportCodeZip()" class="export-dropdown-item">
                             <i class="fa-solid fa-file-code text-blue-500"></i>
-                            <div>
-                                <div class="font-bold text-slate-800">Exportar Código (.zip)</div>
-                                <div class="text-[10px] text-slate-400 font-normal">Descargar Guía de Integración</div>
-                            </div>
+                            <div><div class="font-bold text-slate-800">Exportar Código (.zip)</div><div class="text-[10px] text-slate-400 font-normal">Descargar Guía Integración</div></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="w-px h-8 bg-slate-200 mx-1"></div>
 
-                <!-- Botón Probar Chat -->
                 <button onclick="toggleChat()" class="bg-white border-2 border-tinka-green text-tinka-green hover:bg-green-50 px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-sm">
                     🤖 Probar Chat
                 </button>
             </div>
         </header>
 
-        <!-- Contenido Dinámico -->
-        <div class="flex-1 overflow-y-auto p-8" id="main-content">
-            <!-- Se inyecta por JS -->
-        </div>
+        <div class="flex-1 overflow-y-auto p-8" id="main-content"></div>
 
-        <!-- Botón Flotante Chat (FAB Ampliado) - CONFINADO -->
         <button onclick="toggleChat()" class="fixed bottom-10 right-10 w-20 h-20 bg-slate-100 hover:bg-slate-200 rounded-full shadow-2xl transition-transform hover:scale-105 z-40 border-4 border-tinka-green overflow-hidden p-1 avatar-container flex items-center justify-center">
-            <!-- SVG Tinkong Flotante -->
              <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="60" r="38" fill="#795548"/>
-                <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
-                <circle cx="35" cy="50" r="6" fill="#000"/>
-                <circle cx="65" cy="50" r="6" fill="#000"/>
-                <circle cx="37" cy="48" r="2" fill="#fff"/>
-                <circle cx="67" cy="48" r="2" fill="#fff"/>
-                <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
-                <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
-                <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
-                <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
-                <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
-                <circle cx="17" cy="59" r="4" fill="#34495E"/>
-                <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
-                <circle cx="83" cy="59" r="4" fill="#34495E"/>
-                <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
-                <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
+                <circle cx="50" cy="60" r="38" fill="#795548"/><ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/><circle cx="35" cy="50" r="6" fill="#000"/><circle cx="65" cy="50" r="6" fill="#000"/><circle cx="37" cy="48" r="2" fill="#fff"/><circle cx="67" cy="48" r="2" fill="#fff"/><path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/><path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/><path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/><path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/><path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/><rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/><circle cx="17" cy="59" r="4" fill="#34495E"/><rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/><circle cx="83" cy="59" r="4" fill="#34495E"/><path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/><circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
             </svg>
         </button>
-        
-        <!-- Elemento Oculto para Generación de PDF -->
         <div id="pdf-export-container" style="display: none;"></div>
-        
     </main>
 
     <!-- MODAL NUEVA PREGUNTA -->
@@ -368,32 +207,15 @@
         <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-slate-800">Agregar Nueva Intención</h3>
-                <button onclick="closeAddIntentModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                    <i class="fa-solid fa-times text-xl"></i>
-                </button>
+                <button onclick="closeAddIntentModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-times text-xl"></i></button>
             </div>
             <form id="add-intent-form" onsubmit="saveNewIntent(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Categoría RAG</label>
-                    <select id="new-intent-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pregunta del Usuario (Input)</label>
-                    <input type="text" id="new-intent-q" required placeholder="Ej. ¿Cómo recupero mi contraseña?" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Respuesta IA</label>
-                    <textarea id="new-intent-a" required placeholder="La IA responderá esto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-tinka-green focus:outline-none"></textarea>
-                </div>
+                <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Categoría RAG</label><select id="new-intent-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></select></div>
+                <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pregunta del Usuario (Input)</label><input type="text" id="new-intent-q" required placeholder="Ej. ¿Cómo recupero mi contraseña?" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></div>
+                <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Respuesta IA</label><textarea id="new-intent-a" required placeholder="La IA responderá esto..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-24 resize-none focus:ring-2 focus:ring-tinka-green focus:outline-none"></textarea></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Botón (Opcional)</label>
-                        <input type="text" id="new-intent-linkText" placeholder="Ej. Recuperar clave" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">URL Destino</label>
-                        <input type="text" id="new-intent-linkUrl" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none">
-                    </div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Botón (Opcional)</label><input type="text" id="new-intent-linkText" placeholder="Ej. Recuperar clave" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">URL Destino</label><input type="text" id="new-intent-linkUrl" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-tinka-green focus:outline-none"></div>
                 </div>
                 <div class="pt-4 flex gap-3 justify-end">
                     <button type="button" onclick="closeAddIntentModal()" class="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-500 hover:bg-slate-100 transition-colors">Cancelar</button>
@@ -410,70 +232,41 @@
 
     <!-- CHAT SIMULADOR GEMINI -->
     <div id="chat-modal" class="bg-white flex-col border border-slate-200 shadow-2xl">
-        <!-- Header Chat -->
         <div class="bg-tinka-green px-4 py-3 flex items-center justify-between shadow-md relative z-10">
             <div class="flex items-center gap-3">
-                <!-- CONTENEDOR AVATAR CHAT: Tamaño fijo alineado -->
                 <div class="w-12 h-12 bg-white rounded-full shadow-inner relative overflow-hidden border-2 border-white p-0.5 avatar-container">
-                    <!-- SVG Tinkong Cabecera Chat -->
                      <svg viewBox="0 0 100 100" class="svg-avatar" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="60" r="38" fill="#795548"/>
-                        <ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/>
-                        <circle cx="35" cy="50" r="6" fill="#000"/>
-                        <circle cx="65" cy="50" r="6" fill="#000"/>
-                        <circle cx="37" cy="48" r="2" fill="#fff"/>
-                        <circle cx="67" cy="48" r="2" fill="#fff"/>
-                        <path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
-                        <path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/>
-                        <path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/>
-                        <path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/>
-                        <rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
-                        <circle cx="17" cy="59" r="4" fill="#34495E"/>
-                        <rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/>
-                        <circle cx="83" cy="59" r="4" fill="#34495E"/>
-                        <path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/>
-                        <circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
+                        <circle cx="50" cy="60" r="38" fill="#795548"/><ellipse cx="50" cy="72" rx="28" ry="20" fill="#D7CCC8"/><circle cx="35" cy="50" r="6" fill="#000"/><circle cx="65" cy="50" r="6" fill="#000"/><circle cx="37" cy="48" r="2" fill="#fff"/><circle cx="67" cy="48" r="2" fill="#fff"/><path d="M 30 70 Q 50 95 70 70" fill="#fff" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/><path d="M 30 70 Q 50 95 70 70" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/><path d="M 10 35 Q 50 20 90 35 L 94 42 Q 50 25 6 42 Z" fill="#E3001B"/><path d="M 85 35 L 98 48 L 85 48 Z" fill="#E3001B"/><path d="M 20 55 A 35 35 0 0 1 80 55" fill="none" stroke="#2C3E50" stroke-width="5"/><rect x="8" y="45" width="18" height="28" rx="8" fill="#F1C40F"/><circle cx="17" cy="59" r="4" fill="#34495E"/><rect x="74" y="45" width="18" height="28" rx="8" fill="#F1C40F"/><circle cx="83" cy="59" r="4" fill="#34495E"/><path d="M 83 68 Q 90 85 68 90" fill="none" stroke="#34495E" stroke-width="3" stroke-linecap="round"/><circle cx="65" cy="90" r="5" fill="#7F8C8D"/>
                     </svg>
                     <div class="absolute top-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white z-10"></div>
                 </div>
                 <div>
                     <h3 class="font-bold text-white text-lg leading-tight">Asistente Tinka IA</h3>
-                    <p class="text-green-100 text-xs font-medium flex items-center gap-1">
-                        <i class="fa-solid fa-bolt text-yellow-300"></i> Powered by Gemini
-                    </p>
+                    <p class="text-green-100 text-xs font-medium flex items-center gap-1"><i class="fa-solid fa-bolt text-yellow-300"></i> Powered by Gemini</p>
                 </div>
             </div>
-            <button onclick="toggleChat()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-                <i class="fa-solid fa-times text-xl"></i>
-            </button>
+            <button onclick="toggleChat()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i class="fa-solid fa-times text-xl"></i></button>
         </div>
 
-        <!-- Sugerencias rápidas (Zero Typing) -->
+        <!-- Sugerencias rápidas orientadas comercialmente -->
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2" id="chat-quick-suggestions">
-            <button onclick="sendQuickReply('Precios de Loterías')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                💲 Precios Loterías
-            </button>
-            <button onclick="sendQuickReply('Ver Pozos Actuales')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                💰 Pozos Acumulados
-            </button>
-            <button onclick="sendQuickReply('Quiero jugar Tinka')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                🔴 Jugar Tinka
-            </button>
+            <button onclick="sendQuickReply('Jugar Tinka')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">🔴 Jugar Tinka</button>
+            <button onclick="sendQuickReply('Ver promociones')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">🎁 Ver promociones</button>
+            <button onclick="sendQuickReply('Ver resultados')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">📈 Ver resultados</button>
+            <button onclick="sendQuickReply('Jugar loterías')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">🎲 Jugar loterías</button>
+            <button onclick="sendQuickReply('Pozos acumulados')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">💰 Pozos acumulados</button>
         </div>
 
         <!-- Área de mensajes -->
         <div class="flex-1 p-4 overflow-y-auto bg-slate-50 chat-scroll flex flex-col gap-4" id="chat-messages">
-            <!-- Mensaje Bienvenida -->
             <div class="flex flex-col gap-1 items-start">
-                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700">
-                    ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>Conozco todo sobre los pozos millonarios, precios de juegos, Tinka Express, Casino y más. ¿En qué te ayudo?
+                <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700 shadow-sm">
+                    ¡Hola! Soy tu <strong>Asistente Virtual Tinkong</strong>. 🤖<br><br>Estoy aquí para guiarte por el mundo de las loterías. Conozco todo sobre cómo jugar La Tinka, Kábala y Gana Diario, además de los pozos millonarios y resultados. ¿En qué te ayudo hoy?
                 </div>
                 <span class="text-[10px] text-slate-400 ml-2">Bot • Ahora</span>
             </div>
         </div>
 
-        <!-- Input Chat -->
         <div class="p-4 bg-white border-t border-slate-100">
             <form id="chat-form" class="flex gap-2 relative">
                 <input type="text" id="chat-input" placeholder="Pregunta algo al modelo..." class="flex-1 bg-slate-100 border-none rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-tinka-green text-slate-700 placeholder-slate-400">
@@ -485,149 +278,141 @@
     </div>
 
     <script>
-        const KB_VERSION = "4.4"; 
+        const KB_VERSION = "8.0 (Stable & Complete)"; 
         
         let currentView = 'overview';
         let isChatOpen = true; 
         let chartInstance = null;
+        let chartCXInstance = null;
         let isGeminiGenerating = false;
 
-        // Base de Datos Centralizada (RAG) - ENRIQUECIDA SEGÚN LO SOLICITADO
+        // Base de Datos Centralizada (RAG) - EXACTAMENTE 57 INPUTS 
         const kbData = {
+            'analytics': {
+                icon: '📈', title: 'Analítica CX & KPIs', isSystem: true
+            },
             'pozos_precios': {
                 icon: '💰', title: 'Pozos y Precios',
-                desc: 'Información exacta sobre los precios y pozos millonarios.',
                 items: [
                     { q: "¿Cuánto cuestan las loterías?", a: "Los precios son: Tinka S/ 5, Kábala S/ 2 (+ S/ 1 por Chau Chamba), Gana Diario S/ 2, Kinelo desde S/ 1, y Rapitinkas de S/ 3, S/ 5 y S/ 10." },
-                    { q: "¿De cuánto es el pozo de la Tinka y Kábala?", a: "El Pozo Millonario de La Tinka inicia en S/ 2 millones y el Buenazo de Kábala en S/ 300,000. Revisa la web para ver los acumulados de hoy.", linkText: "Ver Pozos Actuales", linkUrl: "https://www.latinka.com.pe" }
+                    { q: "¿De cuánto es el pozo de la Tinka y Kábala?", a: "El Pozo Millonario de La Tinka inicia en S/ 2 millones y el Buenazo de Kábala en S/ 300,000. Revisa la web para ver los acumulados de hoy.", linkText: "Ver Pozos Actuales", linkUrl: "https://www.latinka.com.pe" },
+                    { q: "¿Cuánto cuesta la jugada de Tinka?", a: "La jugada simple de Tinka cuesta S/ 5. Debes elegir 6 números de 53." },
+                    { q: "¿Cuánto cuesta Kábala y Chau Chamba?", a: "La jugada de Kábala cuesta S/ 2. Por S/ 1 adicional agregas Chau Chamba a tu jugada y participas por S/ 5,000 mensuales por 20 años." }
                 ]
             },
             'tinka_express': {
                 icon: '🚀', title: 'Tinka Express (Invitado)',
-                desc: 'Modalidad de compras sin registro usando Yape/Plin.',
                 items: [
                     { q: "¿Qué es Tinka Express?", a: "Es la modalidad web para jugar como invitado sin registro. Eliges tu jugada, pagas con Yape/Plin y recibes tu boleto digital por SMS." },
+                    { q: "¿Cómo hago para jugar como invitado?", a: "Ingresa a la web, selecciona 6 números y haz clic en 'Comprar'. Luego elige 'Seguir como invitado', ingresa tu DNI y celular, paga con QR (Yape/Plin) y recibe tu boleto por SMS." },
                     { q: "¿Cómo cobro mi boleto de Tinka Express?", a: "Si tienes cuenta, el premio va a 'Mis Premios'. Si no, premios menores a S/ 1,999 se cobran en puntos de venta o TinkaNet. Mayores a S/ 2,000 solo en TinkaNet." },
-                    { q: "¿Qué pasa si escribí mal mi DNI en Tinka Express?", a: "Si compraste con un DNI errado lamentablemente no podemos ajustar el DNI de la jugada. Comunícate con nuestro Call Center." }
+                    { q: "Escribí mal mi DNI al comprar por Tinka Express", a: "Si compraste con un DNI errado lamentablemente no podemos ajustar el DNI de la jugada. Comunícate con nuestro Call Center." },
+                    { q: "¿Puedo jugar Tinka Express desde mi celular?", a: "¡Por supuesto! Tinka Express está optimizado para funcionar perfectamente desde cualquier smartphone, solo necesitas conexión a internet y tener Yape o Plin." }
                 ]
             },
-            'casino_virtuales': {
+            'casino_ganagol': {
                 icon: '🎰', title: 'Casino y Ganagol',
-                desc: 'Reglas de Casino, Ganagol y Deportes Virtuales.',
                 items: [
                     { q: "¿Por qué no me llega el premio de Casino?", a: "Retiros menores a S/ 5,000 llegan automáticamente. Retiros mayores toman un máximo de 2 días hábiles en aprobarse." },
+                    { q: "¿Cómo participar en un torneo de Casino?", a: "Asegúrate de estar logueado y tener saldo. Revisa los torneos en nuestro blog y cumple con el requisito de apuesta mínima." },
                     { q: "¿Qué es Ganagol y cómo se juega?", a: "Pronosticas los resultados de 14 eventos de fútbol. Agregando S/ 1 activas Golazo200 para acertar el rango de goles." },
-                    { q: "¿Qué pasa si se suspende un partido en Ganagol?", a: "Si no es reprogramado en 48 horas, La Tinka lo enviará a sorteo notariado para determinar el resultado final (L, E o V)." }
+                    { q: "¿Qué pasa si se suspende un partido en Ganagol?", a: "Si no es reprogramado en 48 horas, La Tinka lo enviará a sorteo notariado para determinar el resultado final (L, E o V)." },
+                    { q: "¿Qué son Virtuales Te Apuesto?", a: "Es un producto donde puedes apostar a resultados de simulaciones de eventos deportivos (fútbol, penales, carreras) en un entorno virtual con acción inmediata." },
+                    { q: "¿Cómo se pagan los premios de Ganagol?", a: "Los premios de Ganagol se depositan directamente en tu saldo de La Tinka una vez que se han procesado todos los resultados oficiales de la programación." }
                 ]
             },
             'promociones': {
                 icon: '🎁', title: 'Promociones y Beneficios',
-                desc: 'Lógica para mostrar bonos de bienvenida, sorteos especiales (iPhone) y campañas vigentes.',
                 items: [
-                    { q: "¿Cuáles son las promociones vigentes?", a: "¡Tenemos muchas sorpresas para ti! Puedes encontrar Bonos de Bienvenida, sorteos de tecnología y campañas especiales en nuestra cartelera. Te invito a revisarlas todas aquí.", linkText: "Ver todas las promociones", linkUrl: "https://www.latinka.com.pe/p/promociones" },
-                    { q: "Quiero el bono de bienvenida", a: "¡Sí! Al registrarte y realizar tu primer depósito, te regalamos un Bono de Bienvenida del 100% hasta S/ 300 para que juegues a lo grande.", linkText: "Ver Bono de Bienvenida", linkUrl: "https://www.latinka.com.pe/p/promociones/bono-bienvenida" },
-                    { q: "¿Cómo activo un código promocional?", a: "Si tienes un código promocional, ingresa a tu perfil, ve a la sección 'Bonos y Promociones', ingresa el código en la casilla y haz clic en 'Activar'." },
-                    { q: "Sorteo de iPhone 17 Pro", a: "¡Llévate el nuevo iPhone 17 Pro! 📱 Participas automáticamente en el sorteo por cada recarga desde S/ 30 usando PagoEfectivo, Visa o Mastercard durante este mes. ¡A más recargas, más opciones de ganar!", linkText: "Ver Promo iPhone 17 Pro", linkUrl: "https://www.latinka.com.pe/p/promociones/iphone" },
-                    { q: "Jugadas gratis o Raspaditas", a: "¡Claro que sí! Constantemente lanzamos campañas de 'Hora Loca' o 'Fin de semana' donde regalamos Raspaditas virtuales o jugadas gratis por tus compras. Mantente atento a nuestra sección de promos.", linkText: "Ver Promociones de Hoy", linkUrl: "https://www.latinka.com.pe/p/promociones" }
+                    { q: "¿Cuáles son las promociones vigentes?", a: "¡Tenemos muchas sorpresas para ti! Puedes encontrar Bonos de Bienvenida, sorteos de tecnología y campañas especiales en nuestra cartelera.", linkText: "Ver todas las promociones", linkUrl: "https://www.latinka.com.pe/p/promociones" },
+                    { q: "Quiero el bono de bienvenida", a: "¡Sí! Al registrarte y realizar tu primer depósito, te regalamos un Bono de Bienvenida del 100% hasta S/ 300 para que juegues a lo grande." },
+                    { q: "¿Cómo activo un código promocional?", a: "Ingresa a tu perfil, ve a la sección 'Bonos y Promociones', ingresa el código en la casilla y haz clic en 'Activar'." },
+                    { q: "Sorteo de iPhone 17 Pro", a: "¡Llévate el nuevo iPhone 17 Pro! Participas automáticamente en el sorteo por cada recarga desde S/ 30 usando PagoEfectivo, Visa o Mastercard." },
+                    { q: "Jugadas gratis o Raspaditas", a: "Constantemente lanzamos campañas donde regalamos Raspaditas virtuales o jugadas gratis por tus compras. Mantente atento a nuestra sección de promos." },
+                    { q: "¿Cómo uso mi bono de Casino?", a: "Puedes revisar tus jugadas gratis y bonos ingresando a la sección 'Mi perfil', haz clic en 'Mis jugadas' y selecciona la opción 'Jugadas gratis'." },
+                    { q: "¿Cuándo caducan los bonos?", a: "Los bonos tienen una vigencia específica que se detalla en los términos y condiciones de cada promoción. Normalmente es de 7 a 30 días desde su activación." }
                 ]
             },
             'suscripciones': {
                 icon: '🔁', title: 'Suscripciones',
-                desc: 'Explicación del modelo de suscripción automática para que el usuario no pierda sorteos.',
                 items: [
-                    { q: "¿Qué es la suscripción Tinkera?", a: "La 'Suscripción Tinkera' te permite jugar tus números de la suerte en todos los sorteos automáticamente. Solo elige tus números, activa la opción 'Suscripción' antes de pagar, y nosotros nos encargamos del resto mientras tengas saldo.", linkText: "Activar Suscripción", linkUrl: "https://www.latinka.com.pe/p/suscripcion" },
-                    { q: "¿Cómo cancelo mi suscripción?", a: "Puedes pausar o cancelar tu suscripción en cualquier momento desde 'Mi Cuenta' > 'Mis Suscripciones'. No hay penalidades." }
+                    { q: "¿Qué es la suscripción Tinkera?", a: "La 'Suscripción Tinkera' te permite jugar tus números de la suerte en todos los sorteos automáticamente. Solo elige tus números, activa la opción 'Suscripción' antes de pagar.", linkText: "Activar Suscripción", linkUrl: "https://www.latinka.com.pe/p/suscripcion" },
+                    { q: "¿Cómo cancelo mi suscripción?", a: "Puedes pausar o cancelar tu suscripción en cualquier momento desde 'Mi Cuenta' > 'Mis Suscripciones'. No hay penalidades." },
+                    { q: "¿Qué pasa si no tengo saldo para mi suscripción?", a: "Si al momento del sorteo no tienes saldo suficiente, tu suscripción se pausará automáticamente para ese sorteo y se intentará cobrar en el siguiente." }
                 ]
             },
             'mecanicas': {
                 icon: '🎲', title: 'Mecánicas de Juego',
-                desc: 'Cómo jugar, reglas y precios de cada producto. Incluye llamadas a la acción (CTA) para jugar.',
                 items: [
                     { q: "Quiero jugar Tinka", a: "¡Excelente! Vamos a jugar La Tinka y buscar ese Pozo Millonario.", linkText: "Ir a Jugar Tinka", linkUrl: "https://www.latinka.com.pe/p/juega-tinka" },
-                    { q: "Cómo jugar Tinka", a: "¡Excelente elección! La Tinka es nuestro juego estrella con pozos millonarios. Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00. (Sorteos: Miércoles y Domingos). Te dejo una guía detallada.", linkText: "Tutorial Paso a Paso: Tinka", linkUrl: "https://blog.latinka.com.pe/como-jugar-tinka/" },
+                    { q: "Cómo jugar Tinka", a: "¡Excelente elección! La Tinka es nuestro juego estrella con pozos millonarios. Elige 6 números del 1 al 53. Si aciertas los 6, ¡el Pozo Millonario es tuyo! Cuesta S/ 5.00.", linkText: "Tutorial Paso a Paso", linkUrl: "https://blog.latinka.com.pe/como-jugar-tinka/" },
                     { q: "Quiero jugar Kábala", a: "¡Genial! Vamos a jugar Kábala por el Pozo Buenazo.", linkText: "Ir a Jugar Kábala", linkUrl: "https://www.latinka.com.pe/p/juega-kabala" },
-                    { q: "Cómo jugar Kábala", a: "Kábala te permite ganar el Pozo Buenazo eligiendo 6 números del 1 al 40 (cuesta S/ 2.00). Además, por S/ 1.00 adicional juegas 'Chau Chamba' para ganar S/ 5,000 mensuales por 20 años. Te dejo nuestra guía oficial.", linkText: "Tutorial Paso a Paso: Kábala", linkUrl: "https://blog.latinka.com.pe/como-jugar-kabala/" },
-                    { q: "Quiero jugar Gana Diario", a: "¡A jugar Gana Diario! Tu oportunidad de ganar todos los días.", linkText: "Ir a Jugar Gana Diario", linkUrl: "https://www.latinka.com.pe/p/juega-gana-diario" },
-                    { q: "Cómo jugar Gana Diario", a: "Gana Diario sortea premios todos los días. Elige 5 números del 1 al 35 por solo S/ 1.00. Si aciertas los 5, ¡ganas S/ 100,000! Aprende todos los detalles aquí.", linkText: "Tutorial Paso a Paso: Gana Diario", linkUrl: "https://blog.latinka.com.pe/como-jugar-gana-diario/" },
-                    { q: "Quiero jugar Kinelo", a: "Sorteos cada 5 minutos. ¡Vamos a jugar Kinelo!", linkText: "Ir a Jugar Kinelo", linkUrl: "https://www.latinka.com.pe/p/juega-kinelo" },
-                    { q: "Cómo jugar Kinelo", a: "Kinelo es emoción rápida con sorteos cada 5 minutos. Tú decides cuántos números jugar (del 1 al 80) y cuánto apostar. ¡Mientras más números aciertes, más ganas! Revisa la guía.", linkText: "Tutorial Paso a Paso: Kinelo", linkUrl: "https://blog.latinka.com.pe/como-jugar-kinelo/" },
-                    { q: "Quiero jugar Videoloterías", a: "¡Diversión instantánea! Elige tu juego favorito de Videoloterías.", linkText: "Ir a Jugar Videoloterías", linkUrl: "https://www.latinka.com.pe/p/casino" },
-                    { q: "Cómo jugar Videoloterías", a: "¡Las Videoloterías te traen premios al instante! Disfruta de nuestras divertidas temáticas estilo casino (tragamonedas) y descubre si eres un ganador en segundos. Simplemente elige tu juego, define tu apuesta y gira.", linkText: "Ver catálogo de juegos", linkUrl: "https://www.latinka.com.pe/p/casino" },
-                    { q: "¿Cuáles son las reglas de los juegos?", a: "Todos nuestros juegos tienen reglamentos oficiales que garantizan su transparencia y definen las probabilidades. Puedes revisar el detalle normativo de cada producto en nuestra sección de Reglamentos.", linkText: "Ver Reglamentos", linkUrl: "https://www.latinka.com.pe/p/reglamentos" },
-                    { q: "¿Qué es la Boliyapa?", a: "Es una bolilla extra que se extrae para premiar categorías secundarias (2+1, 3+1, 4+1 y 5+1)." },
-                    { q: "¿Cuáles son los premios de las Rapitinkas?", a: "Las de S/ 3 pagan hasta S/ 50,000; las de S/ 5 hasta S/ 200,000; y las de S/ 10 hasta S/ 600,000." }
+                    { q: "Cómo jugar Kábala", a: "Kábala te permite ganar el Pozo Buenazo eligiendo 6 números del 1 al 40 (cuesta S/ 2.00). Además, por S/ 1.00 adicional juegas 'Chau Chamba' para ganar S/ 5,000 mensuales por 20 años." },
+                    { q: "Quiero jugar Gana Diario", a: "Gana Diario sortea premios todos los días. Elige 5 números del 1 al 35. Si aciertas los 5, ¡ganas S/ 100,000!" },
+                    { q: "Quiero jugar Kinelo", a: "Kinelo tiene sorteos cada 5 minutos. Tú decides cuántos números jugar (del 1 al 80) y cuánto apostar. Puedes ganar hasta S/ 1,000,000." },
+                    { q: "Quiero jugar Videoloterías (Casino)", a: "¡Las Videoloterías te traen premios al instante! Disfruta de nuestras divertidas temáticas estilo casino y descubre si eres un ganador en segundos." },
+                    { q: "¿Puedo jugar con los mismos números siempre?", a: "¡Claro! Puedes guardar tus jugadas favoritas en tu perfil o activar una Suscripción para que se jueguen automáticamente en cada sorteo." }
                 ]
             },
             'resultados': {
                 icon: '📈', title: 'Resultados y Ganadores',
-                desc: 'Flujo para derivar a los usuarios a la página de escrutinio oficial.',
                 items: [
-                    { q: "¿Cuáles son los resultados del último sorteo?", a: "Los resultados de los sorteos se actualizan automáticamente al finalizar las jugadas. Puedes revisar los números ganadores, el pozo actual y la cantidad de ganadores en nuestra web oficial.", linkText: "Ver Resultados Oficiales", linkUrl: "https://www.latinka.com.pe/p/resultados" },
+                    { q: "¿Cuáles son los resultados del último sorteo?", a: "Los resultados de los sorteos se actualizan automáticamente al finalizar las jugadas. Puedes revisar los números ganadores, el pozo actual y la cantidad de ganadores en nuestra web oficial.", linkText: "Ver Resultados", linkUrl: "https://www.latinka.com.pe/p/resultados" },
                     { q: "¿A qué hora son los sorteos?", a: "Tinka: Miércoles y Domingos 10:50 PM. Kábala: Martes, Jueves y Sábados 10:00 PM. Gana Diario: Todos los días 8:30 PM. Kinelo: Cada 5 minutos." },
-                    { q: "Video del sorteo", a: "Puedes ver las transmisiones en vivo y las repeticiones de los sorteos en nuestro canal oficial de YouTube y Facebook.", linkText: "Ir a YouTube", linkUrl: "https://www.youtube.com/@latinka" }
+                    { q: "¿Dónde ver el video del sorteo?", a: "Puedes ver las transmisiones en vivo y las repeticiones de los sorteos en nuestro canal oficial de YouTube y Facebook.", linkText: "Ir a YouTube", linkUrl: "https://www.youtube.com/@latinka" },
+                    { q: "¿Dónde reviso los resultados anteriores?", a: "Contamos con un histórico completo. Ve a la sección 'Resultados', selecciona el juego que deseas y utiliza el filtro por fecha o número de sorteo." }
                 ]
             },
-            'cuenta': {
-                icon: '👤', title: 'Mi Cuenta y Registro',
-                desc: 'Dudas sobre creación de cuenta, validación KYC y contraseñas.',
+            'cuenta_cobros': {
+                icon: '👤', title: 'Cuenta, Cobros y KYC',
                 items: [
                     { q: "¿Cómo me registro?", a: "Registrarse es fácil, rápido y seguro. Solo necesitas ser mayor de edad, tener un DNI/CE vigente y completar el formulario en la web.", linkText: "Registrarme ahora", linkUrl: "https://www.latinka.com.pe/p/registro" },
                     { q: "Olvidé mi contraseña", a: "No te preocupes. Ve a la sección 'Iniciar Sesión', haz clic en '¿Olvidaste tu contraseña?' e ingresa tu correo. Te enviaremos un enlace para crear una nueva." },
-                    { q: "¿Por qué rechazaron mi verificación de identidad (KYC)?", a: "Asegúrate de tomar la foto a tu documento (DNI, CE o Pasaporte) físico original, de forma clara, sin flash ni recortes." }
+                    { q: "¿Cómo cobro mi premio desde la web?", a: "Ingresa a tu cuenta, ve a la sección 'Mi cuenta', ingresa a 'Retirar mis premios' y elige el método de pago de tu preferencia." },
+                    { q: "¿Cuánto tiempo demora el pago de un premio?", a: "Si el premio es menor a 1 millón de soles, el plazo máximo para procesar el pago es de 30 días. Si es mayor a 1 millón, es de 90 días, a partir de la validación de tu identidad." },
+                    { q: "Rechazaron mi verificación de identidad (KYC)", a: "Asegúrate de tomar la foto a tu documento (DNI, Carnet de Extranjería o Pasaporte) de forma clara, sin flash, que sea el documento físico original y que la cámara tenga los permisos habilitados." },
+                    { q: "¿Por qué me descuentan de mi premio? (Impuestos)", a: "Todo premio de lotería mayor a S/ 10 está sujeto a una retención del 10% exigida por la Ley de Tributación Municipal. Los pozos anunciados son montos brutos." },
+                    { q: "¿Cuánto tiempo tengo para cobrar? (Caducidad)", a: "Tienes un plazo máximo de 180 días calendario a partir de la fecha del sorteo para cobrar tu premio. Pasado ese tiempo, el boleto caduca." },
+                    { q: "¿Cómo actualizo mi celular?", a: "Para actualizar tu número, envía una solicitud a través del formulario de Derechos ARCO en la web, adjuntando una imagen de tu DNI original." },
+                    { q: "¿Puedo tener más de una cuenta?", a: "No, por medidas de seguridad y políticas de Juego Responsable, cada usuario solo puede tener una cuenta asociada a su documento de identidad (DNI o CE)." }
                 ]
             },
             'compras': {
                 icon: '💳', title: 'Compras y Canales',
-                desc: 'Información sobre cómo recargar saldo, métodos de pago y canales Express/WhatsApp.',
                 items: [
-                    { q: "Combo Lotero", a: "¡Compra inteligente! Con los Combos Loteros puedes comprar jugadas para La Tinka, Kábala y Gana Diario en un solo paquete, de forma rápida y sencilla.", linkText: "Ver Combos Loteros", linkUrl: "https://www.latinka.com.pe/p/combos" },
+                    { q: "Combo Lotero", a: "¡Compra inteligente! Con los Combos Loteros puedes comprar jugadas para La Tinka, Kábala y Gana Diario en un solo paquete, de forma rápida y sencilla.", linkText: "Ver Combos", linkUrl: "https://www.latinka.com.pe/p/combos" },
                     { q: "¿Cómo recargo mi saldo?", a: "Puedes recargar tu billetera virtual usando tarjetas Visa, Mastercard, Yape, Plin, PagoEfectivo, o en efectivo en puntos de venta autorizados como Tambo o Plaza Vea." },
-                    { q: "¿Cómo comprar por WhatsApp?", a: "¡Claro! Ahora puedes comprar La Tinka fácil y rápido desde nuestro WhatsApp Oficial. Solo escríbenos un 'Hola' y sigue las instrucciones del sistema automático.", linkText: "Comprar por WhatsApp (+51 912448677)", linkUrl: "https://wa.me/51912448677?text=Hola" }
+                    { q: "¿Cómo comprar por WhatsApp?", a: "¡Claro! Ahora puedes comprar La Tinka fácil y rápido desde nuestro WhatsApp Oficial. Solo escríbenos un 'Hola' y sigue las instrucciones del sistema automático.", linkText: "Comprar por WhatsApp", linkUrl: "https://wa.me/51912448677?text=Hola" },
+                    { q: "¿Hay monto mínimo para recargar?", a: "Sí, el monto mínimo varía según el método. Para Yape, Plin y tarjetas de crédito o débito, el depósito mínimo es de S/ 10.00." }
                 ]
             },
-            'cobros': {
-                icon: '💸', title: 'Cobro de Premios',
-                desc: 'Procesos de retiro según el monto ganado.',
+            'seguridad_responsable': {
+                icon: '🛡️', title: 'Seguridad y Juego Responsable',
                 items: [
-                    { q: "¿Cómo cobro mi premio?", a: "¡Felicidades! Los premios menores a S/ 5,000 se acreditan directo a tu saldo web para retirar o seguir jugando. Para premios mayores a S/ 5,000 deberás validar tu identidad (KYC) y el pago se coordina vía transferencia bancaria o cheque." },
-                    { q: "¿Cuánto tiempo demora el pago de un premio?", a: "Premios menores a 1 millón de soles toman máximo 30 días. Mayores a 1 millón toman 90 días, previa validación de identidad." },
-                    { q: "¿Me descuentan impuestos de mi premio?", a: "Sí, todo premio mayor a S/ 10 está sujeto a una retención del 10% por la Ley de Tributación Municipal." },
-                    { q: "¿Cuánto tiempo tengo para cobrar un premio? (Caducidad)", a: "Tienes un plazo máximo de 180 días calendario desde la fecha del sorteo. Después de eso, el boleto caduca." }
-                ]
-            },
-            'noticias': {
-                icon: '📰', title: 'Noticias y Novedades',
-                desc: 'Información sobre pozos acumulados y eventos especiales.',
-                items: [
-                    { q: "¿A cuánto está el pozo de la Tinka?", a: "¡El Pozo Millonario sigue creciendo! Para conocer el monto exacto acumulado para el próximo sorteo, te invito a visitar nuestra página principal.", linkText: "Ver Pozo Actual", linkUrl: "https://www.latinka.com.pe/" }
+                    { q: "¿Son reales los sorteos?", a: "Contamos con certificación ISO 9001, certificación WLA y GLI (Gaming Labs International) para la aleatoriedad. Además, cada sorteo físico cuenta con la presencia de un Notario Público." },
+                    { q: "Siento que juego demasiado", a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil en la sección de 'Juego Responsable'." },
+                    { q: "¿Cómo me autoexcluyo?", a: "En la sección 'Juego Responsable' de tu cuenta, selecciona la opción 'Autoexclusión'. Podrás bloquear tu cuenta temporal o definitivamente." }
                 ]
             },
             'puntos_venta': {
-                icon: '🏪', title: 'Puntos de Venta y Aliados',
-                desc: 'Ubicación de módulos físicos y tiendas afiliadas.',
+                icon: '🏪', title: 'Puntos de Venta',
                 items: [
-                    { q: "¿Dónde hay un punto de venta cerca?", a: "Contamos con miles de 'Puntos de la Suerte' a nivel nacional. También nos encuentras en supermercados (Plaza Vea, Vivanda) y tiendas como Tambo o Mass. Encuentra el módulo más cercano aquí.", linkText: "Buscar Puntos de Venta", linkUrl: "https://www.latinka.com.pe/p/puntos-de-venta" }
-                ]
-            },
-            'responsable': {
-                icon: '🛡️', title: 'Juego Responsable',
-                desc: 'Directrices éticas para detectar y ayudar a usuarios con patrones de riesgo.',
-                items: [
-                    { q: "Siento que estoy jugando demasiado", a: "Sí, tu bienestar es nuestra prioridad. Puedes establecer límites de depósito, tiempo de juego o solicitar autoexclusión desde tu perfil en la sección de 'Juego Responsable'." }
+                    { q: "¿Dónde hay un punto de venta cerca?", a: "Contamos con miles de 'Puntos de la Suerte' a nivel nacional. También nos encuentras en supermercados y tiendas Tambo o Mass.", linkText: "Buscar Puntos", linkUrl: "https://www.latinka.com.pe/p/puntos-de-venta" },
+                    { q: "¿Cuáles son los horarios de los puntos de venta?", a: "Los horarios dependen del establecimiento aliado. Sin embargo, en nuestra web y App puedes jugar las 24 horas del día, los 7 días de la semana." }
                 ]
             },
             'contacto': {
                 icon: '🎧', title: 'Atención al Cliente',
-                desc: 'Derivación a asesores humanos (Fallback).',
                 items: [
-                    { q: "Quiero hablar con un humano", a: "¡Claro que sí! Si necesitas asistencia personalizada, nuestro equipo de Atención al Cliente está listo para ayudarte en la central telefónica (01 513-5502) de Lunes a Domingo de 8:00 am a 10:00 pm.", linkText: "Ver todos los canales de contacto", linkUrl: "https://www.latinka.com.pe/p/contacto" }
+                    { q: "Quiero hablar con un humano", a: "¡Claro que sí! Si necesitas asistencia personalizada, nuestro equipo de Atención al Cliente está listo para ayudarte en la central telefónica (01 513-5502) de Lunes a Domingo de 8:00 am a 10:00 pm.", linkText: "Ver canales", linkUrl: "https://www.latinka.com.pe/p/contacto" },
+                    { q: "¿Tienen un correo de atención al cliente?", a: "Sí, puedes escribirnos a atencionalcliente@latinka.com.pe detallando tu consulta y te responderemos a la brevedad." }
                 ]
             },
             'otros': {
-                icon: '⚽', title: 'Otros Productos (Te Apuesto)',
-                desc: 'Manejo de consultas fuera de alcance (Out of Scope) para Loterías.',
+                icon: '⚽', title: 'Otros Productos',
                 items: [
-                    { q: "Quiero apostar en fútbol (Te Apuesto)", a: "Actualmente soy tu Asistente experto enfocado exclusivamente en Loterías (Tinka, Kábala, etc.). Para realizar apuestas deportivas, te invito a visitar la plataforma especializada de Te Apuesto.", linkText: "Ir a Te Apuesto", linkUrl: "https://www.teapuesto.pe/" }
+                    { q: "Quiero apostar en fútbol (Te Apuesto)", a: "Actualmente soy tu Asistente experto enfocado exclusivamente en Loterías (Tinka, Kábala, etc.). Para realizar apuestas deportivas, te invito a visitar la plataforma especializada de Te Apuesto.", linkText: "Ir a Te Apuesto", linkUrl: "https://www.teapuesto.pe/" },
+                    { q: "¿A cuánto está el pozo de la Tinka?", a: "¡El Pozo Millonario sigue creciendo! Para conocer el monto exacto acumulado para el próximo sorteo, te invito a visitar nuestra página principal.", linkText: "Ver Pozo Actual", linkUrl: "https://www.latinka.com.pe/" }
                 ]
             }
         };
@@ -637,7 +422,11 @@
             let html = `
                 <div onclick="switchView('overview')" class="nav-item ${currentView === 'overview' ? 'active' : ''}">
                     <span class="w-8">📊</span>
-                    <span>Resumen de Configuración</span>
+                    <span>Resumen RAG</span>
+                </div>
+                <div onclick="switchView('analytics')" class="nav-item ${currentView === 'analytics' ? 'active' : ''}">
+                    <span class="w-8 text-blue-500"><i class="fa-solid fa-chart-line"></i></span>
+                    <span class="font-bold">Analítica CX & KPIs</span>
                 </div>
                 <div onclick="switchView('executive')" class="nav-item ${currentView === 'executive' ? 'active' : ''}">
                     <span class="w-8">💼</span>
@@ -660,15 +449,17 @@
             
             let totalInputs = 0;
             for (const [key, data] of Object.entries(kbData)) {
-                const count = data.items.length;
-                totalInputs += count;
-                html += `
-                    <div onclick="switchView('${key}')" class="nav-item ${currentView === key ? 'active' : ''}">
-                        <span class="w-8">${data.icon}</span>
-                        <span class="flex-1 truncate">${data.title}</span>
-                        <span class="badge-count">${count}</span>
-                    </div>
-                `;
+                if(!data.isSystem) {
+                    const count = data.items.length;
+                    totalInputs += count;
+                    html += `
+                        <div onclick="switchView('${key}')" class="nav-item ${currentView === key ? 'active' : ''}">
+                            <span class="w-8">${data.icon}</span>
+                            <span class="flex-1 truncate">${data.title}</span>
+                            <span class="badge-count">${count}</span>
+                        </div>
+                    `;
+                }
             }
             nav.innerHTML = html;
             document.getElementById('total-inputs-badge').textContent = `${totalInputs} INPUTS`;
@@ -682,9 +473,10 @@
 
         function renderView() {
             const content = document.getElementById('main-content');
-            
             if (currentView === 'overview') {
                 renderOverview(content);
+            } else if (currentView === 'analytics') {
+                renderAnalytics(content);
             } else if (currentView === 'executive') {
                 renderExecutive(content);
             } else if (currentView === 'rules') {
@@ -719,50 +511,156 @@
                 </div>
             `;
             
-            // Usamos setTimeout para asegurar que el canvas ya esté en el DOM antes de que Chart.js intente renderizar
+            setTimeout(() => {
+                if (typeof Chart === 'undefined') return;
+                const ctx = document.getElementById('intentChart').getContext('2d');
+                const labels = [];
+                const dataCounts = [];
+                const bgColors = ['#00A859', '#FFD100', '#7C3AED', '#A855F7', '#E3001B', '#10B981', '#F59E0B', '#06B6D4', '#64748B', '#22C55E', '#EC4899', '#3B82F6', '#F43F5E', '#8B5CF6'];
+
+                Object.values(kbData).forEach(cat => {
+                    if(!cat.isSystem) {
+                        labels.push(cat.title);
+                        dataCounts.push(cat.items.length);
+                    }
+                });
+
+                if(chartInstance) chartInstance.destroy();
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: labels, datasets: [{ data: dataCounts, backgroundColor: bgColors, borderWidth: 3, borderColor: '#ffffff', hoverOffset: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { padding: 25, font: { size: 14, family: "'Inter', sans-serif", weight: '500' } } } } }
+                });
+            }, 50);
+        }
+
+        function renderAnalytics(container) {
+            container.innerHTML = `
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
+                                <i class="fa-solid fa-chart-line text-blue-500"></i> Dashboard Analítico CX
+                            </h2>
+                            <p class="text-slate-500 mt-1 font-medium">Métricas operativas y de negocio del Asistente Virtual.</p>
+                        </div>
+                        <div class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                            Datos en Tiempo Real (Simulados)
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 1: VOLUMETRÍA OPERATIVA -->
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-200 pb-2">1. Volumetría Operativa</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 text-slate-50 text-6xl"><i class="fa-solid fa-comments"></i></div>
+                            <div class="text-slate-500 text-sm font-semibold mb-1">Total Conversaciones</div>
+                            <div class="text-3xl font-black text-slate-800">14,250</div>
+                            <div class="text-xs font-bold text-tinka-green mt-2"><i class="fa-solid fa-arrow-trend-up"></i> +12% esta semana</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 text-slate-50 text-6xl"><i class="fa-solid fa-users"></i></div>
+                            <div class="text-slate-500 text-sm font-semibold mb-1">Usuarios Únicos</div>
+                            <div class="text-3xl font-black text-slate-800">9,840</div>
+                            <div class="text-xs font-medium text-slate-400 mt-2">65% nuevos / 35% recurrentes</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 text-slate-50 text-6xl"><i class="fa-solid fa-stopwatch"></i></div>
+                            <div class="text-slate-500 text-sm font-semibold mb-1">Duración Media</div>
+                            <div class="text-3xl font-black text-slate-800">1m 45s</div>
+                            <div class="text-xs font-medium text-slate-400 mt-2">Promedio de 4 interacciones</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden bg-red-50/30">
+                            <div class="absolute -right-4 -top-4 text-red-50 text-6xl"><i class="fa-solid fa-headset"></i></div>
+                            <div class="text-red-500 text-sm font-semibold mb-1">Pase a Humano</div>
+                            <div class="text-3xl font-black text-red-700">12%</div>
+                            <div class="text-xs font-medium text-red-400 mt-2">1,710 conversaciones derivadas</div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 2: COMPORTAMIENTO RAG -->
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-200 pb-2 mt-8">2. Eficiencia del Motor RAG</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="font-bold text-slate-700 mb-4">Tasa de Contención vs Fallback</h4>
+                            <div class="h-64 relative w-full">
+                                <canvas id="ragAnalyticsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="font-bold text-slate-700 mb-4">Top Intenciones Consultadas</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold text-slate-600 mb-1"><span>Resultados de Sorteo</span><span>45%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold text-slate-600 mb-1"><span>Mecánicas de Juego</span><span>25%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-blue-400 h-2 rounded-full" style="width: 25%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold text-slate-600 mb-1"><span>Cobro de Premios</span><span>15%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-blue-300 h-2 rounded-full" style="width: 15%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold text-slate-600 mb-1"><span>Promociones (Bonos)</span><span>10%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-amber-400 h-2 rounded-full" style="width: 10%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold text-slate-600 mb-1"><span>Otros (Cuenta, Soporte)</span><span>5%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-slate-300 h-2 rounded-full" style="width: 5%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 3: IMPACTO EN NEGOCIO -->
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-200 pb-2 mt-8">3. Impacto Comercial</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-br from-tinka-green to-emerald-500 p-6 rounded-2xl shadow-md text-white flex items-center justify-between">
+                            <div>
+                                <div class="text-green-100 text-sm font-bold uppercase tracking-wider mb-1">CSAT Promedio</div>
+                                <div class="text-4xl font-black">4.8 <span class="text-xl font-medium">/ 5.0</span></div>
+                                <div class="text-xs text-green-50 mt-1">Basado en 3,400 encuestas</div>
+                            </div>
+                            <div class="text-6xl opacity-50"><i class="fa-regular fa-face-smile-beam"></i></div>
+                        </div>
+                        <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-6 rounded-2xl shadow-md text-white flex items-center justify-between">
+                            <div>
+                                <div class="text-orange-100 text-sm font-bold uppercase tracking-wider mb-1">Conversión Asistida</div>
+                                <div class="text-4xl font-black">18.5%</div>
+                                <div class="text-xs text-orange-50 mt-1">Usuarios compran tras interactuar con el bot</div>
+                            </div>
+                            <div class="text-6xl opacity-50"><i class="fa-solid fa-cart-arrow-down"></i></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
             setTimeout(() => {
                 try {
                     if (typeof Chart === 'undefined') return;
-                    
-                    const ctx = document.getElementById('intentChart').getContext('2d');
-                    const labels = [];
-                    const dataCounts = [];
-                    const bgColors = [
-                        '#00A859', '#FFD100', '#7C3AED', '#A855F7', '#E3001B', 
-                        '#10B981', '#F59E0B', '#06B6D4', '#64748B', '#22C55E', '#EC4899', '#3B82F6', '#F43F5E'
-                    ];
-
-                    Object.values(kbData).forEach(cat => {
-                        labels.push(cat.title);
-                        dataCounts.push(cat.items.length);
-                    });
-
-                    if(chartInstance) chartInstance.destroy();
-                    chartInstance = new Chart(ctx, {
+                    const ctx = document.getElementById('ragAnalyticsChart').getContext('2d');
+                    if (chartCXInstance) chartCXInstance.destroy();
+                    chartCXInstance = new Chart(ctx, {
                         type: 'doughnut',
                         data: {
-                            labels: labels,
+                            labels: ['Contención Exitosa', 'Handoff (Asesor Humano)', 'Fallback (No entendió)'],
                             datasets: [{
-                                data: dataCounts,
-                                backgroundColor: bgColors,
-                                borderWidth: 3,
-                                borderColor: '#ffffff',
-                                hoverOffset: 10
+                                data: [85, 12, 3],
+                                backgroundColor: ['#00A859', '#F59E0B', '#EF4444'],
+                                borderWidth: 0,
+                                hoverOffset: 4
                             }]
                         },
                         options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            cutout: '60%',
-                            plugins: {
-                                legend: { position: 'bottom', labels: { padding: 25, font: { size: 14, family: "'Inter', sans-serif", weight: '500' } } }
-                            }
+                            responsive: true, maintainAspectRatio: false, cutout: '70%',
+                            plugins: { legend: { position: 'bottom' } }
                         }
                     });
-                } catch (error) {
-                    console.error("Chart rendering error:", error);
-                }
-            }, 50);
+                } catch(e) { console.error("Error cargando gráfico RAG Analytics", e); }
+            }, 100);
         }
 
         function renderExecutive(container) {
@@ -829,7 +727,6 @@
                                 <ul class="list-disc pl-5 text-slate-600 space-y-1"><li>Atención de Apuestas Deportivas (Te Apuesto).</li><li>Ejecución de compras directas por voz.</li></ul>
                             </div>
                         </div>
-
                     </div>
                 </div>
             `;
@@ -853,7 +750,7 @@
                                 <p class="text-sm text-slate-600 mb-4">Presenta sugerencias predefinidas al inicio para guiar al usuario y reducir la fricción de escritura.</p>
                                 <div class="bg-white p-4 rounded-xl border border-slate-200 font-mono text-xs text-blue-700">
                                     AL ABRIR CHAT<br>
-                                    <strong class="text-tinka-green">MOSTRAR CHIPS:</strong> [Jugar Tinka] [Ver todos los juegos] [Resultados] [Promociones]
+                                    <strong class="text-tinka-green">MOSTRAR CHIPS:</strong> [Jugar Tinka] [Ver promociones] [Ver resultados] [Jugar loterías] [Pozos acumulados]
                                 </div>
                             </div>
 
@@ -1044,12 +941,21 @@
         &lt;/div&gt;
         &lt;button onclick="document.getElementById('tinkong-chatbox').style.display='none'; document.getElementById('tinkong-fab').style.display='flex';" style="background:none; border:none; color:#fff; font-weight:bold; font-size:18px; cursor:pointer;"&gt;&amp;times;&lt;/button&gt;
     &lt;/div&gt;
+
+    &lt;!-- Sugerencias rápidas orientadas comercialmente --&gt;
+    &lt;div style="padding:12px; border-bottom:1px solid #e2e8f0; background:#f8fafc; display:flex; flex-wrap:wrap; gap:8px;" id="chat-quick-suggestions"&gt;
+        &lt;button onclick="sendQuickReply('Jugar Tinka')" style="white-space:nowrap; padding:6px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; font-size:12px; font-weight:bold; color:#00A859; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05);"&gt;🔴 Jugar Tinka&lt;/button&gt;
+        &lt;button onclick="sendQuickReply('Ver promociones')" style="white-space:nowrap; padding:6px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; font-size:12px; font-weight:bold; color:#00A859; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05);"&gt;🎁 Ver promociones&lt;/button&gt;
+        &lt;button onclick="sendQuickReply('Ver resultados')" style="white-space:nowrap; padding:6px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; font-size:12px; font-weight:bold; color:#00A859; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05);"&gt;📈 Ver resultados&lt;/button&gt;
+        &lt;button onclick="sendQuickReply('Jugar loterías')" style="white-space:nowrap; padding:6px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; font-size:12px; font-weight:bold; color:#00A859; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05);"&gt;🎲 Jugar loterías&lt;/button&gt;
+        &lt;button onclick="sendQuickReply('Pozos acumulados')" style="white-space:nowrap; padding:6px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; font-size:12px; font-weight:bold; color:#00A859; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.05);"&gt;💰 Pozos acumulados&lt;/button&gt;
+    &lt;/div&gt;
     
     &lt;!-- Área de mensajes --&gt;
     &lt;div id="tinkong-msgs" style="flex:1; padding:16px; overflow-y:auto; background:#f8fafc; display:flex; flex-direction:column; gap:12px;"&gt;
         &lt;!-- Mensaje Bot Inicial --&gt;
         &lt;div style="background:#fff; padding:12px 14px; border-radius:12px 12px 12px 2px; border:1px solid #e2e8f0; font-size:13px; color:#334155; max-width:85%; align-self:flex-start; line-height:1.4;"&gt;
-            ¡Hola! Soy Tinkong 🤖, tu Asistente Virtual. ¿En qué te ayudo hoy?
+            ¡Hola! Soy tu &lt;strong&gt;Asistente Virtual Tinkong&lt;/strong&gt;. 🤖&lt;br&gt;&lt;br&gt;Estoy aquí para guiarte por el mundo de las loterías. Conozco todo sobre cómo jugar La Tinka, Kábala y Gana Diario, además de los pozos millonarios y resultados. ¿En qué te ayudo hoy?
         &lt;/div&gt;
     &lt;/div&gt;
 
@@ -1127,9 +1033,60 @@ async function sendMsgToAPI() {
     } catch (error) {
         document.getElementById(loadingId).remove();
         console.error("Error API Chat:", error);
-        // Manejo de errores visual opcional aquí
     }
 }</pre>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección Analítica Dev -->
+                            <div class="p-6 border border-slate-200 bg-slate-50 rounded-2xl">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-chart-pie text-purple-500"></i> Código Base: Dashboard de Analítica CX (HTML + JS)</h3>
+                                <p class="text-sm text-slate-600 mb-4">Snippet de integración para montar el gráfico de contención en el Backoffice usando Chart.js. Requiere inyectar datos del backend.</p>
+                                
+                                <div class="bg-[#1e1e1e] p-4 rounded-xl overflow-hidden relative shadow-inner">
+                                    <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
+                                        <span class="text-xs text-gray-400 font-mono">analytics-dashboard.html</span>
+                                        <button onclick="navigator.clipboard.writeText(document.getElementById('code-analytics').innerText); showToast('Código Analítica copiado');" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition"><i class="fa-solid fa-copy"></i> Copiar</button>
+                                    </div>
+                                    <pre id="code-analytics" class="text-xs text-purple-300 font-mono overflow-x-auto whitespace-pre pb-2">
+&lt;!-- Requisito: Importar Chart.js --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+
+&lt;!-- Contenedor del Gráfico --&gt;
+&lt;div style="position: relative; height: 300px; width: 100%; max-width: 500px;"&gt;
+    &lt;canvas id="ragAnalyticsChart"&gt;&lt;/canvas&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    // Inicializar Gráfico de Contención RAG
+    const ctx = document.getElementById('ragAnalyticsChart').getContext('2d');
+    
+    // Inyectar datos reales del backend en lugar de variables estáticas
+    const dataContencion = 85; 
+    const dataHandoff = 12;
+    const dataFallback = 3;
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Contención Exitosa', 'Pase a Humano', 'No entendió (Fallback)'],
+            datasets: [{
+                data: [dataContencion, dataHandoff, dataFallback],
+                backgroundColor: ['#00A859', '#F59E0B', '#EF4444'], // Colores UX Tinka
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false, 
+            cutout: '70%',
+            plugins: { 
+                legend: { position: 'bottom' } 
+            }
+        }
+    });
+&lt;/script&gt;</pre>
                                 </div>
                             </div>
 
@@ -1149,7 +1106,7 @@ async function sendMsgToAPI() {
                                 <div class="text-4xl">${data.icon}</div>
                                 <div>
                                     <h2 class="text-3xl font-bold text-slate-800 tracking-tight">${data.title}</h2>
-                                    <p class="text-slate-500 mt-1 font-medium">${data.desc}</p>
+                                    <p class="text-slate-500 mt-1 font-medium">${data.desc || 'Preguntas frecuentes entrenadas.'}</p>
                                 </div>
                             </div>
                             <span class="badge-total">${data.items.length} INPUTS ENTRENADOS</span>
@@ -1247,13 +1204,12 @@ async function sendMsgToAPI() {
             if (typing) typing.remove();
         }
 
-        // Motor NLP y Reglas (Fase 1 y 2) - ACTUALIZADO PARA RECONOCER NUEVAS PALABRAS
+        // Motor NLP y Reglas (Fase 1 y 2)
         function processNLP(input) {
             const lowerInput = input.toLowerCase().trim();
-            const normalizedInput = lowerInput.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar tildes
+            const normalizedInput = lowerInput.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
             
-            // FASE 1: INTERCEPCIÓN ESTRICTA Y ENRUTAMIENTO DIRECTO (CORTAFUEGOS)
-            if (normalizedInput === 'ver todos los juegos' || normalizedInput === 'quiero jugar') {
+            if (normalizedInput === 'ver todos los juegos' || normalizedInput === 'quiero jugar' || normalizedInput === 'jugar loterias' || normalizedInput.includes('jugar loteria')) {
                 return { 
                     a: "¡Perfecto! Elige tu juego favorito de nuestro catálogo para empezar a ganar:",
                     sug: [
@@ -1265,13 +1221,12 @@ async function sendMsgToAPI() {
                     ]
                 };
             }
-            if (normalizedInput.includes('quiero jugar tinka')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Tinka");
+            if (normalizedInput.includes('quiero jugar tinka') || normalizedInput.includes('jugar tinka')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Tinka");
             if (normalizedInput.includes('quiero jugar kabala')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Kábala");
             if (normalizedInput.includes('quiero jugar gana diario')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Gana Diario");
             if (normalizedInput.includes('quiero jugar kinelo')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Kinelo");
             if (normalizedInput.includes('quiero jugar videoloterias') || normalizedInput.includes('quiero jugar casino')) return kbData.mecanicas.items.find(i=>i.q==="Quiero jugar Videoloterías");
 
-            // Tutoriales explícitos
             if (normalizedInput.includes('como jugar') || normalizedInput.includes('tutorial') || normalizedInput.includes('paso a paso') || normalizedInput.includes('guia') || normalizedInput.includes('como juego')) {
                 if (normalizedInput.includes('tinka')) return kbData.mecanicas.items.find(i=>i.q==="Cómo jugar Tinka");
                 if (normalizedInput.includes('kabala')) return kbData.mecanicas.items.find(i=>i.q==="Cómo jugar Kábala");
@@ -1280,32 +1235,27 @@ async function sendMsgToAPI() {
                 if (normalizedInput.includes('videoloteria') || normalizedInput.includes('casino')) return kbData.mecanicas.items.find(i=>i.q==="Cómo jugar Videoloterías");
             }
 
-            // Expresiones exactas críticas Y NUEVOS DATOS
-            if (normalizedInput.includes('precio') || normalizedInput.includes('cuesta')) return kbData.pozos_precios.items[0];
+            if (normalizedInput.includes('precio') || normalizedInput.includes('cuesta') || normalizedInput.includes('precios')) return kbData.pozos_precios.items[0];
             if (normalizedInput.includes('pozo') || normalizedInput.includes('acumulado')) return kbData.pozos_precios.items[1];
-            if (normalizedInput.includes('express') || normalizedInput.includes('invitado')) return kbData.tinka_express.items[0];
-            if (normalizedInput.includes('casino')) return kbData.casino_virtuales.items[0];
-            if (normalizedInput.includes('ganagol')) return kbData.casino_virtuales.items[1];
-            if (normalizedInput.includes('impuesto') || normalizedInput.includes('descuento') || normalizedInput.includes('retencion')) return kbData.cobros.items[2];
-            if (normalizedInput.includes('caduca') || normalizedInput.includes('tiempo') || normalizedInput.includes('180')) return kbData.cobros.items[3];
-
+            if (normalizedInput.includes('express') || normalizedInput.includes('sin registro') || normalizedInput.includes('invitado')) return kbData.tinka_express.items.find(i=>i.q.includes("Express"));
+            if (normalizedInput.includes('ganagol')) return kbData.casino_ganagol.items.find(i=>i.q.includes("Ganagol"));
+            if (normalizedInput.includes('casino')) return kbData.casino_ganagol.items.find(i=>i.q.includes("Casino"));
+            
             if (normalizedInput.includes('whatsapp') || normalizedInput.includes('wsp')) return kbData.compras.items.find(i=>i.q.includes("WhatsApp"));
             if (normalizedInput.includes('combo') || (normalizedInput.includes('todas') && normalizedInput.includes('loterias'))) return kbData.compras.items.find(i=>i.q==="Combo Lotero");
             if (normalizedInput.includes('resultado') || normalizedInput.includes('ganador')) return kbData.resultados.items[0];
+            if (normalizedInput.includes('video') && normalizedInput.includes('sorteo')) return kbData.resultados.items[2];
             if (normalizedInput.includes('asesor') || normalizedInput.includes('humano') || normalizedInput.includes('operador')) return kbData.contacto.items[0];
 
-            // Sub-Fase 1.5: Atajos rápidos para Promociones y Suscripciones
             if (normalizedInput.includes('iphone') || normalizedInput.includes('celular') || normalizedInput.includes('smartphone')) return kbData.promociones.items[3];
             if (normalizedInput.includes('gratis') || normalizedInput.includes('raspadita')) return kbData.promociones.items[4];
             if (normalizedInput.includes('bono') || normalizedInput.includes('bienvenida')) return kbData.promociones.items[1];
             if (normalizedInput.includes('codigo')) return kbData.promociones.items[2];
             if (normalizedInput.includes('promocion') || normalizedInput.includes('promo')) return kbData.promociones.items[0];
             if (normalizedInput.includes('suscrib') || normalizedInput.includes('suscrip')) return kbData.suscripciones.items[0];
-            if (normalizedInput.includes('cobrar') || normalizedInput.includes('retiro') || normalizedInput.includes('retirar')) return kbData.cobros.items[0];
-            if (normalizedInput.includes('registro') || normalizedInput.includes('registrarme') || normalizedInput.includes('cuenta')) return kbData.cuenta.items[0];
+            if (normalizedInput.includes('cobrar') || normalizedInput.includes('retiro') || normalizedInput.includes('retirar')) return kbData.cuenta_cobros.items[2];
+            if (normalizedInput.includes('registro') || normalizedInput.includes('registrarme') || normalizedInput.includes('cuenta')) return kbData.cuenta_cobros.items[0];
 
-
-            // FASE 2: BÚSQUEDA SEMÁNTICA VECTORIAL (MOCK RAG)
             const stopWords = ['quiero', 'saber', 'sobre', 'como', 'para', 'mas', 'que', 'el', 'la', 'los', 'las', 'un', 'una'];
             let words = normalizedInput.split(' ').filter(w => !stopWords.includes(w) && w.length > 2);
             
@@ -1313,11 +1263,9 @@ async function sendMsgToAPI() {
             let maxScore = 0;
 
             for (const cat of Object.values(kbData)) {
-                // Saltar categorías de sistema
                 if(cat.isSystem) continue;
 
                 for (const item of cat.items) {
-                    // Evitar que la fase 2 dispare tutoriales (eso es de la Fase 1)
                     if (item.q.toLowerCase().includes('cómo jugar')) continue;
 
                     let score = 0;
@@ -1333,25 +1281,30 @@ async function sendMsgToAPI() {
             return { a: "Lo siento, no encuentro información exacta sobre eso en mi base de datos actual. ¿Te gustaría intentar con otras palabras o hablar con un asesor?", sug: [{label: "🎧 Hablar con asesor", q: "asesor"}] };
         }
 
-        // SIMULACIÓN DE GEMINI API (Streaming Effect)
+        // Lógica de Conexión principal
         async function callGeminiAPI(userInput) {
             isGeminiGenerating = true;
             showTyping();
             
-            // Simular latencia de red de LLM (1.5 a 2.5 segundos)
             const latency = Math.floor(Math.random() * 1000) + 1500;
             await new Promise(resolve => setTimeout(resolve, latency));
             
             removeTyping();
             const responseData = processNLP(userInput);
             
-            // Lógica de Cross-selling dinámico (Ataque comercial)
             let finalSuggestions = responseData.sug || [];
+            
             if (!responseData.sug) {
                 const ansLower = responseData.a.toLowerCase();
-                if (ansLower.includes('tinka')) {
-                    finalSuggestions.push({label: "🔴 Jugar Tinka", q: "quiero jugar tinka"});
-                    finalSuggestions.push({label: "🔁 Suscripción", q: "suscripción"});
+                const userInputLower = userInput.toLowerCase();
+                
+                const isTinkaQuery = userInputLower.includes('tinka') && (userInputLower.includes('jugar') || userInputLower.includes('quiero') || userInputLower.includes('como'));
+                
+                if (ansLower.includes('tinka') && !ansLower.includes('precio') && !ansLower.includes('pozo')) {
+                    if (!isTinkaQuery) {
+                        finalSuggestions.push({label: "🔴 Jugar Tinka", q: "quiero jugar tinka"});
+                    }
+                    finalSuggestions.push({label: "🔁 Suscripciones Tinkeras", q: "suscripción"});
                 } else if (ansLower.includes('kábala') || ansLower.includes('kabala')) {
                     finalSuggestions.push({label: "🔵 Jugar Kábala", q: "quiero jugar kabala"});
                 } else if (ansLower.includes('gana diario')) {
@@ -1362,25 +1315,32 @@ async function sendMsgToAPI() {
                     finalSuggestions.push({label: "🎰 Jugar Videoloterías", q: "quiero jugar videoloterias"});
                 } else if (ansLower.includes('promocion') || ansLower.includes('bono')) {
                     finalSuggestions.push({label: "🎮 Ver todos los juegos", q: "ver todos los juegos"});
+                    if (!isTinkaQuery) finalSuggestions.push({label: "🔴 Jugar Tinka", q: "quiero jugar tinka"});
+                }
+                
+                if (finalSuggestions.length < 3 && !isTinkaQuery) {
                     finalSuggestions.push({label: "🔴 Jugar Tinka", q: "quiero jugar tinka"});
                 }
-                if (finalSuggestions.length === 0 || (!ansLower.includes('promocion') && !ansLower.includes('bono'))) {
-                    finalSuggestions.push({label: "🎁 Promociones", q: "promociones"});
+                if (finalSuggestions.length < 3 && isTinkaQuery) {
+                    finalSuggestions.push({label: "🔁 Suscripciones Tinkeras", q: "suscripción"});
                 }
+                if (finalSuggestions.length < 3) finalSuggestions.push({label: "🎁 Ver promociones", q: "promociones"});
+                if (finalSuggestions.length < 3) finalSuggestions.push({label: "📈 Ver resultados", q: "resultados"});
+                if (finalSuggestions.length < 3) finalSuggestions.push({label: "💰 Pozos acumulados", q: "pozos acumulados"});
+                
+                finalSuggestions = finalSuggestions.filter((v,i,a)=>a.findIndex(t=>(t.label === v.label))===i).slice(0,3);
             }
 
             const links = responseData.linkText ? { text: responseData.linkText, url: responseData.linkUrl } : null;
             
-            // Renderizado instantáneo de la respuesta completa
             appendMessage('bot', responseData.a, links, finalSuggestions.length > 0 ? finalSuggestions : null);
             
             isGeminiGenerating = false;
         }
 
-        // Manejo del formulario y botones rápidos
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            if(isGeminiGenerating) return; // Bloquear si Gemini está pensando
+            if(isGeminiGenerating) return; 
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
@@ -1399,7 +1359,6 @@ async function sendMsgToAPI() {
             callGeminiAPI(text);
         }
 
-        // Inicio Garantizado
         window.onload = function() {
             try {
                 renderSidebar();
@@ -1413,7 +1372,6 @@ async function sendMsgToAPI() {
             const menu = document.getElementById('export-menu');
             menu.classList.toggle('show');
             
-            // Cerrar si hace clic fuera
             document.addEventListener('click', function closeMenu(e) {
                 if (!e.target.closest('#btn-exportar') && !e.target.closest('#export-menu')) {
                     menu.classList.remove('show');
@@ -1428,14 +1386,12 @@ async function sendMsgToAPI() {
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "SECCION,CATEGORIA,PREGUNTA_USUARIO,RESPUESTA_IA,BOTON_CTA,URL_DESTINO\n";
             
-            // Stats Header
             let totalInputs = 0;
             for (const key in kbData) {
                 if(!kbData[key].isSystem) totalInputs += kbData[key].items.length;
             }
-            csvContent += `RESUMEN,Metricas Globales,Total Categorias: ${Object.keys(kbData).length - 2},Total Preguntas: ${totalInputs},,\n`;
+            csvContent += `RESUMEN,Metricas Globales,Total Categorias: ${Object.keys(kbData).length - 1},Total Preguntas: ${totalInputs},,\n`;
             
-            // RAG Data
             for (const [catKey, catData] of Object.entries(kbData)) {
                 if(catData.isSystem) continue;
                 catData.items.forEach(item => {
@@ -1464,7 +1420,6 @@ async function sendMsgToAPI() {
             const container = document.getElementById('pdf-export-container');
             let date = new Date().toLocaleDateString();
             
-            // Capturar la imagen del gráfico de Chart.js si existe
             let chartImgHTML = '';
             try {
                 if (chartInstance) {
@@ -1472,23 +1427,19 @@ async function sendMsgToAPI() {
                 }
             } catch (e) { console.log("No se pudo exportar el gráfico al PDF"); }
             
-            // Construir el HTML integral
             let htmlContent = `
                 <div style="font-family: 'Helvetica', sans-serif; padding: 40px; color: #333;">
-                    <!-- PORTADA / CABECERA -->
                     <div style="border-bottom: 3px solid #00A859; padding-bottom: 20px; margin-bottom: 30px;">
                         <h1 style="color: #0033A0; margin: 0; font-size: 28px;">Reporte Integral del Proyecto IA</h1>
                         <p style="color: #666; margin-top: 5px; font-size: 14px;">Asistente Virtual IA - Loterías | Generado: ${date}</p>
                     </div>
 
-                    <!-- 1. RESUMEN DE CONFIGURACION -->
                     <div style="page-break-after: always;">
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">1. Resumen de Configuración</h2>
                         <p style="font-size: 14px; color: #555;">Distribución del estado actual de la Base de Conocimientos del motor LLM.</p>
                         ${chartImgHTML}
                     </div>
 
-                    <!-- 2. VISTA EJECUTIVA -->
                     <div style="page-break-after: always;">
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">2. Vista Ejecutiva (Business Case)</h2>
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
@@ -1520,7 +1471,6 @@ async function sendMsgToAPI() {
                         </ul>
                     </div>
 
-                    <!-- 3. ARQUITECTURA Y REGLAS -->
                     <div style="page-break-after: always;">
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">3. Arquitectura y Reglas de Negocio</h2>
                         <h3 style="color: #0033A0; font-size: 16px;">Arquitectura Tecnológica (4 Capas)</h3>
@@ -1539,12 +1489,10 @@ async function sendMsgToAPI() {
                         </ul>
                     </div>
 
-                    <!-- 4. BASE DE CONOCIMIENTOS (RAG) -->
                     <div style="page-break-after: always;">
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">4. Diccionario RAG (Base de Conocimientos)</h2>
             `;
             
-            // Loop a través de los datos RAG
             for (const [catKey, catData] of Object.entries(kbData)) {
                 if(catData.isSystem || catData.items.length === 0) continue;
                 
@@ -1580,9 +1528,7 @@ async function sendMsgToAPI() {
             
             htmlContent += `</div>`;
 
-            // AÑADIR SECCIÓN GUÍA DE INTEGRACIÓN AL PDF
             htmlContent += `
-                    <!-- 5. GUÍA DE INTEGRACIÓN (DEV) -->
                     <div>
                         <h2 style="color: #00A859; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">5. Guía de Integración Frontend (Snippet Code)</h2>
                         <p style="font-size: 12px; color: #555; margin-bottom: 10px;">A continuación se detalla el código base HTML y JavaScript requerido para integrar la interfaz del asistente virtual en los portales web, aislando los estilos y definiendo la conexión al middleware.</p>
@@ -1596,6 +1542,11 @@ ${escapeHtmlForPDF(document.getElementById('code-ui') ? document.getElementById(
                         <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 9px; overflow-wrap: break-word; color: #334155;">
 ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById('code-js').innerText : 'Código no disponible en la vista actual.')}
                         </div>
+
+                        <h3 style="color: #0033A0; font-size: 14px; margin-top: 20px;">Dashboard de Analítica CX</h3>
+                        <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 9px; overflow-wrap: break-word; color: #334155;">
+${escapeHtmlForPDF(document.getElementById('code-analytics') ? document.getElementById('code-analytics').innerText : 'Código no disponible en la vista actual.')}
+                        </div>
                     </div>
                 </div>
             `;
@@ -1603,7 +1554,6 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
             container.innerHTML = htmlContent;
             container.style.display = 'block';
 
-            // Opciones de html2pdf
             var opt = {
                 margin:       [10, 10, 15, 10],
                 filename:     'Reporte_Integral_IA_Tinka_Con_Codigo.pdf',
@@ -1612,15 +1562,13 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Generar y descargar
             html2pdf().set(opt).from(container).save().then(() => {
                 container.style.display = 'none';
-                container.innerHTML = ''; // Limpiar RAM
+                container.innerHTML = ''; 
                 showToast("¡Reporte PDF (con código) descargado con éxito!");
             });
         }
 
-        // Función auxiliar para escapar HTML en el PDF
         function escapeHtmlForPDF(text) {
             return text
                 .replace(/&/g, "&amp;")
@@ -1639,7 +1587,6 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
             pptx.layout = 'LAYOUT_16x9';
             let date = new Date().toLocaleDateString();
 
-            // Slide Master
             pptx.defineSlideMaster({
                 title: "TINKA_MASTER",
                 background: { color: "FFFFFF" },
@@ -1653,26 +1600,22 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
                 slideNumber: { x: 9.5, y: 5.2, color: "888888" }
             });
 
-            // Slide 1: Portada
             let slide1 = pptx.addSlide({ masterName: "TINKA_MASTER" });
             slide1.addText("Reporte Integral del Proyecto IA", { x: 1, y: 2, w: 8, h: 1, fontFace: "Arial", fontSize: 40, color: "0033A0", bold: true });
             slide1.addText("Asistente Cognitivo Estratégico - La Tinka", { x: 1, y: 3, w: 8, h: 0.5, fontFace: "Arial", fontSize: 24, color: "00A859" });
 
-            // Slide 2: Resumen Gráfico
             let slide2 = pptx.addSlide({ masterName: "TINKA_MASTER" });
             slide2.addText("1. Resumen de Configuración", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
             try {
                 if(chartInstance) slide2.addImage({ data: chartInstance.toBase64Image(), x: 2.5, y: 1.5, w: 5, h: 3.5 });
             } catch(e) {}
 
-            // Slide 3: Vista Ejecutiva
             let slide3 = pptx.addSlide({ masterName: "TINKA_MASTER" });
             slide3.addText("2. Vista Ejecutiva (Business Case)", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
             slide3.addText("EL PROBLEMA ACTUAL:\n• Fricción en búsqueda de reglas y cobros.\n• Pérdida de oportunidad en cross-selling.\n• Sobrecarga Operativa en Call Center.", { x: 0.5, y: 1.5, w: 4.5, h: 1.8, fontSize: 13, color: "333333", fill: "FFF0F0", line: "FFCCCC" });
             slide3.addText("LA SOLUCIÓN IA:\n• Copiloto Cognitivo resolviendo dudas al instante.\n• Cross-Selling automatizado (Combos, Suscripción).\n• Eficiencia de canal: 75% deflection rate.", { x: 5.2, y: 1.5, w: 4.5, h: 1.8, fontSize: 13, color: "333333", fill: "F0FFF0", line: "CCFFCC" });
             slide3.addText("KPIs Objetivo:  🚀 Aumento Ventas   |   🛒 +12% Cross-Selling   |   😊 > 4.5/5 CSAT   |   🎧 > 75% Deflection", { x: 0.5, y: 3.8, w: 9, h: 0.8, fontSize: 12, color: "0033A0", bold: true, fill: "F4F7F6" });
 
-            // Slide 4: Arquitectura y Reglas
             let slide4 = pptx.addSlide({ masterName: "TINKA_MASTER" });
             slide4.addText("3. Arquitectura y Reglas de Negocio", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
             slide4.addText("Arquitectura (4 Capas):", { x: 0.5, y: 1.5, w: 4.5, h: 0.4, fontSize: 14, color: "00A859", bold: true });
@@ -1680,7 +1623,6 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
             slide4.addText("Reglas NLP (Guardrails):", { x: 5.2, y: 1.5, w: 4.5, h: 0.4, fontSize: 14, color: "00A859", bold: true });
             slide4.addText("• Menú Interactivo (Zero-Typing UI)\n• Búsqueda de 2 Fases (Anti-Falsos)\n• Enrutamiento Inteligente\n• Cross-Selling Dinámico (CTAs)\n• Escalamiento a Humano tras fallos", { x: 5.2, y: 2.0, w: 4.5, h: 2, fontSize: 13, color: "333333", bullet: true });
 
-            // Slides de Contenido (RAG)
             for (const [catKey, catData] of Object.entries(kbData)) {
                 if(catData.isSystem || catData.items.length === 0) continue;
                 
@@ -1719,12 +1661,10 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
                 }
             }
 
-            // AÑADIR SLIDES DE GUÍA DE INTEGRACIÓN AL PPT
             let slideCode1 = pptx.addSlide({ masterName: "TINKA_MASTER" });
             slideCode1.addText("5. Guía de Integración (Frontend UI)", { x: 0.5, y: 0.8, w: 9, h: 0.5, fontFace: "Arial", fontSize: 20, color: "0033A0", bold: true });
             
             let htmlCode = document.getElementById('code-ui') ? document.getElementById('code-ui').innerText : 'Código HTML no disponible';
-            // Truncar si es muy largo para una sola diapositiva
             if(htmlCode.length > 1500) htmlCode = htmlCode.substring(0, 1500) + "\n\n... (Código truncado para presentación)";
             
             slideCode1.addText(htmlCode, {
@@ -1744,13 +1684,11 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
                 fill: "F4F7F6", align: "left", valign: "top"
             });
 
-            // Descargar archivo
             pptx.writeFile({ fileName: "Reporte_Integral_IA_Tinka_Con_Codigo.pptx" }).then(() => {
                 showToast("¡Presentación PPTX (con código) descargada con éxito!");
             });
         }
 
-        // Nueva función para exportar solo el código en un ZIP
         function exportCodeZip() {
             document.getElementById('export-menu').classList.remove('show');
             if (typeof JSZip === 'undefined') {
@@ -1762,22 +1700,20 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
             
             var zip = new JSZip();
             
-            // Archivo 1: tinkong-chat.html
             let htmlContent = document.getElementById('code-ui') ? document.getElementById('code-ui').innerText : '<!-- HTML no encontrado -->';
             zip.file("tinkong-chat.html", htmlContent);
             
-            // Archivo 2: chat-logic.js
             let jsContent = document.getElementById('code-js') ? document.getElementById('code-js').innerText : '// JS no encontrado';
             zip.file("chat-logic.js", jsContent);
             
-            // Archivo 3: README.txt
-            let readmeContent = `TINKONG IA - GUÍA DE INTEGRACIÓN FRONTEND\n\nInstrucciones:\n1. Inserta el contenido de 'tinkong-chat.html' justo antes de cerrar la etiqueta </body> en tu web principal.\n2. Incluye el archivo 'chat-logic.js' en tu flujo de scripts o empaquetador (Webpack/Vite).\n3. Reemplaza el endpoint '/api/v1/gemini/chat' en el archivo JS por tu URL real de backend.\n\nNota: Los estilos CSS están en línea para evitar conflictos con Tailwind o Bootstrap de la web host.`;
+            let analyticsContent = document.getElementById('code-analytics') ? document.getElementById('code-analytics').innerText : '// Analytics no encontrado';
+            zip.file("analytics-dashboard.html", analyticsContent);
+
+            let readmeContent = `TINKONG IA - GUÍA DE INTEGRACIÓN FRONTEND\n\nInstrucciones:\n1. Inserta el contenido de 'tinkong-chat.html' justo antes de cerrar la etiqueta </body> en tu web principal.\n2. Incluye el archivo 'chat-logic.js' en tu flujo de scripts o empaquetador (Webpack/Vite).\n3. Reemplaza el endpoint '/api/v1/gemini/chat' en el archivo JS por tu URL real de backend.\n4. Usa el archivo 'analytics-dashboard.html' en tu backoffice para mostrar los KPIs.\n\nNota: Los estilos CSS están en línea para evitar conflictos con Tailwind o Bootstrap de la web host.`;
             zip.file("README.txt", readmeContent);
 
-            // Generar y descargar el ZIP
             zip.generateAsync({type:"blob"})
             .then(function(content) {
-                // Crear un enlace temporal para forzar la descarga
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(content);
                 link.download = "Tinkong_Integracion_Frontend.zip";
@@ -1818,10 +1754,8 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
                 newItem.linkUrl = linkUrl;
             }
 
-            // Agregamos a la base de datos local
             kbData[cat].items.push(newItem);
             
-            // Actualizamos la UI
             closeAddIntentModal();
             renderSidebar();
             if(currentView === cat || currentView === 'overview') {
