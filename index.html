@@ -451,14 +451,14 @@
 
         <!-- Sugerencias rápidas (Zero Typing) -->
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2" id="chat-quick-suggestions">
+            <button onclick="sendQuickReply('Precios de Loterías')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
+                💲 Precios Loterías
+            </button>
+            <button onclick="sendQuickReply('Ver Pozos Actuales')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
+                💰 Pozos Acumulados
+            </button>
             <button onclick="sendQuickReply('Quiero jugar Tinka')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                🔴 Quiero jugar Tinka
-            </button>
-            <button onclick="sendQuickReply('Ver todos los juegos')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                🎮 Ver todos los juegos
-            </button>
-            <button onclick="sendQuickReply('Promociones')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-tinka-green hover:bg-slate-50 shadow-sm transition-colors">
-                🎁 Promociones
+                🔴 Jugar Tinka
             </button>
         </div>
 
@@ -467,7 +467,7 @@
             <!-- Mensaje Bienvenida -->
             <div class="flex flex-col gap-1 items-start">
                 <div class="chat-bubble-bot p-4 max-w-[85%] text-sm text-slate-700">
-                    ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>¿En qué te puedo ayudar hoy? Selecciona una opción rápida o escríbeme tu duda.
+                    ¡Hola! Soy tu <strong>Asistente Virtual Tinka</strong>. 🤖<br><br>Conozco todo sobre los pozos millonarios, precios de juegos, Tinka Express, Casino y más. ¿En qué te ayudo?
                 </div>
                 <span class="text-[10px] text-slate-400 ml-2">Bot • Ahora</span>
             </div>
@@ -485,15 +485,41 @@
     </div>
 
     <script>
-        const KB_VERSION = "4.2"; 
+        const KB_VERSION = "4.4"; 
         
         let currentView = 'overview';
         let isChatOpen = true; 
         let chartInstance = null;
         let isGeminiGenerating = false;
 
-        // Base de Datos Centralizada (RAG)
+        // Base de Datos Centralizada (RAG) - ENRIQUECIDA SEGÚN LO SOLICITADO
         const kbData = {
+            'pozos_precios': {
+                icon: '💰', title: 'Pozos y Precios',
+                desc: 'Información exacta sobre los precios y pozos millonarios.',
+                items: [
+                    { q: "¿Cuánto cuestan las loterías?", a: "Los precios son: Tinka S/ 5, Kábala S/ 2 (+ S/ 1 por Chau Chamba), Gana Diario S/ 2, Kinelo desde S/ 1, y Rapitinkas de S/ 3, S/ 5 y S/ 10." },
+                    { q: "¿De cuánto es el pozo de la Tinka y Kábala?", a: "El Pozo Millonario de La Tinka inicia en S/ 2 millones y el Buenazo de Kábala en S/ 300,000. Revisa la web para ver los acumulados de hoy.", linkText: "Ver Pozos Actuales", linkUrl: "https://www.latinka.com.pe" }
+                ]
+            },
+            'tinka_express': {
+                icon: '🚀', title: 'Tinka Express (Invitado)',
+                desc: 'Modalidad de compras sin registro usando Yape/Plin.',
+                items: [
+                    { q: "¿Qué es Tinka Express?", a: "Es la modalidad web para jugar como invitado sin registro. Eliges tu jugada, pagas con Yape/Plin y recibes tu boleto digital por SMS." },
+                    { q: "¿Cómo cobro mi boleto de Tinka Express?", a: "Si tienes cuenta, el premio va a 'Mis Premios'. Si no, premios menores a S/ 1,999 se cobran en puntos de venta o TinkaNet. Mayores a S/ 2,000 solo en TinkaNet." },
+                    { q: "¿Qué pasa si escribí mal mi DNI en Tinka Express?", a: "Si compraste con un DNI errado lamentablemente no podemos ajustar el DNI de la jugada. Comunícate con nuestro Call Center." }
+                ]
+            },
+            'casino_virtuales': {
+                icon: '🎰', title: 'Casino y Ganagol',
+                desc: 'Reglas de Casino, Ganagol y Deportes Virtuales.',
+                items: [
+                    { q: "¿Por qué no me llega el premio de Casino?", a: "Retiros menores a S/ 5,000 llegan automáticamente. Retiros mayores toman un máximo de 2 días hábiles en aprobarse." },
+                    { q: "¿Qué es Ganagol y cómo se juega?", a: "Pronosticas los resultados de 14 eventos de fútbol. Agregando S/ 1 activas Golazo200 para acertar el rango de goles." },
+                    { q: "¿Qué pasa si se suspende un partido en Ganagol?", a: "Si no es reprogramado en 48 horas, La Tinka lo enviará a sorteo notariado para determinar el resultado final (L, E o V)." }
+                ]
+            },
             'promociones': {
                 icon: '🎁', title: 'Promociones y Beneficios',
                 desc: 'Lógica para mostrar bonos de bienvenida, sorteos especiales (iPhone) y campañas vigentes.',
@@ -527,7 +553,9 @@
                     { q: "Cómo jugar Kinelo", a: "Kinelo es emoción rápida con sorteos cada 5 minutos. Tú decides cuántos números jugar (del 1 al 80) y cuánto apostar. ¡Mientras más números aciertes, más ganas! Revisa la guía.", linkText: "Tutorial Paso a Paso: Kinelo", linkUrl: "https://blog.latinka.com.pe/como-jugar-kinelo/" },
                     { q: "Quiero jugar Videoloterías", a: "¡Diversión instantánea! Elige tu juego favorito de Videoloterías.", linkText: "Ir a Jugar Videoloterías", linkUrl: "https://www.latinka.com.pe/p/casino" },
                     { q: "Cómo jugar Videoloterías", a: "¡Las Videoloterías te traen premios al instante! Disfruta de nuestras divertidas temáticas estilo casino (tragamonedas) y descubre si eres un ganador en segundos. Simplemente elige tu juego, define tu apuesta y gira.", linkText: "Ver catálogo de juegos", linkUrl: "https://www.latinka.com.pe/p/casino" },
-                    { q: "¿Cuáles son las reglas de los juegos?", a: "Todos nuestros juegos tienen reglamentos oficiales que garantizan su transparencia y definen las probabilidades. Puedes revisar el detalle normativo de cada producto en nuestra sección de Reglamentos.", linkText: "Ver Reglamentos", linkUrl: "https://www.latinka.com.pe/p/reglamentos" }
+                    { q: "¿Cuáles son las reglas de los juegos?", a: "Todos nuestros juegos tienen reglamentos oficiales que garantizan su transparencia y definen las probabilidades. Puedes revisar el detalle normativo de cada producto en nuestra sección de Reglamentos.", linkText: "Ver Reglamentos", linkUrl: "https://www.latinka.com.pe/p/reglamentos" },
+                    { q: "¿Qué es la Boliyapa?", a: "Es una bolilla extra que se extrae para premiar categorías secundarias (2+1, 3+1, 4+1 y 5+1)." },
+                    { q: "¿Cuáles son los premios de las Rapitinkas?", a: "Las de S/ 3 pagan hasta S/ 50,000; las de S/ 5 hasta S/ 200,000; y las de S/ 10 hasta S/ 600,000." }
                 ]
             },
             'resultados': {
@@ -544,7 +572,8 @@
                 desc: 'Dudas sobre creación de cuenta, validación KYC y contraseñas.',
                 items: [
                     { q: "¿Cómo me registro?", a: "Registrarse es fácil, rápido y seguro. Solo necesitas ser mayor de edad, tener un DNI/CE vigente y completar el formulario en la web.", linkText: "Registrarme ahora", linkUrl: "https://www.latinka.com.pe/p/registro" },
-                    { q: "Olvidé mi contraseña", a: "No te preocupes. Ve a la sección 'Iniciar Sesión', haz clic en '¿Olvidaste tu contraseña?' e ingresa tu correo. Te enviaremos un enlace para crear una nueva." }
+                    { q: "Olvidé mi contraseña", a: "No te preocupes. Ve a la sección 'Iniciar Sesión', haz clic en '¿Olvidaste tu contraseña?' e ingresa tu correo. Te enviaremos un enlace para crear una nueva." },
+                    { q: "¿Por qué rechazaron mi verificación de identidad (KYC)?", a: "Asegúrate de tomar la foto a tu documento (DNI, CE o Pasaporte) físico original, de forma clara, sin flash ni recortes." }
                 ]
             },
             'compras': {
@@ -553,15 +582,17 @@
                 items: [
                     { q: "Combo Lotero", a: "¡Compra inteligente! Con los Combos Loteros puedes comprar jugadas para La Tinka, Kábala y Gana Diario en un solo paquete, de forma rápida y sencilla.", linkText: "Ver Combos Loteros", linkUrl: "https://www.latinka.com.pe/p/combos" },
                     { q: "¿Cómo recargo mi saldo?", a: "Puedes recargar tu billetera virtual usando tarjetas Visa, Mastercard, Yape, Plin, PagoEfectivo, o en efectivo en puntos de venta autorizados como Tambo o Plaza Vea." },
-                    { q: "¿Cómo comprar por WhatsApp?", a: "¡Claro! Ahora puedes comprar La Tinka fácil y rápido desde nuestro WhatsApp Oficial. Solo escríbenos un 'Hola' y sigue las instrucciones del sistema automático.", linkText: "Comprar por WhatsApp (+51 912448677)", linkUrl: "https://wa.me/51912448677?text=Hola" },
-                    { q: "¿Qué es Tinka Express (Sin Registro)?", a: "Tinka Express es nuestra nueva modalidad para que juegues de inmediato sin necesidad de crearte una cuenta. Solo ingresas tu número de celular, pagas con Yape/Plin y ¡listo! Te enviamos tu boleto por SMS.", linkText: "Jugar Tinka Express Ahora", linkUrl: "https://express.latinka.com.pe/" }
+                    { q: "¿Cómo comprar por WhatsApp?", a: "¡Claro! Ahora puedes comprar La Tinka fácil y rápido desde nuestro WhatsApp Oficial. Solo escríbenos un 'Hola' y sigue las instrucciones del sistema automático.", linkText: "Comprar por WhatsApp (+51 912448677)", linkUrl: "https://wa.me/51912448677?text=Hola" }
                 ]
             },
             'cobros': {
-                icon: '💰', title: 'Cobro de Premios',
+                icon: '💸', title: 'Cobro de Premios',
                 desc: 'Procesos de retiro según el monto ganado.',
                 items: [
-                    { q: "¿Cómo cobro mi premio?", a: "¡Felicidades! Los premios menores a S/ 5,000 se acreditan directo a tu saldo web para retirar o seguir jugando. Para premios mayores a S/ 5,000 deberás validar tu identidad (KYC) y el pago se coordina vía transferencia bancaria o cheque." }
+                    { q: "¿Cómo cobro mi premio?", a: "¡Felicidades! Los premios menores a S/ 5,000 se acreditan directo a tu saldo web para retirar o seguir jugando. Para premios mayores a S/ 5,000 deberás validar tu identidad (KYC) y el pago se coordina vía transferencia bancaria o cheque." },
+                    { q: "¿Cuánto tiempo demora el pago de un premio?", a: "Premios menores a 1 millón de soles toman máximo 30 días. Mayores a 1 millón toman 90 días, previa validación de identidad." },
+                    { q: "¿Me descuentan impuestos de mi premio?", a: "Sí, todo premio mayor a S/ 10 está sujeto a una retención del 10% por la Ley de Tributación Municipal." },
+                    { q: "¿Cuánto tiempo tengo para cobrar un premio? (Caducidad)", a: "Tienes un plazo máximo de 180 días calendario desde la fecha del sorteo. Después de eso, el boleto caduca." }
                 ]
             },
             'noticias': {
@@ -688,41 +719,50 @@
                 </div>
             `;
             
-            const ctx = document.getElementById('intentChart').getContext('2d');
-            const labels = [];
-            const dataCounts = [];
-            const bgColors = [
-                '#00A859', '#FFD100', '#7C3AED', '#A855F7', '#E3001B', 
-                '#10B981', '#F59E0B', '#06B6D4', '#64748B', '#22C55E', '#EC4899', '#3B82F6', '#F43F5E'
-            ];
+            // Usamos setTimeout para asegurar que el canvas ya esté en el DOM antes de que Chart.js intente renderizar
+            setTimeout(() => {
+                try {
+                    if (typeof Chart === 'undefined') return;
+                    
+                    const ctx = document.getElementById('intentChart').getContext('2d');
+                    const labels = [];
+                    const dataCounts = [];
+                    const bgColors = [
+                        '#00A859', '#FFD100', '#7C3AED', '#A855F7', '#E3001B', 
+                        '#10B981', '#F59E0B', '#06B6D4', '#64748B', '#22C55E', '#EC4899', '#3B82F6', '#F43F5E'
+                    ];
 
-            Object.values(kbData).forEach(cat => {
-                labels.push(cat.title);
-                dataCounts.push(cat.items.length);
-            });
+                    Object.values(kbData).forEach(cat => {
+                        labels.push(cat.title);
+                        dataCounts.push(cat.items.length);
+                    });
 
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: dataCounts,
-                        backgroundColor: bgColors,
-                        borderWidth: 3,
-                        borderColor: '#ffffff',
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 25, font: { size: 14, family: "'Inter', sans-serif", weight: '500' } } }
-                    }
+                    if(chartInstance) chartInstance.destroy();
+                    chartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: dataCounts,
+                                backgroundColor: bgColors,
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: { position: 'bottom', labels: { padding: 25, font: { size: 14, family: "'Inter', sans-serif", weight: '500' } } }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Chart rendering error:", error);
                 }
-            });
+            }, 50);
         }
 
         function renderExecutive(container) {
@@ -1207,7 +1247,7 @@ async function sendMsgToAPI() {
             if (typing) typing.remove();
         }
 
-        // Motor NLP y Reglas (Fase 1 y 2)
+        // Motor NLP y Reglas (Fase 1 y 2) - ACTUALIZADO PARA RECONOCER NUEVAS PALABRAS
         function processNLP(input) {
             const lowerInput = input.toLowerCase().trim();
             const normalizedInput = lowerInput.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar tildes
@@ -1240,8 +1280,15 @@ async function sendMsgToAPI() {
                 if (normalizedInput.includes('videoloteria') || normalizedInput.includes('casino')) return kbData.mecanicas.items.find(i=>i.q==="Cómo jugar Videoloterías");
             }
 
-            // Expresiones exactas críticas
-            if (normalizedInput.includes('express') || normalizedInput.includes('sin registro')) return kbData.compras.items.find(i=>i.q.includes("Express"));
+            // Expresiones exactas críticas Y NUEVOS DATOS
+            if (normalizedInput.includes('precio') || normalizedInput.includes('cuesta')) return kbData.pozos_precios.items[0];
+            if (normalizedInput.includes('pozo') || normalizedInput.includes('acumulado')) return kbData.pozos_precios.items[1];
+            if (normalizedInput.includes('express') || normalizedInput.includes('invitado')) return kbData.tinka_express.items[0];
+            if (normalizedInput.includes('casino')) return kbData.casino_virtuales.items[0];
+            if (normalizedInput.includes('ganagol')) return kbData.casino_virtuales.items[1];
+            if (normalizedInput.includes('impuesto') || normalizedInput.includes('descuento') || normalizedInput.includes('retencion')) return kbData.cobros.items[2];
+            if (normalizedInput.includes('caduca') || normalizedInput.includes('tiempo') || normalizedInput.includes('180')) return kbData.cobros.items[3];
+
             if (normalizedInput.includes('whatsapp') || normalizedInput.includes('wsp')) return kbData.compras.items.find(i=>i.q.includes("WhatsApp"));
             if (normalizedInput.includes('combo') || (normalizedInput.includes('todas') && normalizedInput.includes('loterias'))) return kbData.compras.items.find(i=>i.q==="Combo Lotero");
             if (normalizedInput.includes('resultado') || normalizedInput.includes('ganador')) return kbData.resultados.items[0];
@@ -1266,6 +1313,9 @@ async function sendMsgToAPI() {
             let maxScore = 0;
 
             for (const cat of Object.values(kbData)) {
+                // Saltar categorías de sistema
+                if(cat.isSystem) continue;
+
                 for (const item of cat.items) {
                     // Evitar que la fase 2 dispare tutoriales (eso es de la Fase 1)
                     if (item.q.toLowerCase().includes('cómo jugar')) continue;
@@ -1349,9 +1399,15 @@ async function sendMsgToAPI() {
             callGeminiAPI(text);
         }
 
-        // Inicio
-        renderSidebar();
-        renderView();
+        // Inicio Garantizado
+        window.onload = function() {
+            try {
+                renderSidebar();
+                renderView();
+            } catch (e) {
+                console.error("Error in init:", e);
+            }
+        };
         
         function toggleExportMenu() {
             const menu = document.getElementById('export-menu');
@@ -1374,11 +1430,14 @@ async function sendMsgToAPI() {
             
             // Stats Header
             let totalInputs = 0;
-            for (const key in kbData) totalInputs += kbData[key].items.length;
-            csvContent += `RESUMEN,Metricas Globales,Total Categorias: ${Object.keys(kbData).length},Total Preguntas: ${totalInputs},,\n`;
+            for (const key in kbData) {
+                if(!kbData[key].isSystem) totalInputs += kbData[key].items.length;
+            }
+            csvContent += `RESUMEN,Metricas Globales,Total Categorias: ${Object.keys(kbData).length - 2},Total Preguntas: ${totalInputs},,\n`;
             
             // RAG Data
             for (const [catKey, catData] of Object.entries(kbData)) {
+                if(catData.isSystem) continue;
                 catData.items.forEach(item => {
                     let q = `"${item.q.replace(/"/g, '""')}"`;
                     let a = `"${item.a.replace(/"/g, '""')}"`;
@@ -1487,7 +1546,7 @@ async function sendMsgToAPI() {
             
             // Loop a través de los datos RAG
             for (const [catKey, catData] of Object.entries(kbData)) {
-                if(catData.items.length === 0) continue;
+                if(catData.isSystem || catData.items.length === 0) continue;
                 
                 htmlContent += `
                     <div style="margin-bottom: 30px; page-break-inside: avoid;">
@@ -1623,7 +1682,7 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
 
             // Slides de Contenido (RAG)
             for (const [catKey, catData] of Object.entries(kbData)) {
-                if(catData.items.length === 0) continue;
+                if(catData.isSystem || catData.items.length === 0) continue;
                 
                 const chunkSize = 4;
                 for (let i = 0; i < catData.items.length; i += chunkSize) {
@@ -1733,7 +1792,9 @@ ${escapeHtmlForPDF(document.getElementById('code-js') ? document.getElementById(
             const select = document.getElementById('new-intent-category');
             select.innerHTML = '';
             for(const [key, data] of Object.entries(kbData)) {
-                select.innerHTML += `<option value="${key}">${data.title}</option>`;
+                if(!data.isSystem) {
+                    select.innerHTML += `<option value="${key}">${data.title}</option>`;
+                }
             }
             document.getElementById('add-intent-modal').style.display = 'flex';
         }
